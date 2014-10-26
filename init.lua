@@ -6,12 +6,19 @@ require.update_require_paths("In Home", {
 require.update_require_paths("Luarocks", "luarocks path", true)
 
 for i,v in pairs(require.require_dir("hs", true)) do hs[i] = v end
-inspect = require("inspect")
-require.require_dir("utils._keys", true)
+if hs.screen then hs.screen.watcher = require("hs.screen.watcher") end
 
-_asm = {
-    _ = package.loaded,
-}
+inspect = require("inspect")
+hs.ipc.cli_install("/opt/amagill")
+
+hs._ = { _ = package.loaded, exec = require("hs.extras").exec }
+hs._._actions, hs._._keys = {}, {}
+for i,v in pairs(require.require_dir("utils._keys", true)) do
+    hs._._keys[i] = v or true
+end
+for i,v in pairs(require.require_dir("utils._actions", true)) do
+    hs._._actions[i] = v or true
+end
 
 print("Running: "..hs.extras._paths().bundlePath)
 

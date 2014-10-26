@@ -16,16 +16,20 @@ local hotkey = require("hs.hotkey")
 local fnutils = require("hs.fnutils")
 local application = require("hs.application")
 local alert = require("hs.alert").show
+local bluetooth = require("hs.undocumented.bluetooth")
 
+local AppName = (mjolnir and "mjolnir") or (hs and "hammerspoon") or "hellifino"
 
 hotkey.bind(mods.CAsC, "d", function() application.launchorfocus("Dash") end, nil)
 hotkey.bind(mods.CAsC, "n", function() application.launchorfocus("Notational Velocity") end, nil)
 hotkey.bind(mods.CASC, "b", function()
-    os.execute("/opt/amagill/bin/blueutil power $((1 - `/opt/amagill/bin/blueutil power`))")
-    alert("Toggle Bluetooth")
-end, nil)
+    alert("Bluetooth is power is now: "..
+        (bluetooth.power(not bluetooth.power()) and "On" or "Off"))
+    end, nil)
 
-hotkey.bind(mods.CASC, "e", function() os.execute("/usr/local/bin/edit ~/.hammerspoon /opt/amagill/src/hammerspoon/_asm") end, nil)
+hotkey.bind(mods.CASC, "e", function()
+        os.execute("/usr/local/bin/edit ~/."..AppName.." /opt/amagill/src/_asm")
+    end, nil)
 hotkey.bind(mods.CASC, "3", function() application.launchorfocus("Calculator") end, nil)
 hotkey.bind(mods.CAsC, "r", hs.openconsole, nil)
 
