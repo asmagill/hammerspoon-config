@@ -1,0 +1,183 @@
+CGEventGetTypeID                                        Returns the type identifier for the opaque type CGEventRef.
+CGEventCreateData                                       Returns a flattened data representation of a Quartz event.
+CGEventCreateFromData                                   Returns a Quartz event created from a flattened data representation of the event.
+    CGEventCreateMouseEvent                                 Returns a new Quartz mouse event.
+    CGEventCreateKeyboardEvent                              Returns a new Quartz keyboard event.
+CGEventCreateScrollWheelEvent                           Returns a new Quartz scrolling event.
+    CGEventCreateCopy                                       Returns a copy of an existing Quartz event.
+CGEventCreateSourceFromEvent                            Returns a Quartz event source created from an existing Quartz event.
+CGEventSetSource                                        Sets the event source of a Quartz event.
+    CGEventGetType                                          Returns the event type of a Quartz event (left mouse down, for example).
+CGEventSetType                                          Sets the event type of a Quartz event (left mouse down, for example).
+CGEventGetTimestamp                                     Returns the timestamp of a Quartz event.
+CGEventSetTimestamp                                     Sets the timestamp of a Quartz event.
+CGEventGetLocation                                      Returns the location of a Quartz mouse event.
+CGEventGetUnflippedLocation                             Returns the location of a Quartz mouse event.
+CGEventSetLocation                                      Sets the location of a Quartz mouse event.
+    CGEventGetFlags                                         Returns the event flags of a Quartz event.
+    CGEventSetFlags                                         Sets the event flags of a Quartz event.
+CGEventKeyboardGetUnicodeString                         Returns the Unicode string associated with a Quartz keyboard event.
+CGEventKeyboardSetUnicodeString                         Sets the Unicode string associated with a Quartz keyboard event.
+CGEventGetIntegerValueField                             Returns the integer value of a field in a Quartz event.
+    CGEventSetIntegerValueField                             Sets the integer value of a field in a Quartz event.
+    CGEventGetDoubleValueField                              Returns the floating-point value of a field in a Quartz event.
+    CGEventSetDoubleValueField                              Sets the floating-point value of a field in a Quartz event.
+
+    CGEventTapCreate                                        Creates an event tap.
+CGEventTapCreateForPSN                                  Creates an event tap for a specified process.
+    CGEventTapEnable                                        Enables or disables an event tap.
+CGEventTapIsEnabled                                     Returns a Boolean value indicating whether an event tap is enabled.
+    CGEventTapPostEvent                                     Posts a Quartz event from an event tap into the event stream.
+    CGEventPost                                             Posts a Quartz event into the event stream at a specified location.
+    CGEventPostToPSN                                        Posts a Quartz event into the event stream for a specific application.
+CGGetEventTapList                                       Gets a list of currently installed event taps.
+    CGEventMaskBit                                          Generates an event mask for a single type of event.
+
+CGEventSourceGetTypeID                                  Returns the type identifier for the opaque type CGEventSourceRef.
+    CGEventSourceCreate                                     Returns a Quartz event source created with a specified source state.
+CGEventSourceGetKeyboardType                            Returns the keyboard type to be used with a Quartz event source.
+CGEventSourceSetKeyboardType                            Sets the keyboard type to be used with a Quartz event source.
+    CGEventSourceGetSourceStateID                           Returns the source state associated with a Quartz event source.
+    CGEventSourceButtonState                                Returns a Boolean value indicating the current button state of a Quartz event source.
+CGEventSourceKeyState                                   Returns a Boolean value indicating the current keyboard state of a Quartz event source.
+CGEventSourceFlagsState                                 Returns the current flags of a Quartz event source.
+CGEventSourceSecondsSinceLastEventType                  Returns the elapsed time since the last event for a Quartz event source.
+CGEventSourceCounterForEventType                        Returns a count of events of a given type seen since the window server started.
+CGEventSourceGetUserData                                Returns the 64-bit user-specified data for a Quartz event source.
+CGEventSourceSetUserData                                Sets the 64-bit user-specified data for a Quartz event source.
+CGEventSourceGetLocalEventsFilterDuringSuppressionState Returns the mask that indicates which classes of local hardware events are enabled during event suppression.
+CGEventSourceSetLocalEventsFilterDuringSuppressionState Sets the mask that indicates which classes of local hardware events are enabled during event suppression.
+CGEventSourceGetLocalEventsSuppressionInterval          Returns the interval that local hardware events may be suppressed following the posting of a Quartz event.
+CGEventSourceSetLocalEventsSuppressionInterval          Sets the interval that local hardware events may be suppressed following the posting of a Quartz event.
+CGEventSourceGetPixelsPerLine                           Gets the scale of pixels per line in a scrolling event source.
+CGEventSourceSetPixelsPerLine                           Sets the scale of pixels per line in a scrolling event source.
+
+
+    CGEventTapCallBack                                      A client-supplied callback function that’s invoked whenever an associated event tap receives a Quartz event.
+CGButtonCount                                           Represents the number of buttons being set in a synthetic mouse event.
+CGCharCode                                              Represents a character generated by pressing one or more keys on a keyboard.
+    CGEventMask                                             Defines a mask that identifies the set of Quartz events to be observed in an event tap.
+    CGEventRef                                              Defines an opaque type that represents a low-level hardware event.
+CGEventSourceKeyboardType                               Defines a code that represents the type of keyboard used with a specified event source.
+CGEventSourceRef                                        Defines an opaque type that represents the source of a Quartz event.
+    CGEventTapProxy                                         Defines an opaque type that represents state within the client application that’s associated with an event tap.
+CGEventTimestamp                                        Defines the elapsed time in nanoseconds since startup that a Quartz event occurred.
+CGKeyCode                                               Represents the virtual key codes used in keyboard events.
+CGWheelCount                                            Represents the number of wheels being set in a scroll wheel event.
+
+    kCGMouseEventNumber                                     Key to access an integer field that contains the mouse button event number. Matching mouse-down and mouse-up events will have the same event number.
+    kCGMouseEventClickState                                 Key to access an integer field that contains the mouse button click state. A click state of 1 represents a single click. A click state of 2 represents a double-click. A click state of 3 represents a triple-click.
+    kCGMouseEventPressure                                   Key to access a double field that contains the mouse button pressure. The pressure value may range from 0 to 1, with 0 representing the mouse being up. This value is commonly set by tablet pens mimicking a mouse.
+    kCGMouseEventButtonNumber                               Key to access an integer field that contains the mouse button number. For information about the possible values, see Mouse Buttons.
+    kCGMouseEventDeltaX                                     Key to access an integer field that contains the horizontal mouse delta since the last mouse movement event.
+    kCGMouseEventDeltaY                                     Key to access an integer field that contains the vertical mouse delta since the last mouse movement event.
+    kCGMouseEventInstantMouser                              Key to access an integer field. The value is non-zero if the event should be ignored by the Inkwell subsystem.
+    kCGMouseEventSubtype                                    Key to access an integer field that encodes the mouse event subtype as a kCFNumberIntType.
+    kCGKeyboardEventAutorepeat                              Key to access an integer field, non-zero when this is an autorepeat of a key-down, and zero otherwise.
+    kCGKeyboardEventKeycode                                 Key to access an integer field that contains the virtual keycode of the key-down or key-up event.
+    kCGKeyboardEventKeyboardType                            Key to access an integer field that contains the keyboard type identifier.
+    kCGScrollWheelEventDeltaAxis1                           Key to access an integer field that contains scrolling data. This field typically contains the change in vertical position since the last scrolling event from a Mighty Mouse scroller or a single-wheel mouse scroller.
+    kCGScrollWheelEventDeltaAxis2                           Key to access an integer field that contains scrolling data. This field typically contains the change in horizontal position since the last scrolling event from a Mighty Mouse scroller.
+    kCGScrollWheelEventDeltaAxis3                           This field is not used.
+    kCGScrollWheelEventFixedPtDeltaAxis1                    Key to access a field that contains scrolling data. The scrolling data represents a line-based or pixel-based change in vertical position since the last scrolling event from a Mighty Mouse scroller or a single-wheel mouse scroller. The scrolling data uses a fixed-point 16.16 signed integer format. For example, if the field contains a value of 1.0, the integer 0x00010000 is returned by CGEventGetIntegerValueField. If this key is passed to CGEventGetDoubleValueField, the fixed-point value is converted to a double value.
+    kCGScrollWheelEventFixedPtDeltaAxis2                    Key to access a field that contains scrolling data. The scrolling data represents a line-based or pixel-based change in horizontal position since the last scrolling event from a Mighty Mouse scroller. The scrolling data uses a fixed-point 16.16 signed integer format. For example, if the field contains a value of 1.0, the integer 0x00010000 is returned by CGEventGetIntegerValueField. If this key is passed to CGEventGetDoubleValueField, the fixed-point value is converted to a double value.
+    kCGScrollWheelEventFixedPtDeltaAxis3                    This field is not used.
+    kCGScrollWheelEventPointDeltaAxis1                      Key to access an integer field that contains pixel-based scrolling data. The scrolling data represents the change in vertical position since the last scrolling event from a Mighty Mouse scroller or a single-wheel mouse scroller.
+    kCGScrollWheelEventPointDeltaAxis2                      Key to access an integer field that contains pixel-based scrolling data. The scrolling data represents the change in horizontal position since the last scrolling event from a Mighty Mouse scroller.
+    kCGScrollWheelEventPointDeltaAxis3                      This field is not used.
+    kCGScrollWheelEventInstantMouser                        Key to access an integer field that indicates whether the event should be ignored by the Inkwell subsystem. If the value is non-zero, the event should be ignored.
+    kCGTabletEventPointX                                    Key to access an integer field that contains the absolute X coordinate in tablet space at full tablet resolution.
+    kCGTabletEventPointY                                    Key to access an integer field that contains the absolute Y coordinate in tablet space at full tablet resolution.
+    kCGTabletEventPointZ                                    Key to access an integer field that contains the absolute Z coordinate in tablet space at full tablet resolution.
+    kCGTabletEventPointButtons                              Key to access an integer field that contains the tablet button state. Bit 0 is the first button, and a set bit represents a closed or pressed button. Up to 16 buttons are supported.
+    kCGTabletEventPointPressure                             Key to access a double field that contains the tablet pen pressure. A value of 0.0 represents no pressure, and 1.0 represents maximum pressure.
+    kCGTabletEventTiltX                                     Key to access a double field that contains the horizontal tablet pen tilt. A value of 0.0 represents no tilt, and 1.0 represents maximum tilt.
+    kCGTabletEventTiltY                                     Key to access a double field that contains the vertical tablet pen tilt. A value of 0.0 represents no tilt, and 1.0 represents maximum tilt.
+    kCGTabletEventRotation                                  Key to access a double field that contains the tablet pen rotation.
+    kCGTabletEventTangentialPressure                        Key to access a double field that contains the tangential pressure on the device. A value of 0.0 represents no pressure, and 1.0 represents maximum pressure.
+    kCGTabletEventDeviceID                                  Key to access an integer field that contains the system-assigned unique device ID.
+    kCGTabletEventVendor1                                   Key to access an integer field that contains a vendor-specified value.
+    kCGTabletEventVendor2                                   Key to access an integer field that contains a vendor-specified value.
+    kCGTabletEventVendor3                                   Key to access an integer field that contains a vendor-specified value.
+    kCGTabletProximityEventVendorID                         Key to access an integer field that contains the vendor-defined ID, typically the USB vendor ID.
+    kCGTabletProximityEventTabletID                         Key to access an integer field that contains the vendor-defined tablet ID, typically the USB product ID.
+    kCGTabletProximityEventPointerID                        Key to access an integer field that contains the vendor-defined ID of the pointing device.
+    kCGTabletProximityEventDeviceID                         Key to access an integer field that contains the system-assigned device ID.
+    kCGTabletProximityEventSystemTabletID                   Key to access an integer field that contains the system-assigned unique tablet ID.
+    kCGTabletProximityEventVendorPointerType                Key to access an integer field that contains the vendor-assigned pointer type.
+    kCGTabletProximityEventVendorPointerSerialNumber        Key to access an integer field that contains the vendor-defined pointer serial number.
+    kCGTabletProximityEventVendorUniqueID                   Key to access an integer field that contains the vendor-defined unique ID.
+    kCGTabletProximityEventCapabilityMask                   Key to access an integer field that contains the device capabilities mask.
+    kCGTabletProximityEventPointerType                      Key to access an integer field that contains the pointer type.
+    kCGTabletProximityEventEnterProximity                   Key to access an integer field that indicates whether the pen is in proximity to the tablet. The value is non-zero if the pen is in proximity to the tablet and zero when leaving the tablet.
+    kCGEventTargetProcessSerialNumber                       Key to access a field that contains the event target process serial number. The value is a 64-bit long word.
+    kCGEventTargetUnixProcessID                             Key to access a field that contains the event target Unix process ID.
+    kCGEventSourceUnixProcessID                             Key to access a field that contains the event source Unix process ID.
+    kCGEventSourceUserData                                  Key to access a field that contains the event source user-supplied data, up to 64 bits.
+    kCGEventSourceUserID                                    Key to access a field that contains the event source Unix effective UID.
+    kCGEventSourceGroupID                                   Key to access a field that contains the event source Unix effective GID.
+    kCGEventSourceStateID                                   Key to access a field that contains the event source state ID used to create this event.
+    kCGScrollWheelEventIsContinuous                         Key to access an integer field that indicates whether a scrolling event contains continuous, pixel-based scrolling data. The value is non-zero when the scrolling data is pixel-based and zero when the scrolling data is line-based.
+
+kCGEventFilterMaskPermitLocalMouseEvents            =   0x00000001,
+kCGEventFilterMaskPermitLocalKeyboardEvents         =   0x00000002,
+kCGEventFilterMaskPermitSystemDefinedEvents         =   0x00000004,
+kCGEventFilterMaskPermitAllEvents                   =   kCGEventFilterMaskPermitLocalMouseEvents  |
+                                                        kCGEventFilterMaskPermitLocalKeyboardEvents |
+                                                        kCGEventFilterMaskPermitSystemDefinedEvents
+
+kCGEventFlagMaskAlphaShift                              Indicates that the Caps Lock key is down for a keyboard, mouse, or flag-changed event.
+    kCGEventFlagMaskShift                                   Indicates that the Shift key is down for a keyboard, mouse, or flag-changed event.
+    kCGEventFlagMaskControl                                 Indicates that the Control key is down for a keyboard, mouse, or flag-changed event.
+    kCGEventFlagMaskAlternate                               Indicates that the Alt or Option key is down for a keyboard, mouse, or flag-changed event.
+    kCGEventFlagMaskCommand                                 Indicates that the Command key is down for a keyboard, mouse, or flag-changed event.
+kCGEventFlagMaskHelp                                    Indicates that the Help modifier key is down for a keyboard, mouse, or flag-changed event. This key is not present on most keyboards, and is different than the Help key found in the same row as Home and Page Up.
+    kCGEventFlagMaskSecondaryFn                             Indicates that the Fn (Function) key is down for a keyboard, mouse, or flag-changed event. This key is found primarily on laptop keyboards.
+kCGEventFlagMaskNumericPad                              Identifies key events from the numeric keypad area on extended keyboards.
+kCGEventFlagMaskNonCoalesced                            Indicates that mouse and pen movement events are not being coalesced.
+kCGEventSourceStatePrivate                              Specifies that an event source should use a private event state table.
+    kCGEventSourceStateCombinedSessionState                 Specifies that an event source should use the event state table that reflects the combined state of all event sources posting to the current user login session.
+kCGEventSourceStateHIDSystemState                       Specifies that an event source should use the event state table that reflects the combined state of all hardware event sources posting from the HID system.
+kCGAnyInputEventType                                    A constant that specifies any input event type.
+kCGEventSuppressionStateSuppressionInterval             Specifies that certain local hardware events may be suppressed for a short interval after posting an event.
+kCGEventSuppressionStateRemoteMouseDrag                 Specifies that certain local hardware events may be suppressed during a mouse drag operation (mouse movement with the left or only mouse button down).
+kCGHIDEventTap                                          Specifies that an event tap is placed at the point where HID system events enter the window server.
+kCGSessionEventTap                                      Specifies that an event tap is placed at the point where HID system and remote control events enter a login session.
+kCGAnnotatedSessionEventTap                             Specifies that an event tap is placed at the point where session events have been annotated to flow to an application.
+kCGEventTapOptionDefault                                Specifies that a new event tap is an active filter. (Applications targeting OS X v10.4 should use the literal value to create an active filter event tap, as this constant was omitted from the header.)
+kCGEventTapOptionListenOnly                             Specifies that a new event tap is a passive listener.
+kCGHeadInsertEventTap                                   Specifies that a new event tap should be inserted before any pre-existing event taps at the same location.
+kCGTailAppendEventTap                                   Specifies that a new event tap should be inserted after any pre-existing event taps at the same location.
+
+# event types
+    kCGEventNull                                            Specifies a null event.
+    kCGEventLeftMouseDown                                   Specifies a mouse down event with the left button.
+    kCGEventLeftMouseUp                                     Specifies a mouse up event with the left button.
+    kCGEventRightMouseDown                                  Specifies a mouse down event with the right button.
+    kCGEventRightMouseUp                                    Specifies a mouse up event with the right button.
+    kCGEventMouseMoved                                      Specifies a mouse moved event.
+    kCGEventLeftMouseDragged                                Specifies a mouse drag event with the left button down.
+    kCGEventRightMouseDragged                               Specifies a mouse drag event with the right button down.
+    kCGEventKeyDown                                         Specifies a key down event.
+    kCGEventKeyUp                                           Specifies a key up event.
+    kCGEventFlagsChanged                                    Specifies a key changed event for a modifier or status key.
+    kCGEventScrollWheel                                     Specifies a scroll wheel moved event.
+    kCGEventTabletPointer                                   Specifies a tablet pointer event.
+    kCGEventTabletProximity                                 Specifies a tablet proximity event.
+    kCGEventOtherMouseDown                                  Specifies a mouse down event with one of buttons 2-31.
+    kCGEventOtherMouseUp                                    Specifies a mouse up event with one of buttons 2-31.
+    kCGEventOtherMouseDragged                               Specifies a mouse drag event with one of buttons 2-31 down.
+    kCGEventTapDisabledByTimeout                            Specifies an event indicating the event tap is disabled because of timeout.
+    kCGEventTapDisabledByUserInput                          Specifies an event indicating the event tap is disabled because of user input.
+    kCGEventMaskForAllEvents                                An event mask that specifies all event types.
+
+# predefined for CreateMouseEvent and SourceButtonState
+    kCGMouseButtonLeft                                      Specifies the only mouse button on a one-button mouse, or the left mouse button on a two-button or three-button mouse.
+    kCGMouseButtonRight                                     Specifies the right mouse button on a two-button or three-button mouse.
+    kCGMouseButtonCenter                                    Specifies the center mouse button on a three-button mouse.
+
+kCGEventMouseSubtypeDefault                             Specifies that the event is an ordinary mouse event, and does not contain additional tablet device information.
+kCGEventMouseSubtypeTabletPoint                         Specifies that the mouse event originated from a tablet device, and that the various kCGTabletEvent field selectors may be used to obtain tablet-specific data from the mouse event.
+kCGEventMouseSubtypeTabletProximity                     Specifies that the mouse event originated from a tablet device with the pen in proximity but not necessarily touching the tablet, and that the various kCGTabletProximity field selectors may be used to obtain tablet-specific data from the mouse event. This is often used with mouse move events originating from a tablet.
+kCGScrollEventUnitPixel                                 Specifies that the unit of measurement is pixels.
+kCGScrollEventUnitLine                                  Specifies that the unit of measurement is lines.

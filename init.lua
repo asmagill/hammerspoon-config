@@ -6,7 +6,8 @@ require.update_require_paths("In Home", {
 require.update_require_paths("Luarocks", "luarocks path", true)
 
 hs.extras = require("hs.extras")
-inspect = require("inspect")
+--inspect = require("inspect")
+inspect = hs.inspect
 hs.ipc.cli_install("/opt/amagill")
 
 if hs.fnutils and hs.extras then
@@ -27,5 +28,9 @@ print("Running: "..hs.extras._paths.bundlePath)
 
 -- _G["debug.docs.module"] = "sort"
 doc = hs.doc.from_json_file(hs.docstrings_json_file)
-_doc = hs.doc.from_package_loaded(true)
+_doc = hs.doc.from_array({"hs.extras","utils.require"})
 
+hs.restart = function()
+    os.execute([[ (sleep 5 ; open -a Hammerspoon) & ]])
+    hs._exit()
+end

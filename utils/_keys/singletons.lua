@@ -33,6 +33,8 @@ hotkey.bind(mods.CASC, "e", function()
 hotkey.bind(mods.CASC, "3", function() application.launchorfocus("Calculator") end, nil)
 hotkey.bind(mods.CAsC, "r", hs.openconsole, nil)
 
+hotkey.bind(mods.CASC, "r", function() hs.restart() end, nil)
+
 -- Public interface ------------------------------------------------------
 -- Return Module Object --------------------------------------------------
 
