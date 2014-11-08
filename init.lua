@@ -31,6 +31,6 @@ doc = hs.doc.from_json_file(hs.docstrings_json_file)
 _doc = hs.doc.from_array({"hs.extras","utils.require"})
 
 hs.restart = function()
-    os.execute([[ (sleep 5 ; open -a Hammerspoon) & ]])
+    os.execute([[ (sleep 2 ; open -a /opt/amagill/src/_asm/hammerspoon_local/build/Hammerspoon.app) & ]])
     hs._exit()
 end

@@ -15,6 +15,11 @@ setmetatable(module,
 
 module.heartbeat = hs.timer.new(hs.timer.minutes(1), function()
         hs.settings.set_date("_asm.last_heartbeat",os.time())
+        if hs.appfinder.window_from_window_title("Hammerspoon Console") then
+            hs.settings.set("_asm.open_console_at_start", true)
+        else
+            hs.settings.set("_asm.open_console_at_start", false)
+        end
     end
 ):start()
 
@@ -25,6 +30,8 @@ module.status = function()
     print("Configuration loaded:", os.date("%c", hs.settings.get("_asm.last_loaded") or 0))
     print("-------------------------------------------------")
 end
+
+if hs.settings.get("_asm.open_console_at_start") then hs.openconsole() end
 
 module.status()
 

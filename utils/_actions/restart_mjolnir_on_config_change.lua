@@ -7,6 +7,6 @@ return hs.pathwatcher.new(
             end
             if not hs.fnutils.every(changedfiles, is_lua_file) then return end
 --             hammerspoon.reload()
-            print("you better reload!")
+            print("you might wanna reload!")
         end
     ):start()
