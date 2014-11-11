@@ -27,9 +27,9 @@ hotkey.bind(mods.CASC, "b", function()
         (bluetooth.power(not bluetooth.power()) and "On" or "Off"))
     end, nil)
 
-hotkey.bind(mods.CASC, "e", function()
+hotkey.bind(mods.CASC, "e", nil, function()
         os.execute("/usr/local/bin/edit ~/."..AppName.." /opt/amagill/src/_asm")
-    end, nil)
+    end)
 hotkey.bind(mods.CASC, "3", function() application.launchorfocus("Calculator") end, nil)
 hotkey.bind(mods.CAsC, "r", hs.openconsole, nil)
 

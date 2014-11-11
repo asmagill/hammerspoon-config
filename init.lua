@@ -17,10 +17,10 @@ end
 
 _asm = { _ = package.loaded, exec = require("hs.extras").exec }
 _asm._actions, _asm._keys = {}, {}
-for i,v in pairs(require.require_dir("utils._keys", false)) do
+for i,v in pairs(require.require_path("utils._keys", false)) do
     _asm._keys[i] = v or true
 end
-for i,v in pairs(require.require_dir("utils._actions", false)) do
+for i,v in pairs(require.require_path("utils._actions", false)) do
     _asm._actions[i] = v or true
 end
 

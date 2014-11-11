@@ -121,13 +121,13 @@ module.reset = function()
     end
 end
 
---- utils.require.require_dir(path[, output]) -> table-of-modules
+--- utils.require.require_path(path[, output]) -> table-of-modules
 --- Function
 --- Parses `package.path` and `package.cpath` by appending `path` to it and seeing what modules or files may exist at each location for loading, then requires them.  If `output` is true, then a log message is printed to the hammerspoon console for each file loaded. This function returns a table whose individual keys contain the loaded modules.
 ---
 --- This only checks at the level of `path` for a match to ?.lua or ?/init.lua (or ?.so).  It does not recurse further subdirectories.  Load order is unspecified, so each module must (they really should anyways) make sure to require anything necessary for their successful loading internally, and not assume a specific load order.
 ---
-module.require_dir = function(path, output)
+module.require_path = function(path, output)
     local prefix, _ = string.gsub(path,"/",".")
     local prefix_dir, _ = string.gsub(path,"%.","/")
     local package_list, loaded = {}, {}
@@ -182,34 +182,28 @@ module.update_require_paths = function(label, command, append)
     else
         print("\tInvalid command specifier: ("..type(command)..") "..tostring(command))
     end
-    local new_path, new_cpath = "", ""
-    for test_path, sep in string.gmatch(paths[1],"([^;]+)(;?)") do
-        if not string.find(package.path, ";?"..test_path:gsub("[%.%?]",{ ["."]="%.", ["?"]="%?" })..";?") then
-            print("\tpath: "..test_path)
-            if append then
-                new_path = new_path..";"..test_path
-            else
-                new_path = new_path..test_path..";"
-            end
-        end
-    end
-    for test_path, sep in string.gmatch(paths[2],"([^;]+)(;?)") do
-        if not string.find(package.cpath, ";?"..test_path:gsub("[%.%?]",{ ["."]="%.", ["?"]="%?" })..";?") then
-            print("\tcpath: "..test_path)
-            if append then
-                new_cpath = new_cpath..";"..test_path
-            else
-                new_cpath = new_cpath..test_path..";"
-            end
-        end
-    end
     if append then
-        package.path = package.path..new_path
-        package.cpath = package.cpath..new_cpath
+        package.path = package.path..";"..paths[1]
+        package.cpath = package.cpath..";"..paths[2]
     else
-        package.path = new_path..package.path
-        package.cpath = new_cpath..package.cpath
+        package.path = paths[1]..";"..package.path
+        package.cpath = paths[2]..";"..package.cpath
     end
+    local singlepaths, singlecpaths = {}, {}
+    for test_path, sep in string.gmatch(package.path,"([^;]+)(;?)") do
+        if not singlepaths[test_path] then
+            singlepaths[test_path] = true
+            singlepaths[#singlepaths+1] = test_path
+        end
+    end
+    for test_path, sep in string.gmatch(package.cpath,"([^;]+)(;?)") do
+        if not singlecpaths[test_path] then
+            singlecpaths[test_path] = true
+            singlecpaths[#singlecpaths+1] = test_path
+        end
+    end
+    package.path = table.concat(singlepaths, ";") ;
+    package.cpath = table.concat(singlecpaths, ";") ;
 end
 
 -- Return Module Object --------------------------------------------------
