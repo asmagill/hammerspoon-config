@@ -29,7 +29,7 @@ local app = hotkey.modal.new(mods.CAsC, "a")
     },
         function(object)
             app:bind(mods.casc, object.key,
-                function() application.launchorfocus(object.app) end,
+                function() application.launchOrFocus(object.app) end,
                 function() app:exit() end
             )
         end

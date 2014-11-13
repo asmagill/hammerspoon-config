@@ -8,7 +8,7 @@ require.update_require_paths("Luarocks", "luarocks path", true)
 hs.extras = require("hs.extras")
 --inspect = require("inspect")
 inspect = hs.inspect
-hs.ipc.cli_install("/opt/amagill")
+hs.ipc.cliInstall("/opt/amagill")
 
 if hs.fnutils and hs.extras then
     hs.fnutils.every = hs.extras.fnutils_every
@@ -27,8 +27,8 @@ end
 print("Running: "..hs.extras._paths.bundlePath)
 
 -- _G["debug.docs.module"] = "sort"
-doc = hs.doc.from_json_file(hs.docstrings_json_file)
-_doc = hs.doc.from_array({"hs.extras","utils.require"})
+doc = hs.doc.fromJSONFile(hs.docstrings_json_file)
+_doc = hs.doc.fromArray({"hs.extras","utils.require"})
 
 hs.restart = function()
     os.execute([[ (sleep 2 ; open -a /opt/amagill/src/_asm/hammerspoon_local/build/Hammerspoon.app) & ]])

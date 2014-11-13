@@ -1,11 +1,11 @@
 -- Try to unmount USB drives if we switch to battery, cause we're probably
 -- yanking the USB cable next...
 
-local PreviousPowerSource = hs.battery.powersource()
+local PreviousPowerSource = hs.battery.powerSource()
 
 return hs.battery.watcher.new(function()
     local total, count = 0, 0
-    local CurrentPowerSource  = hs.battery.powersource()
+    local CurrentPowerSource  = hs.battery.powerSource()
     if CurrentPowerSource ~= PreviousPowerSource then
         if CurrentPowerSource ~= "AC Power" then
             for volume in string.gmatch(hs.extras.exec("system_profiler SPUSBDataType | grep Mount\\ Point | sed 's/Mount Point: //'"),"%s+(/Volumes/[^\n\r]+)") do

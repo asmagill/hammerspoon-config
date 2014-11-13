@@ -7,7 +7,7 @@
 
 return hs.screen.watcher.new(function()
     local btooth = require("hs.undocumented.bluetooth")
-    if #hs.screen.allscreens() == 1 then
+    if #hs.screen.allScreens() == 1 then
         if btooth.available() and btooth.power() then
             hs.alert.show("Turning bluetooth off to conserve mouse battery.",5)
             btooth.power(false)

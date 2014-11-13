@@ -4,18 +4,18 @@ local module = {}
 -- funny that way.
 
 
-hs.settings.set_date("_asm.last_loaded",os.time())
+hs.settings.setDate("_asm.last_loaded",os.time())
 
 setmetatable(module,
     {__gc = function(obj)
-            hs.settings.set_date("_asm.last_clean_shutdown",os.time())
+            hs.settings.setDate("_asm.last_clean_shutdown",os.time())
         end
     }
 )
 
 module.heartbeat = hs.timer.new(hs.timer.minutes(1), function()
-        hs.settings.set_date("_asm.last_heartbeat",os.time())
-        if hs.appfinder.window_from_window_title("Hammerspoon Console") then
+        hs.settings.setDate("_asm.last_heartbeat",os.time())
+        if hs.appfinder.windowFromWindowTitle("Hammerspoon Console") then
             hs.settings.set("_asm.open_console_at_start", true)
         else
             hs.settings.set("_asm.open_console_at_start", false)
@@ -31,7 +31,7 @@ module.status = function()
     print("-------------------------------------------------")
 end
 
-if hs.settings.get("_asm.open_console_at_start") then hs.openconsole() end
+if hs.settings.get("_asm.open_console_at_start") then hs.openConsole() end
 
 module.status()
 

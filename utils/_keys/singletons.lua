@@ -20,8 +20,8 @@ local bluetooth = require("hs.undocumented.bluetooth")
 
 local AppName = (mjolnir and "mjolnir") or (hs and "hammerspoon") or "hellifino"
 
-hotkey.bind(mods.CAsC, "d", function() application.launchorfocus("Dash") end, nil)
-hotkey.bind(mods.CAsC, "n", function() application.launchorfocus("Notational Velocity") end, nil)
+hotkey.bind(mods.CAsC, "d", function() application.launchOrFocus("Dash") end, nil)
+hotkey.bind(mods.CAsC, "n", function() application.launchOrFocus("Notational Velocity") end, nil)
 hotkey.bind(mods.CASC, "b", function()
     alert("Bluetooth is power is now: "..
         (bluetooth.power(not bluetooth.power()) and "On" or "Off"))
@@ -30,8 +30,8 @@ hotkey.bind(mods.CASC, "b", function()
 hotkey.bind(mods.CASC, "e", nil, function()
         os.execute("/usr/local/bin/edit ~/."..AppName.." /opt/amagill/src/_asm")
     end)
-hotkey.bind(mods.CASC, "3", function() application.launchorfocus("Calculator") end, nil)
-hotkey.bind(mods.CAsC, "r", hs.openconsole, nil)
+hotkey.bind(mods.CASC, "3", function() application.launchOrFocus("Calculator") end, nil)
+hotkey.bind(mods.CAsC, "r", hs.openConsole, nil)
 
 hotkey.bind(mods.CASC, "r", function() hs.restart() end, nil)
 
