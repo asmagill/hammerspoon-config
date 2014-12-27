@@ -3,9 +3,9 @@
 --
 -- This is a sample file for testing out eventtap modules.
 
--- Currently it only tests receiving events and displaying the details in the mjolnir console.
+-- Currently it only tests receiving events and displaying the details in the hs console.
 --
--- Place this file in your ~/.mjolnir directory.  Then you can play with it from the mjolnir
+-- Place this file in your ~/.hammerspoon directory.  Then you can play with it from the hs
 -- console as follows:
 --
 -- dofile("eventtest.lua")

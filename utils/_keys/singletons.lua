@@ -2,8 +2,8 @@ local module = {
 --[=[
     _NAME        = 'key_bindings.lua',
     _VERSION     = '0.1',
-    _URL         = 'https://github.com/asmagill/mjolnir-config',
-    _DESCRIPTION = [[ personal keybindings for mjolnir ]],
+    _URL         = 'https://github.com/asmagill/hammerspoon-config',
+    _DESCRIPTION = [[ personal keybindings for hammerspoon ]],
     _TODO        = [[]],
     _LICENSE     = [[ See README.md ]]
 --]=]
@@ -11,12 +11,12 @@ local module = {
 
 -- private variables and methods -----------------------------------------
 
-local mods = require("hs.extras").mods
-local hotkey = require("hs.hotkey")
-local fnutils = require("hs.fnutils")
-local application = require("hs.application")
-local alert = require("hs.alert").show
-local bluetooth = require("hs.undocumented.bluetooth")
+local mods = hs.extras.mods
+local hotkey = hs.hotkey
+local fnutils = hs.fnutils
+local application = hs.application
+local alert = hs.alert.show
+local bluetooth = require("hs._asm.undocumented.bluetooth")
 
 local AppName = (mjolnir and "mjolnir") or (hs and "hammerspoon") or "hellifino"
 
@@ -28,12 +28,12 @@ hotkey.bind(mods.CASC, "b", function()
     end, nil)
 
 hotkey.bind(mods.CASC, "e", nil, function()
-        os.execute("/usr/local/bin/edit ~/."..AppName.." /opt/amagill/src/_asm")
+        os.execute("/usr/local/bin/edit ~/."..AppName.." /opt/amagill/src/hammerspoon")
     end)
 hotkey.bind(mods.CASC, "3", function() application.launchOrFocus("Calculator") end, nil)
-hotkey.bind(mods.CAsC, "r", hs.openConsole, nil)
 
-hotkey.bind(mods.CASC, "r", function() hs.restart() end, nil)
+hotkey.bind(mods.CAsC, "r", function() hs.openConsole() end, nil)
+hotkey.bind(mods.CASC, "r", function() _asm._restart() end, nil)
 
 -- Public interface ------------------------------------------------------
 -- Return Module Object --------------------------------------------------

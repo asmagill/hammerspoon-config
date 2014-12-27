@@ -1,0 +1,57 @@
+local module = {
+--[=[
+    _NAME        = 'windowmoves.lua',
+    _VERSION     = '0.1',
+    _URL         = 'https://github.com/asmagill/hammerspoon-config',
+    _DESCRIPTION = [[ personal keybindings for hammerspoon ]],
+    _TODO        = [[
+        add history
+        add percentage moves/sizes
+    ]],
+    _LICENSE     = [[ See README.md ]]
+--]=]
+}
+
+-- private variables and methods -----------------------------------------
+
+local mods = hs.extras.mods
+local hotkey = hs.hotkey
+local winter = require("mjolnir.winter").new()
+local window = hs.window
+
+local actualWindow = function(f)
+    return function()
+        if window.focusedWindow() then
+           f()
+        else
+            hs.alert.show("No window currently focused")
+        end
+    end
+end
+
+-- center window
+hotkey.bind(mods.CAsC, 'c', actualWindow(winter:focused():vcenter():hcenter():place()))
+
+-- shove window to screen edge
+hotkey.bind(mods.CAsC, 'h', actualWindow(winter:focused():leftmost():place()))
+hotkey.bind(mods.CAsC, 'k', actualWindow(winter:focused():topmost():place()))
+hotkey.bind(mods.CAsC, 'j', actualWindow(winter:focused():bottommost():place()))
+hotkey.bind(mods.CAsC, 'l', actualWindow(winter:focused():rightmost():place()))
+
+-- full-height window, full-width window, and a maximize
+hotkey.bind(mods.CAsC, 't', actualWindow(winter:focused():tallest():resize()))
+hotkey.bind(mods.CAsC, 'w', actualWindow(winter:focused():widest():resize()))
+hotkey.bind(mods.CAsC, 'm', actualWindow(winter:focused():widest():tallest():resize()))
+hotkey.bind(mods.CASC, 'm', actualWindow(function()
+        window.focusedWindow():setFullScreen(not window.focusedWindow():isFullScreen())
+    end)
+)
+
+-- push window to different screen
+hotkey.bind(mods.CAsC, '[', actualWindow(winter:focused():prevscreen():move()))
+hotkey.bind(mods.CAsC, ']', actualWindow(winter:focused():nextscreen():move()))
+
+-- Public interface ------------------------------------------------------
+-- Return Module Object --------------------------------------------------
+
+return module

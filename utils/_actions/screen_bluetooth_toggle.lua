@@ -5,17 +5,23 @@
 -- we turn it off when I drop to one monitor.  I can always toggle it back (see
 -- _keys).
 
+local prevScreens = #hs.screen.allScreens()
+
 return hs.screen.watcher.new(function()
-    local btooth = require("hs.undocumented.bluetooth")
-    if #hs.screen.allScreens() == 1 then
-        if btooth.available() and btooth.power() then
-            hs.alert.show("Turning bluetooth off to conserve mouse battery.",5)
-            btooth.power(false)
+    local numScreens = #hs.screen.allScreens()
+    if numScreens ~= prevScreens then
+        local btooth = require("hs._asm.undocumented.bluetooth")
+        if numScreens == 1 then
+            if btooth.available() and btooth.power() then
+                hs.alert.show("Turning bluetooth off to conserve mouse battery.",5)
+                btooth.power(false)
+            end
+        else
+            if btooth.available() and not btooth.power() then
+                hs.alert.show("Turning bluetooth on.",5)
+                btooth.power(true)
+            end
         end
-    else
-        if btooth.available() and not btooth.power() then
-            hs.alert.show("Turning bluetooth on.",5)
-            btooth.power(true)
-        end
+        prevScreens = numScreens
     end
 end):start()

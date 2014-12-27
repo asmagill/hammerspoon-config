@@ -6,13 +6,13 @@ Description
 ### Install
 
 ~~~bash
-$ git clone https://github.com/asmagill/mjolnir-XXX.git ~/.hydra/ext/XXX
+$ git clone https://github.com/asmagill/hammerspoon-XXX.git
 ~~~
 
 ### Require
 
 ~~~lua
-require "ext.XXX"
+require "hs._asm.XXX"
 ~~~
 
 ### Terminology

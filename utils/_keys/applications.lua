@@ -2,8 +2,8 @@ local module = {
 --[=[
     _NAME        = 'key_bindings.lua',
     _VERSION     = '0.1',
-    _URL         = 'https://github.com/asmagill/mjolnir-config',
-    _DESCRIPTION = [[ personal keybindings for mjolnir ]],
+    _URL         = 'https://github.com/asmagill/hammerspoon-config',
+    _DESCRIPTION = [[ personal keybindings for hammerspoon ]],
     _TODO        = [[]],
     _LICENSE     = [[ See README.md ]]
 --]=]
@@ -11,11 +11,11 @@ local module = {
 
 -- private variables and methods -----------------------------------------
 
-local mods = require("hs.extras").mods
-local hotkey = require("hs.hotkey")
-local fnutils = require("hs.fnutils")
-local application = require("hs.application")
-local alert = require("hs.alert").show
+local mods = hs.extras.mods
+local hotkey = hs.hotkey
+local fnutils = hs.fnutils
+local application = hs.application
+local alert = hs.alert.show
 
 local app = hotkey.modal.new(mods.CAsC, "a")
 
