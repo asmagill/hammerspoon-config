@@ -35,6 +35,8 @@ hotkey.bind(mods.CASC, "3", function() application.launchOrFocus("Calculator") e
 hotkey.bind(mods.CAsC, "r", function() hs.openConsole() end, nil)
 hotkey.bind(mods.CASC, "r", function() _asm._restart() end, nil)
 
+hotkey.bind(mods.CAsC, "space", function() hs.hints.windowHints() end, nil)
+
 -- Public interface ------------------------------------------------------
 -- Return Module Object --------------------------------------------------
 
