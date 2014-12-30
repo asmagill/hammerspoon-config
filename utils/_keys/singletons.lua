@@ -11,7 +11,7 @@ local module = {
 
 -- private variables and methods -----------------------------------------
 
-local mods = hs.extras.mods
+local mods = require("hs._asm.extras").mods
 local hotkey = hs.hotkey
 local fnutils = hs.fnutils
 local application = hs.application

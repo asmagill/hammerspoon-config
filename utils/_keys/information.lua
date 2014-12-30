@@ -12,7 +12,7 @@ local module = {
 -- private variables and methods -----------------------------------------
 
 local hotkey        = hs.hotkey
-local mods          = hs.extras.mods
+local mods          = require("hs._asm.extras").mods
 local window        = hs.window
 local fnutils       = hs.fnutils
 local mouse         = hs.mouse

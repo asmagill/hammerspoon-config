@@ -12,7 +12,7 @@ local module = {
 
 local grid     = require("hs.grid")
 local settings = require("hs.settings")
-local mods     = require("hs.extras").mods
+local mods     = require("hs._asm.extras").mods
 local hotkey   = require("hs.hotkey")
 local window   = require("hs.window")
 
