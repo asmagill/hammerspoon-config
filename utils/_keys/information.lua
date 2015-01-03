@@ -96,7 +96,7 @@ local dev = hotkey.modal.new(mods.CAsC, "=")
     dev:bind(mods.Casc, "V",
         function()
             print("-- Clipboard Contents ------------------")
-            print(pasteboard.getcontents())
+            print(pasteboard.getContents())
             print("----------------------------------------")
         end
     )
