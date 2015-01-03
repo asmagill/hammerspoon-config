@@ -33,7 +33,7 @@ hotkey.bind(mods.CASC, "e", nil, function()
 hotkey.bind(mods.CASC, "3", function() application.launchOrFocus("Calculator") end, nil)
 
 hotkey.bind(mods.CAsC, "r", function() hs.openConsole() end, nil)
-hotkey.bind(mods.CASC, "r", function() _asm._restart() end, nil)
+hotkey.bind(mods.CASC, "r", function() require("hs._asm.extras").restart() end, nil)
 
 hotkey.bind(mods.CAsC, "space", function() hs.hints.windowHints() end, nil)
 

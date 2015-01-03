@@ -37,11 +37,11 @@ local change = function(command, direction)
             if direction     == "left"  then
                 state.x = state.x > 0 and state.x - 1 or state.x
             elseif direction == "right" then
-                state.x = state.x + state.w < grid.GRIDHEIGHT and state.x + 1 or state.x
+                state.x = state.x + state.w < grid.GRIDWIDTH and state.x + 1 or state.x
             elseif direction == "up"    then
                 state.y = state.y > 0 and state.y - 1 or state.y
             elseif direction == "down"  then
-                state.y = state.y + state.h < grid.GRIDWIDTH  and state.y + 1 or state.y
+                state.y = state.y + state.h < grid.GRIDHEIGHT  and state.y + 1 or state.y
             else
                 hs.alert.show("Invalid direction: "..direction)
             end
@@ -132,6 +132,7 @@ end
     hotkey.bind(mods.CAsC, "down",  function() adjust(-1,  0) end, nil)
     hotkey.bind(mods.CAsC, "left",  function() adjust( 0, -1) end, nil)
     hotkey.bind(mods.CAsC, "right", function() adjust( 0,  1) end, nil)
+    hotkey.bind(mods.CAsC, "/",     function() adjust( 0,  0) end, nil) -- show current
 
 ---- center window
 --hotkey.bind(mods.CAsC, 'c', function()actualWindow(winter:focused():vcenter():hcenter():place()), nil)

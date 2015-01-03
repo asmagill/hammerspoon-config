@@ -29,10 +29,6 @@ _asm = {
     exec = extras.exec,
     _keys = require.require_path("utils._keys", false),
     _actions = require.require_path("utils._actions", false),
-    _restart = function()
-        os.execute("(sleep 2 ; open -a "..extras._paths.bundlePath..") &")
-        hs._exit()
-    end,
     _doc = "use _asm._doc_load() to load docs corrosponding to package.loaded.",
     _doc_load = function() _asm._doc = hs.doc.fromPackageLoaded() end,
 }
