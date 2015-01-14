@@ -20,6 +20,7 @@ local alert = hs.alert.show
 local app = hotkey.modal.new(mods.CAsC, "a")
 
     fnutils.each({
+        { key = "a", app = "Activity Monitor" },
         { key = "t", app = "Terminal" },
         { key = "e", app = "TextWrangler" },
         { key = "f", app = "Finder" },
