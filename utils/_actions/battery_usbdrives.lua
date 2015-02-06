@@ -20,4 +20,4 @@ return hs.battery.watcher.new(function()
         end
         PreviousPowerSource = CurrentPowerSource
     end
-end):start()
+end) -- :start()
