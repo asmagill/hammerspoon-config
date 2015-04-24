@@ -36,6 +36,9 @@ hotkey.bind(mods.CAsC, "r", function() hs.openConsole() end, nil)
 hotkey.bind(mods.CASC, "r", function() require("hs._asm.extras").restart() end, nil)
 
 hotkey.bind(mods.CAsC, "space", function() hs.hints.windowHints() end, nil)
+hotkey.bind(mods.CASC, "space", function()
+    hs.hints.windowHints(hs.window.focusedWindow():application():allWindows())
+end)
 
 -- Public interface ------------------------------------------------------
 -- Return Module Object --------------------------------------------------

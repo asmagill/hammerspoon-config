@@ -1,3 +1,8 @@
+-- Set to True or False indicating if you want a crash report when lua is invoked on  threads other than main (0) -- this should not happen, as lua is only supposed to execute in the main thread (unsupported and scary things can happen otherwise).  There is a performance hit, though, since the debug hook will be invoked for every call to a lua function, so usually this should be enabled only when testing in-development modules.
+
+hs.settings.set("_asm.crashIfNotMain", false)
+
+
 require = require("utils.require")
 require.update_require_paths("In Home", {
     os.getenv("HOME").."/.hammerspoon/?.lua;"..
@@ -29,4 +34,5 @@ _asm = {
 hs.hints.style = "vimperator"
 
 print("Running: ".._asm.extras._paths.bundlePath)
+print("Accessibility: "..tostring(_asm.extras.accessibility(true)))
 
