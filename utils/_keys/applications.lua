@@ -17,10 +17,11 @@ local fnutils = hs.fnutils
 local application = hs.application
 local alert = hs.alert.show
 
-local app = hotkey.modal.new(mods.CAsC, "a")
+local app = hotkey.modal.new(mods.CAsC, "RETURN")
 
     fnutils.each({
-        { key = "a", app = "Activity Monitor" },
+        { key = "a", app = "Arduino" },
+        { key = "p", app = "Activity Monitor" },
         { key = "t", app = "Terminal" },
         { key = "e", app = "TextWrangler" },
         { key = "f", app = "Finder" },
