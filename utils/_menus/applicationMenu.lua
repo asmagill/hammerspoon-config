@@ -20,8 +20,10 @@ local appMenu = fileListMenu.new("Apps") ;
 --appMenu:menuCriteria("^([^/]+)%.app$")    -- allow function/table for matches?
 --appMenu:actionFunction(function(x) hs.application.launchOrFocus(x) end)
 --appMenu:rootDirectory("/Applications")
+
+-- Think I like this slant better
 appMenu:menuIcon("ASCII:....................\n"..
-                       "....1...4...........\n"..
+                       "............1..4....\n"..
                        "....................\n"..
                        "....................\n"..
                        "....................\n"..
@@ -36,9 +38,9 @@ appMenu:menuIcon("ASCII:....................\n"..
                        "....................\n"..
                        "....................\n"..
                        "....................\n"..
-                       "....2...........5...\n"..
+                       "...2...........5....\n"..
                        "....................\n"..
-                       "......3.........6...\n"..
+                       "...3..........6.....\n"..
                        "....................")
 appMenu:subFolders("before")
 appMenu:activate()
