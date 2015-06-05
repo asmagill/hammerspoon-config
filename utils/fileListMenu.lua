@@ -5,9 +5,15 @@ local module = {
     _URL         = 'https://github.com/asmagill/hammerspoon-config',
     _DESCRIPTION = [[ applicationMenu to replace XMenu and the like ]],
     _TODO        = [[
-                        add hs.pathwatcher to detect changes that may require updating the menu
-                        add hs.settings to store state so reload/restart of HS doesn't require repopulate
-                        can I speed this up at all?  via hs.fs?
+                        ok... sold on hs.fs... it's fast enough we no longer
+                        need extra crap to save/repopulate only on demand, etc.
+
+                        clean out placeholders for crap I no longer want/need
+                        add pathwatcher to detect changes
+                        add expression tester for testing new patterns
+                        add collectgarbage() at key places? where?
+                        hide data to make it necessary to use helpers?
+                        detect loops in path?  maxDepth?
     ]],
     _LICENSE     = [[ See README.md ]]
 --]=]
@@ -15,46 +21,32 @@ local module = {
 
 -- private variables and methods -----------------------------------------
 
-local shellExec = function(command)
-    local f = io.popen(command, 'r')
-    local s = f:read('*a')
-    local status, exit_type, rc = f:close()
-    return s, status, exit_type, rc
-end
-
 local l_generateAppList -- because this function is recursive, we have to pre-declare it to keep it local
-l_generateAppList = function(self, startDir, expression)
+l_generateAppList = function(startDir, expression, doSubDirs)
     local list = {}
 -- get files at this level -- we want a label and a path
-    string.gsub(
-        shellExec([[find -EL "]]..startDir..[[" -regex '.*/]]..expression..[[' -maxdepth 1]]),
-        "[^\r\n]+",
-        function(c)
-            local l = c:gsub([[^]]..startDir..[[/]],"")
-            local _, _, nl = string.find(c:gsub([[^]]..startDir..[[/]],""), expression:gsub("\\.","%%."))
-            l = nl or l
-            list[#list+1] = { l, c }
+    for name in hs.fs.dir(startDir) do
+        local label = name:match(expression)
+        if label then
+            list[#list+1] = { label, startDir.."/"..name }
         end
-    )
-    if self.subFolderBehavior ~= 0 then
+    end
+
+    if doSubDirs then
 -- get sub-dirs at this level -- we want a label and a table -- recursion!
-        string.gsub(
-            shellExec([[find -EL "]]..startDir..[[" -type d ! -regex '.*/]]..expression..[[' -maxdepth 1]]),
-            "[^\r\n]+",
-            function(c)
-                if c ~= startDir then
-                    local subDirs = l_generateAppList(self, c, expression)
+        for name in hs.fs.dir(startDir) do
+            if not (name == "." or name == ".." or name:match(expression)) then
+                if hs.fs.attributes(startDir.."/"..name).mode == "directory" then
+                    local subDirs = l_generateAppList(startDir.."/"..name, expression, doSubDirs )
                     if next(subDirs) ~= nil then
-                        list[#list+1] = { c:gsub([[^]]..startDir..[[/]],""), subDirs, c }
+                        list[#list+1] = { name, subDirs, startDir.."/"..name }
                     end
                 end
             end
-        )
+        end
     end
     return list
 end
-
-local l_backupMenuListData = function(self) print("backupMenuListData not yet immplemented") end
 
 local l_generateMenu -- because this function is recursive, we have to pre-declare it to keep it local
 l_generateMenu = function(self, menuPart)
@@ -96,11 +88,12 @@ local l_sortMenuItems = function(self)
 end
 
 local l_populateMenu = function(self)
-    hs.alert.show("Populating menu...")
-    self.menuListRawData = l_generateAppList(self, self.root, self.matchCriteria)
-    l_sortMenuItems(self)
-    self.menuLastUpdated = os.date()
-    collectgarbage() -- we may have just replaced a semi-large data structure
+    if self.menuUserdata then
+        self.menuListRawData = l_generateAppList(self.root, self.matchCriteria, self.subFolderBehavior ~= 0)
+        l_sortMenuItems(self)
+        self.menuLastUpdated = os.date()
+        collectgarbage() -- we may have just replaced a semi-large data structure
+    end
     return self
 end
 
@@ -143,23 +136,10 @@ local l_subFolderEval = function(self, x)
             if string.lower(x) == "after"  then y = 3 end
         end
         self.subFolderBehavior = y
-        l_sortMenuItems(self)
+--        l_sortMenuItems(self)
+        l_populateMenu(self)
     end
     return self.subFolderBehavior
-end
-
-local l_changeDetectionEval = function(self, x)
-    if x then
-        local y = tonumber(x) or 0
-        if type(x) == "string" then
-            if string.lower(x) == "ignore"     then y = 0 end
-            if string.lower(x) == "silent"     then y = 1 end
-            if string.lower(x) == "notify"     then y = 2 end
-            if string.lower(x) == "repopulate" then y = 3 end
-        end
-        self.changeBehavior = y
-    end
-    return self.changeBehavior
 end
 
 local l_doFileListMenu = function(self, mods)
@@ -168,18 +148,14 @@ local l_doFileListMenu = function(self, mods)
             { title = self.label.." fileListMenu" },
             { title = "Open "..self.root.." in Finder", fn = function() os.execute([[open -a Finder "]]..self.root..[["]]) end },
             { title = "-" },
-            { title = "Sub Directories - Before",  checked = ( self.subFolderBehavior == 1 ), fn = function() l_subFolderEval(self, 1) end,       disabled = (self.subFolderBehavior == 0) },
-            { title = "Sub Directories - Mixed",   checked = ( self.subFolderBehavior == 2 ), fn = function() l_subFolderEval(self, 2) end,       disabled = (self.subFolderBehavior == 0) },
-            { title = "Sub Directories - After",   checked = ( self.subFolderBehavior == 3 ), fn = function() l_subFolderEval(self, 3) end,       disabled = (self.subFolderBehavior == 0) },
+            { title = "Sub Directories - Ignore",  checked = ( self.subFolderBehavior == 0 ), fn = function() l_subFolderEval(self, 0) end },
+            { title = "Sub Directories - Before",  checked = ( self.subFolderBehavior == 1 ), fn = function() l_subFolderEval(self, 1) end },
+            { title = "Sub Directories - Mixed",   checked = ( self.subFolderBehavior == 2 ), fn = function() l_subFolderEval(self, 2) end },
+            { title = "Sub Directories - After",   checked = ( self.subFolderBehavior == 3 ), fn = function() l_subFolderEval(self, 3) end },
             { title = "-" },
-            { title = "File Changes - Ignore",     checked = ( self.changeBehavior == 0 ),    fn = function() l_changeDetectionEval(self, 0) end, disabled = true },
-            { title = "File Changes - Silent",     checked = ( self.changeBehavior == 1 ),    fn = function() l_changeDetectionEval(self, 1) end, disabled = true },
-            { title = "File Changes - Notify",     checked = ( self.changeBehavior == 2 ),    fn = function() l_changeDetectionEval(self, 2) end, disabled = true },
-            { title = "File Changes - Repopulate", checked = ( self.changeBehavior == 3 ),    fn = function() l_changeDetectionEval(self, 3) end, disabled = true },
-            { title = "-" },
-            { title = "Show Icon",                 checked = ( self.menuView == 0 ),          fn = function() l_menuViewEval(self, 0) end        },
-            { title = "Show Label",                checked = ( self.menuView == 1 ),          fn = function() l_menuViewEval(self, 1) end        },
-            { title = "Show Both",                 checked = ( self.menuView == 2 ),          fn = function() l_menuViewEval(self, 2) end        },
+            { title = "Show Icon",                 checked = ( self.menuView == 0 ),          fn = function() l_menuViewEval(self, 0) end  },
+            { title = "Show Label",                checked = ( self.menuView == 1 ),          fn = function() l_menuViewEval(self, 1) end  },
+            { title = "Show Both",                 checked = ( self.menuView == 2 ),          fn = function() l_menuViewEval(self, 2) end  },
             { title = "-" },
             { title = "Repopulate Now", fn = function() l_populateMenu(self) end },
             { title = "-" },
@@ -189,11 +165,8 @@ local l_doFileListMenu = function(self, mods)
             { title = "Remove Menu", fn = function() self:deactivate() end  },
         }
     else
-        if not self.actualMenuTable then
-            return { { title = "Populate...", fn = function() l_populateMenu(self) end } }
-        else
-            return self.actualMenuTable
-        end
+        if not self.actualMenuTable then l_populateMenu(self) end
+        return self.actualMenuTable
     end
 end
 
@@ -224,19 +197,16 @@ local mt_fileListMenu = {
         menuLabel       = function(self, x) if x then self.label = x ; l_updateMenuView(self) end ; return self.label end,
         showForMenu     = l_menuViewEval,
         subFolders      = l_subFolderEval,
-        changeDetect    = l_changeDetectionEval,
-        menuCriteria    = function(self, x) if x and not self.menuUserdata then self.matchCriteria = x end ; return self.matchCriteria end,
-        actionFunction  = function(self, x) if x and not self.menuUserdata then self.template = x      end ; return self.template      end,
-        rootDirectory   = function(self, x) if x and not self.menuUserdata then self.root = x          end ; return self.root          end,
-        storageKey      = function(self, x) if x and not self.menuUserdata then self.settingsKey = x   end ; return self.settingsKey   end,
-        populate        = l_populateMenu,
+        menuCriteria    = function(self, x) if x then self.matchCriteria = x ; l_populateMenu(self) end ; return self.matchCriteria end,
+        actionFunction  = function(self, x) if x then self.template = x      ; l_populateMenu(self) end ; return self.template      end,
+        rootDirectory   = function(self, x) if x then self.root = x          ; l_populateMenu(self) end ; return self.root          end,
+--        populate        = l_populateMenu,
         activate        = l_activateMenu,
         deactivate      = l_deactivateMenu,
 
         subFolderBehavior = 0,
-        changeBehavior    = 0,
         menuView          = 0,
-        matchCriteria     = "([^/]+)\\.app$",
+        matchCriteria     = "([^/]+)%.app$",
         template          = function(x) hs.application.launchOrFocus(x) end,
         root              = "/Applications",
         menuLastUpdated   = "not yet",
