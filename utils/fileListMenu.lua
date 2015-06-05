@@ -5,15 +5,11 @@ local module = {
     _URL         = 'https://github.com/asmagill/hammerspoon-config',
     _DESCRIPTION = [[ applicationMenu to replace XMenu and the like ]],
     _TODO        = [[
-                        ok... sold on hs.fs... it's fast enough we no longer
-                        need extra crap to save/repopulate only on demand, etc.
-
-                        clean out placeholders for crap I no longer want/need
-                        add pathwatcher to detect changes
                         add expression tester for testing new patterns
-                        add collectgarbage() at key places? where?
-                        hide data to make it necessary to use helpers?
+                        allow function/table for matchCriteria?
+                        hide data to make it necessary to use helpers? (i.e. protect data)
                         detect loops in path?  maxDepth?
+                        document
     ]],
     _LICENSE     = [[ See README.md ]]
 --]=]
@@ -84,6 +80,7 @@ local l_sortMenuItems = function(self)
     if self.menuListRawData then
         l_tableSortSubFolders(self.menuListRawData, self.subFolderBehavior)
         self.actualMenuTable = l_generateMenu(self, self.menuListRawData)
+        collectgarbage() -- we may have just replaced a semi-large data structure
     end
 end
 
@@ -170,11 +167,33 @@ local l_doFileListMenu = function(self, mods)
     end
 end
 
+local l_changeWatcher = function(self, paths)
+    local doUpdate = false
+    local name
+    for _, v in pairs(paths) do
+        name = string.sub(v,string.match(v, '^.*()/')+1)
+        if name:match(self.matchCriteria) then
+            doUpdate = true
+            break
+        end
+    end
+    if doUpdate then
+        self.lastChangeSeen = os.date()
+        l_populateMenu(self)
+        -- need some sense of how often this occurs... may remove in the future
+        hs.notify.new(nil,{title="Menu "..self.label.." Updated",subTitle=name}):send()
+        print("Menu "..self.label.." Updated: "..name)
+    end
+end
+
 local l_deactivateMenu = function(self)
     if self.menuUserdata then
-        if self.storageLabel then l_backupMenuListData(self) end
+        self.watcher:stop()
         self.menuUserdata:delete()
     end
+    self.watcher = nil
+    self.actualMenuTable = nil
+    self.menuListRawData = nil
     self.menuUserdata = nil
     collectgarbage()
     return self
@@ -185,6 +204,7 @@ local l_activateMenu = function(self)
         hs.alert.show("Menu '"..self.label.."' already present... bug?")
     else
         self.menuUserdata = hs.menubar.new()
+        self.watcher = hs.pathwatcher.new(self.root, function(paths) l_changeWatcher(self, paths) end):start()
         l_updateMenuView(self)
         self.menuUserdata:setMenu(function(mods) return l_doFileListMenu(self, mods) end)
     end
@@ -229,7 +249,6 @@ module.delete = function(self)
     if self then
         self:deactivate()
         setmetatable(self, nil)
-        collectgarbage()
     end
     return nil
 end

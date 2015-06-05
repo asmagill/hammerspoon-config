@@ -12,8 +12,16 @@ local module = {
 local fileListMenu = require("utils.fileListMenu")
 
 local appMenu = fileListMenu.new("Apps") ;
+--
+-- the commented out lines are actually in the defaults, included here just for completness
+-- in case change desired:
+--
+--appMenu:showForMenu("icon")
+--appMenu:menuCriteria("^([^/]+)%.app$")    -- allow function/table for matches?
+--appMenu:actionFunction(function(x) hs.application.launchOrFocus(x) end)
+--appMenu:rootDirectory("/Applications")
 appMenu:menuIcon("ASCII:....................\n"..
-                       "........1..4........\n"..
+                       "....1...4...........\n"..
                        "....................\n"..
                        "....................\n"..
                        "....................\n"..
@@ -28,15 +36,11 @@ appMenu:menuIcon("ASCII:....................\n"..
                        "....................\n"..
                        "....................\n"..
                        "....................\n"..
-                       "..2..............5..\n"..
+                       "....2...........5...\n"..
                        "....................\n"..
-                       "....3..........6....\n"..
+                       "......3.........6...\n"..
                        "....................")
-appMenu:subFolders("before")                    -- 0,1,2,3 := "ignore","before","mixed","after"
-appMenu:showForMenu("icon")                     -- 0,1,2   := "icon","label","both"
-appMenu:menuCriteria("^([^/]+)%.app$")
-appMenu:actionFunction(function(x) hs.application.launchOrFocus(x) end)
-appMenu:rootDirectory("/Applications")
+appMenu:subFolders("before")
 appMenu:activate()
 
 return appMenu
