@@ -18,24 +18,32 @@ local module = {
 -- private variables and methods -----------------------------------------
 
 local l_generateAppList -- because this function is recursive, we have to pre-declare it to keep it local
-l_generateAppList = function(startDir, expression, doSubDirs)
+l_generateAppList = function(self, startDir, expression, depth)
+    local startDir = startDir or self.root
+    local expression = expression or self.matchCriteria
+    local depth = depth or 1
     local list = {}
--- get files at this level -- we want a label and a path
-    for name in hs.fs.dir(startDir) do
-        local label = name:match(expression)
-        if label then
-            list[#list+1] = { label, startDir.."/"..name }
-        end
-    end
 
-    if doSubDirs then
--- get sub-dirs at this level -- we want a label and a table -- recursion!
+    if depth > self.maxDepth then
+        if self.warnings then print("Maximum search depth of "..self.maxDepth.." reached for menu "..self.label.." at "..startDir) end
+    else
+-- get files at this level -- we want a label and a path
         for name in hs.fs.dir(startDir) do
-            if not (name == "." or name == ".." or name:match(expression)) then
-                if hs.fs.attributes(startDir.."/"..name).mode == "directory" then
-                    local subDirs = l_generateAppList(startDir.."/"..name, expression, doSubDirs )
-                    if next(subDirs) ~= nil then
-                        list[#list+1] = { name, subDirs, startDir.."/"..name }
+            local label = name:match(expression)
+            if label then
+                list[#list+1] = { title = label, fn = function() if type(self.template) == "function" then self.template(startDir.."/"..name) else if self.warnings then print("Menu action template must be a function") end end end }
+            end
+        end
+
+        if self.subFolderBehavior ~= 0 then
+-- get sub-dirs at this level -- we want a label and a table -- recursion!
+            for name in hs.fs.dir(startDir) do
+                if not (name == "." or name == ".." or name:match(expression)) then
+                    if hs.fs.attributes(startDir.."/"..name).mode == "directory" then
+                        local subDirs = l_generateAppList(self, startDir.."/"..name, expression, depth + 1)
+                        if next(subDirs) ~= nil then
+                            list[#list+1] = { title = name, menu = subDirs, fn = function() if type(self.folderTemplate) == "function" then self.folderTemplate(startDir.."/"..name) else if self.warnings then print("Menu folder action template must be a function") end end end }
+                        end
                     end
                 end
             end
@@ -44,34 +52,21 @@ l_generateAppList = function(startDir, expression, doSubDirs)
     return list
 end
 
-local l_generateMenu -- because this function is recursive, we have to pre-declare it to keep it local
-l_generateMenu = function(self, menuPart)
-    local list = {}
-    for _,v in ipairs(menuPart) do
-        if type(v[2]) ~= "table" then
-            table.insert(list, { title = v[1], fn = function() self.template(v[2]) end })
-        else
-            table.insert(list, { title = v[1], menu = l_generateMenu(self, v[2]), fn = function() os.execute([[open -a Finder "]]..v[3]..[["]]) end })
-        end
-    end
-    return list
-end
-
 local l_tableSortSubFolders
 l_tableSortSubFolders = function(theTable, Behavior)
     table.sort(theTable, function(c,d)
-        if (type(c[2]) == type(d[2])) or (Behavior % 2 == 0) then -- == 0 or 2 (ignored or mixed)
-            return string.lower(c[1]) < string.lower(d[1])
+        if (Behavior % 2 == 0) or (c.menu and d.menu) or not (c.menu or d.menu) then -- == 0 or 2 (ignored or mixed)
+            return string.lower(c.title) < string.lower(d.title)
         else
             if Behavior == 1 then                                 -- == 1 (before)
-                return type(c[2]) == "table"
+                return c.menu and true
             else                                                  -- == 3 (after)
-                return type(d[2]) == "table"
+                return d.menu and true
             end
         end
     end)
     for _,v in ipairs(theTable) do
-        if type(v[2]) == "table" then l_tableSortSubFolders(v[2], Behavior) end
+        if v.menu then l_tableSortSubFolders(v.menu, Behavior) end
     end
 end
 
@@ -79,14 +74,13 @@ end
 local l_sortMenuItems = function(self)
     if self.menuListRawData then
         l_tableSortSubFolders(self.menuListRawData, self.subFolderBehavior)
-        self.actualMenuTable = l_generateMenu(self, self.menuListRawData)
         collectgarbage() -- we may have just replaced a semi-large data structure
     end
 end
 
 local l_populateMenu = function(self)
     if self.menuUserdata then
-        self.menuListRawData = l_generateAppList(self.root, self.matchCriteria, self.subFolderBehavior ~= 0)
+        self.menuListRawData = l_generateAppList(self)
         l_sortMenuItems(self)
         self.menuLastUpdated = os.date()
         collectgarbage() -- we may have just replaced a semi-large data structure
@@ -132,9 +126,13 @@ local l_subFolderEval = function(self, x)
             if string.lower(x) == "mixed"  then y = 2 end
             if string.lower(x) == "after"  then y = 3 end
         end
+        local populateNeeded = (y == 0) or (self.subFolderBehavior == 0)
         self.subFolderBehavior = y
---        l_sortMenuItems(self)
-        l_populateMenu(self)
+        if populateNeeded then
+            l_populateMenu(self)
+        else
+            l_sortMenuItems(self)
+        end
     end
     return self.subFolderBehavior
 end
@@ -162,8 +160,8 @@ local l_doFileListMenu = function(self, mods)
             { title = "Remove Menu", fn = function() self:deactivate() end  },
         }
     else
-        if not self.actualMenuTable then l_populateMenu(self) end
-        return self.actualMenuTable
+        if not self.menuListRawData then l_populateMenu(self) end
+        return self.menuListRawData
     end
 end
 
@@ -182,7 +180,7 @@ local l_changeWatcher = function(self, paths)
         l_populateMenu(self)
         -- need some sense of how often this occurs... may remove in the future
         hs.notify.new(nil,{title="Menu "..self.label.." Updated",subTitle=name}):send()
-        print("Menu "..self.label.." Updated: "..name)
+        if self.warnings then print("Menu "..self.label.." Updated: "..name) end
     end
 end
 
@@ -192,7 +190,6 @@ local l_deactivateMenu = function(self)
         self.menuUserdata:delete()
     end
     self.watcher = nil
-    self.actualMenuTable = nil
     self.menuListRawData = nil
     self.menuUserdata = nil
     collectgarbage()
@@ -217,10 +214,12 @@ local mt_fileListMenu = {
         menuLabel       = function(self, x) if x then self.label = x ; l_updateMenuView(self) end ; return self.label end,
         showForMenu     = l_menuViewEval,
         subFolders      = l_subFolderEval,
-        menuCriteria    = function(self, x) if x then self.matchCriteria = x ; l_populateMenu(self) end ; return self.matchCriteria end,
-        actionFunction  = function(self, x) if x then self.template = x      ; l_populateMenu(self) end ; return self.template      end,
-        rootDirectory   = function(self, x) if x then self.root = x          ; l_populateMenu(self) end ; return self.root          end,
---        populate        = l_populateMenu,
+        subFolderDepth  = function(self, x) if x then self.maxDepth = x       ; l_populateMenu(self) end ; return self.maxDepth       end,
+        menuCriteria    = function(self, x) if x then self.matchCriteria = x  ; l_populateMenu(self) end ; return self.matchCriteria  end,
+        actionFunction  = function(self, x) if x then self.template = x                              end ; return self.template       end,
+        folderFunction  = function(self, x) if x then self.folderTemplate = x                        end ; return self.folderTemplate end,
+        showWarnings    = function(self, x) if x then self.warnings = x                              end ; return self.warnings       end,
+        rootDirectory   = function(self, x) if x then self.root = x           ; l_populateMenu(self) end ; return self.root           end,
         activate        = l_activateMenu,
         deactivate      = l_deactivateMenu,
 
@@ -228,9 +227,12 @@ local mt_fileListMenu = {
         menuView          = 0,
         matchCriteria     = "([^/]+)%.app$",
         template          = function(x) hs.application.launchOrFocus(x) end,
+        folderTemplate    = function(x) os.execute([[open -a Finder "]]..x..[["]]) end,
         root              = "/Applications",
         menuLastUpdated   = "not yet",
         lastChangeSeen    = "not yet",
+        warnings          = false,
+        maxDepth          = 10,
     },
     __gc = function(self)
         return self:l_deactivateMenu()

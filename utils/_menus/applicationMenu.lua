@@ -12,14 +12,18 @@ local module = {
 local fileListMenu = require("utils.fileListMenu")
 
 local appMenu = fileListMenu.new("Apps") ;
---
+
 -- the commented out lines are actually in the defaults, included here just for completness
 -- in case change desired:
---
+
 --appMenu:showForMenu("icon")
---appMenu:menuCriteria("^([^/]+)%.app$")    -- allow function/table for matches?
+--appMenu:menuCriteria("^([^/]+)%.app$")    -- allow function/table for matches -- yes, soon...
 --appMenu:actionFunction(function(x) hs.application.launchOrFocus(x) end)
+--appMenu:folderFunction(function(x) os.execute([[open -a Finder "]]..x..[["]]) end)
 --appMenu:rootDirectory("/Applications")
+
+appMenu:subFolderDepth(12)
+appMenu:showWarnings(true)
 
 -- Think I like this slant better
 appMenu:menuIcon("ASCII:....................\n"..
