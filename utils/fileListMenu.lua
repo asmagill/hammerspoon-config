@@ -58,7 +58,7 @@ l_generateAppList = function(self, startDir, expression, depth)
                 local label, accept
                 if type(expression) == "string" then
                     if not (name == "." or name == ".." or name:match(expression)) then
-                        accept = hs.fs.attributes(startDir.."/"..name).mode == "directory"
+                        accept = hs.fs.attributes(startDir.."/"..name, "mode") == "directory"
                         label = name
                     else
                         accept = false
@@ -70,7 +70,11 @@ l_generateAppList = function(self, startDir, expression, depth)
                 if accept then
                     local subDirs = l_generateAppList(self, startDir.."/"..name, expression, depth + 1)
                     if  next(subDirs) or not self.pruneEmpty then
-                        list[#list+1] = { title = label, menu = subDirs, fn = function() if type(self.folderTemplate) == "function" then self.folderTemplate(startDir.."/"..name, self.triggerMods) else if self.warnings then print("Menu folder action template must be a function") end end end }
+                        if next(subDirs) then
+                            list[#list+1] = { title = label, menu = subDirs, fn = function() if type(self.folderTemplate) == "function" then self.folderTemplate(startDir.."/"..name, self.triggerMods) else if self.warnings then print("Menu folder action template must be a function") end end end }
+                        else
+                            list[#list+1] = { title = label, fn = function() if type(self.folderTemplate) == "function" then self.folderTemplate(startDir.."/"..name, self.triggerMods) else if self.warnings then print("Menu folder action template must be a function") end end end }
+                        end
                     end
                 end
             end
@@ -214,9 +218,11 @@ local l_changeWatcher = function(self, paths)
     end
     if doUpdate then
         self.lastChangeSeen = os.date()
-        l_populateMenu(self)
+        self.menuListRawdata = nil        -- only rebuild when they actually look at it
+        collectgarbage()
+--        l_populateMenu(self)
         -- need some sense of how often this occurs... may remove or make option in the future
-        hs.notify.new(nil,{title="Menu "..self.label.." Updated",subTitle=name}):send()
+--        hs.notify.new(nil,{title="Menu "..self.label.." Updated",subTitle=name}):send()
         if self.warnings then print("Menu "..self.label.." Updated: "..name) end
     end
 end

@@ -23,10 +23,11 @@ devMenu:menuCriteria(function(file, path, purpose)
       if string.match(file, "^%..*$") then return false end -- ignore dot files
       if purpose == "file" then return false -- this is a test of getting just the folders
       elseif purpose == "directory" then
-          if hs.fs.attributes(path.."/"..file).mode == "directory" then return true, file end -- for dir match, return true and dir as label
+          if hs.fs.attributes(path.."/"..file, "mode") == "directory" then return true, file end -- for dir match, return true and dir as label
           return false -- otherwise, return false
       elseif purpose == "update" then
-          return true, file -- let's see how bad this gets...
+          if hs.fs.attributes(path.."/"..file, "mode") == "directory" then return true, file end
+          return false
       end
     end
 )

@@ -26,13 +26,13 @@ local docMenu = fileListMenu.new("Docs") ;
 docMenu:menuCriteria(function(file, path, purpose)
       if string.match(file, "^%..*$") then return false end -- ignore dot files
       if purpose == "file" then
-          if hs.fs.attributes(path.."/"..file).mode == "directory" then return false end -- for file match, ignore directories.
+          if hs.fs.attributes(path.."/"..file, "mode") == "directory" then return false end -- for file match, ignore directories.
           return true, file -- otherwise, return true and file as label
       elseif purpose == "directory" then
-          if hs.fs.attributes(path.."/"..file).mode == "directory" then return true, file end -- for dir match, return true and dir as label
+          if hs.fs.attributes(path.."/"..file, "mode") == "directory" then return true, file end -- for dir match, return true and dir as label
           return false -- otherwise, return false
       elseif purpose == "update" then
-          return true, file -- let's see how bad this gets...
+          return true, file
       end
     end
 )
