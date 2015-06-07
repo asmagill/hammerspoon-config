@@ -6,10 +6,21 @@ local module = {
     _DESCRIPTION = [[ applicationMenu to replace XMenu and the like ]],
     _TODO        = [[
                         add expression tester for testing new patterns
-                        allow function/table for matchCriteria?
-                        hide data to make it necessary to use helpers? (i.e. protect data)
-                        detect loops in path?  maxDepth?
+                        allow function/table for matchCriteria -- yes, soon
+                            table   list of patterns or functions, with pass/fail flag?
+                          * function returns T/F, label
+                          * function takes flag indicating file check, dir check, change check
+                      * pass mods to templates?
+                      * prune subdir flag
+                        alt/toggles for status menu?  modify mods for status menu?
+
+                        hide data to make it necessary to use helpers?
+                            (protect data, inspect as method shortcut list, etc.)
+                        better error detection (e.g. wrong data types)
                         document
+
+                        Other so I don't forget:
+                            ipc cli needs to handle paths with spaces
     ]],
     _LICENSE     = [[ See README.md ]]
 --]=]
@@ -29,21 +40,37 @@ l_generateAppList = function(self, startDir, expression, depth)
     else
 -- get files at this level -- we want a label and a path
         for name in hs.fs.dir(startDir) do
-            local label = name:match(expression)
+            local label, accept
+            if type(expression) == "string" then
+                label = name:match(expression)
+            elseif type(expression) == "function" then
+                accept, label = expression(name, startDir, "file")
+                if not accept then label = nil end
+            end
             if label then
-                list[#list+1] = { title = label, fn = function() if type(self.template) == "function" then self.template(startDir.."/"..name) else if self.warnings then print("Menu action template must be a function") end end end }
+                list[#list+1] = { title = label, fn = function() if type(self.template) == "function" then self.template(startDir.."/"..name, self.triggerMods) else if self.warnings then print("Menu action template must be a function") end end end }
             end
         end
 
         if self.subFolderBehavior ~= 0 then
 -- get sub-dirs at this level -- we want a label and a table -- recursion!
             for name in hs.fs.dir(startDir) do
-                if not (name == "." or name == ".." or name:match(expression)) then
-                    if hs.fs.attributes(startDir.."/"..name).mode == "directory" then
-                        local subDirs = l_generateAppList(self, startDir.."/"..name, expression, depth + 1)
-                        if next(subDirs) ~= nil then
-                            list[#list+1] = { title = name, menu = subDirs, fn = function() if type(self.folderTemplate) == "function" then self.folderTemplate(startDir.."/"..name) else if self.warnings then print("Menu folder action template must be a function") end end end }
-                        end
+                local label, accept
+                if type(expression) == "string" then
+                    if not (name == "." or name == ".." or name:match(expression)) then
+                        accept = hs.fs.attributes(startDir.."/"..name).mode == "directory"
+                        label = name
+                    else
+                        accept = false
+                    end
+                elseif type(expression) == "function" then
+                    accept, label = expression(name, startDir, "directory")
+                    if not accept then label = nil end
+                end
+                if accept then
+                    local subDirs = l_generateAppList(self, startDir.."/"..name, expression, depth + 1)
+                    if  next(subDirs) or not self.pruneEmpty then
+                        list[#list+1] = { title = label, menu = subDirs, fn = function() if type(self.folderTemplate) == "function" then self.folderTemplate(startDir.."/"..name, self.triggerMods) else if self.warnings then print("Menu folder action template must be a function") end end end }
                     end
                 end
             end
@@ -74,7 +101,6 @@ end
 local l_sortMenuItems = function(self)
     if self.menuListRawData then
         l_tableSortSubFolders(self.menuListRawData, self.subFolderBehavior)
-        collectgarbage() -- we may have just replaced a semi-large data structure
     end
 end
 
@@ -82,8 +108,8 @@ local l_populateMenu = function(self)
     if self.menuUserdata then
         self.menuListRawData = l_generateAppList(self)
         l_sortMenuItems(self)
-        self.menuLastUpdated = os.date()
         collectgarbage() -- we may have just replaced a semi-large data structure
+        self.menuLastUpdated = os.date()
     end
     return self
 end
@@ -104,7 +130,7 @@ local l_updateMenuView = function(self)
 end
 
 local l_menuViewEval = function(self, x)
-    if x then
+    if type(x) ~= "nil" then
         local y = tonumber(x) or 0
         if type(x) == "string" then
             if string.lower(x) == "icon"  then y = 0 end
@@ -118,7 +144,7 @@ local l_menuViewEval = function(self, x)
 end
 
 local l_subFolderEval = function(self, x)
-    if x then
+    if type(x) ~= "nil" then
         local y = tonumber(x) or 0
         if type(x) == "string" then
             if string.lower(x) == "ignore" then y = 0 end
@@ -138,6 +164,7 @@ local l_subFolderEval = function(self, x)
 end
 
 local l_doFileListMenu = function(self, mods)
+    self.triggerMods = mods
     if mods["ctrl"] then
         return {
             { title = self.label.." fileListMenu" },
@@ -147,6 +174,7 @@ local l_doFileListMenu = function(self, mods)
             { title = "Sub Directories - Before",  checked = ( self.subFolderBehavior == 1 ), fn = function() l_subFolderEval(self, 1) end },
             { title = "Sub Directories - Mixed",   checked = ( self.subFolderBehavior == 2 ), fn = function() l_subFolderEval(self, 2) end },
             { title = "Sub Directories - After",   checked = ( self.subFolderBehavior == 3 ), fn = function() l_subFolderEval(self, 3) end },
+            { title = "Prune Empty Directories",   checked = ( self.pruneEmpty ), fn = function() self.pruneEmpty = not self.pruneEmpty ; l_populateMenu(self) end },
             { title = "-" },
             { title = "Show Icon",                 checked = ( self.menuView == 0 ),          fn = function() l_menuViewEval(self, 0) end  },
             { title = "Show Label",                checked = ( self.menuView == 1 ),          fn = function() l_menuViewEval(self, 1) end  },
@@ -167,18 +195,27 @@ end
 
 local l_changeWatcher = function(self, paths)
     local doUpdate = false
-    local name
+    local name, path
     for _, v in pairs(paths) do
         name = string.sub(v,string.match(v, '^.*()/')+1)
-        if name:match(self.matchCriteria) then
-            doUpdate = true
-            break
+        path = string.sub(v, 1, string.match(v, '^.*()/')-1)
+        if type(self.matchCriteria) == "string" then
+            if name:match(self.matchCriteria) then
+                doUpdate = true
+                break
+            end
+        elseif type(self.matchCriteria) == "function" then
+            local accept, _ = self.matchCriteria(name, path, "update")
+            if accept then
+                doUpdate = true
+                break
+            end
         end
     end
     if doUpdate then
         self.lastChangeSeen = os.date()
         l_populateMenu(self)
-        -- need some sense of how often this occurs... may remove in the future
+        -- need some sense of how often this occurs... may remove or make option in the future
         hs.notify.new(nil,{title="Menu "..self.label.." Updated",subTitle=name}):send()
         if self.warnings then print("Menu "..self.label.." Updated: "..name) end
     end
@@ -197,9 +234,7 @@ local l_deactivateMenu = function(self)
 end
 
 local l_activateMenu = function(self)
-    if self.menuUserdata then
-        hs.alert.show("Menu '"..self.label.."' already present... bug?")
-    else
+    if not self.menuUserdata then
         self.menuUserdata = hs.menubar.new()
         self.watcher = hs.pathwatcher.new(self.root, function(paths) l_changeWatcher(self, paths) end):start()
         l_updateMenuView(self)
@@ -210,18 +245,19 @@ end
 
 local mt_fileListMenu = {
     __index = {
-        menuIcon        = function(self, x) if x then self.icon = x ;  l_updateMenuView(self) end ; return self.icon  end,
-        menuLabel       = function(self, x) if x then self.label = x ; l_updateMenuView(self) end ; return self.label end,
-        showForMenu     = l_menuViewEval,
-        subFolders      = l_subFolderEval,
-        subFolderDepth  = function(self, x) if x then self.maxDepth = x       ; l_populateMenu(self) end ; return self.maxDepth       end,
-        menuCriteria    = function(self, x) if x then self.matchCriteria = x  ; l_populateMenu(self) end ; return self.matchCriteria  end,
-        actionFunction  = function(self, x) if x then self.template = x                              end ; return self.template       end,
-        folderFunction  = function(self, x) if x then self.folderTemplate = x                        end ; return self.folderTemplate end,
-        showWarnings    = function(self, x) if x then self.warnings = x                              end ; return self.warnings       end,
-        rootDirectory   = function(self, x) if x then self.root = x           ; l_populateMenu(self) end ; return self.root           end,
-        activate        = l_activateMenu,
-        deactivate      = l_deactivateMenu,
+        menuIcon       = function(self, x) if type(x) ~= "nil" then self.icon = x ;  l_updateMenuView(self) end ; return self.icon  end,
+        menuLabel      = function(self, x) if type(x) ~= "nil" then self.label = x ; l_updateMenuView(self) end ; return self.label end,
+        showForMenu    = l_menuViewEval,
+        subFolders     = l_subFolderEval,
+        subFolderDepth = function(self, x) if type(x) ~= "nil" then self.maxDepth = x       ; l_populateMenu(self) end ; return self.maxDepth       end,
+        menuCriteria   = function(self, x) if type(x) ~= "nil" then self.matchCriteria = x  ; l_populateMenu(self) end ; return self.matchCriteria  end,
+        actionFunction = function(self, x) if type(x) ~= "nil" then self.template = x                              end ; return self.template       end,
+        folderFunction = function(self, x) if type(x) ~= "nil" then self.folderTemplate = x                        end ; return self.folderTemplate end,
+        showWarnings   = function(self, x) if type(x) ~= "nil" then self.warnings = x                              end ; return self.warnings       end,
+        rootDirectory  = function(self, x) if type(x) ~= "nil" then self.root = x           ; l_populateMenu(self) end ; return self.root           end,
+        pruneEmptyDirs = function(self, x) if type(x) ~= "nil" then self.pruneEmpty = x                            end ; return self.pruneEmpty     end,
+        activate       = l_activateMenu,
+        deactivate     = l_deactivateMenu,
 
         subFolderBehavior = 0,
         menuView          = 0,
@@ -232,10 +268,15 @@ local mt_fileListMenu = {
         menuLastUpdated   = "not yet",
         lastChangeSeen    = "not yet",
         warnings          = false,
+        pruneEmpty        = true,
         maxDepth          = 10,
+        triggerMods       = {},
     },
     __gc = function(self)
         return self:l_deactivateMenu()
+    end,
+    __tostring = function(self)
+        return "This is the state data for menu "..self.label.."."
     end,
 }
 -- Public interface ------------------------------------------------------
