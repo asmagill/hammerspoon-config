@@ -1,36 +1,53 @@
-local module = {
---[=[
-    _NAME        = 'documentsMenu.lua',
-    _VERSION     = '0.1',
-    _URL         = 'https://github.com/asmagill/hammerspoon-config',
-    _DESCRIPTION = [[ applicationMenu to replace XMenu and the like ]],
-    _TODO        = [[]],
-    _LICENSE     = [[ See README.md ]]
---]=]
-}
+-- In this example we create a menu of the users Documents folder.  We
+-- want to match all files and folders (except for dot-files)
 
-local fileListMenu = require("utils.fileListMenu")
-local actionFunction = function(x, mods)
+local FLM = require("hs._asm.filelistmenu")
+
+-- Here we define an action function which takes the modifiers pressed when the
+-- menu is clicked on so we can choose what action to perform.  This action function
+-- is used for both Files and Folders
+local actionFunction = function(x)
+    local mods = require("hs._asm.filelistmenu").keyModifiers()
     if mods["cmd"] then
-        os.execute([[open -a Finder "]]..x..[["]])
+        os.execute([[/usr/local/bin/edit "]]..x..[["]])
     else
-        os.execute([[edit "]]..x..[["]])
+        os.execute([[open -a Finder "]]..x..[["]])
     end
 end
-local docMenu = fileListMenu.new("Docs") ;
 
--- the commented out lines are actually in the defaults, included here just for completness
--- in case change desired:
+local docMenu = FLM.new("Docs") ;
 
---docMenu:showForMenu("icon")
+-- Here we define the match criteria as a function.  The function receives 3 arguments
+-- and returns up to 2.  The arguments passed in are the file name (without path),
+-- the path (without the file at the end), and the purpose of this call, which will be
+-- "file"      -- indicates we're matching files (i.e. menu end nodes)
+-- "directory" -- indicates we're matching folders (i.e. potential submenus)
+-- "update"    -- indicates we're matching against the results of hs.pathwatcher for
+--                potential updates to the menu.
+
+-- Note that unlike a string criteria, when a function is used, file matches are not
+-- automatically exempted from subfolder matches -- this allows more flexibility when
+-- it comes to OS X bundle types (like .app)
+
+-- Returns 'boolean, label' where boolean will be true if we should consider this file
+-- a match or false if we should skip it.  Label is what will be put in the menu and is
+-- optional when the boolean value is false.
 docMenu:menuCriteria(function(file, path, purpose)
-      if string.match(file, "^%..*$") then return false end -- ignore dot files
+
+      -- ignore dot files
+      if string.match(file, "^%..*$") then return false end
+
+      -- For file checks, we want to ignore directories
       if purpose == "file" then
-          if hs.fs.attributes(path.."/"..file, "mode") == "directory" then return false end -- for file match, ignore directories.
+          if hs.fs.attributes(path.."/"..file, "mode") == "directory" then return false end
           return true, file -- otherwise, return true and file as label
+
+      -- We want all folders as well, when looking for them
       elseif purpose == "directory" then
-          if hs.fs.attributes(path.."/"..file, "mode") == "directory" then return true, file end -- for dir match, return true and dir as label
+          if hs.fs.attributes(path.."/"..file, "mode") == "directory" then return true, file end
           return false -- otherwise, return false
+
+      -- And any update which makes it this far should also be accepted
       elseif purpose == "update" then
           return true, file
       end
@@ -41,8 +58,7 @@ docMenu:actionFunction(actionFunction)
 docMenu:folderFunction(actionFunction)
 docMenu:rootDirectory(os.getenv("HOME").."/Documents")
 
---docMenu:subFolderDepth(12)
-docMenu:showWarnings(true)
+docMenu:showWarnings(false)
 
 docMenu:menuIcon("ASCII:....................\n"..
                        "....................\n"..
@@ -64,7 +80,9 @@ docMenu:menuIcon("ASCII:....................\n"..
                        "...a............a...\n"..
                        "....................\n"..
                        "....................")
+
 docMenu:subFolders("mixed")
-docMenu:activate()
+
+--docMenu:activate()
 
 return docMenu
