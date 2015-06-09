@@ -17,8 +17,8 @@ hs.ipc.cliInstall("/opt/amagill")
 
 -- What can I say? I like the original Hydra's console documentation style,
 -- rather than help("...")
--- _G["debug.docs.module"] = "sort"
-doc = hs.doc.fromJSONFile(hs.docstrings_json_file)
+doc = require("utils.docs")
+
 
 -- For my convenience while testing and screwing around...
 -- If something grows into usefulness, I'll modularize it.
