@@ -77,7 +77,8 @@ devMenu:rootDirectory({
                         ["HS Modules"]  = "/opt/amagill/src/hammerspoon/_asm",
                       })
 
-devMenu:showWarnings(false)
+devMenu:subFolderDepth(15)
+devMenu:showWarnings(true)
 
 -- In this case, the directories are our entries, so each will seem "empty" as there are no
 -- file matches within them... this causes the module to list them anyways.
