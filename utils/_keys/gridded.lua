@@ -134,7 +134,7 @@ end
     hotkey.bind(mods.CAsC, "right", function() adjust( 0,  1) end, nil)
     hotkey.bind(mods.CAsC, "/",     function() adjust( 0,  0) end, nil) -- show current
 
----- center window
+-- center window
 --hotkey.bind(mods.CAsC, 'c', function()actualWindow(winter:focused():vcenter():hcenter():place()), nil)
 --
 

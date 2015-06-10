@@ -1,0 +1,18 @@
+#! /usr/bin/make -f Makefile.documentation all
+
+DOC_FILE = local_config.json
+
+all: clean docs
+
+docs: $(DOC_FILE)
+
+$(DOC_FILE):
+	find . -type f \( -name '*.lua' -o -name '*.m' \) -not -name 'template.*' -not -path './_*' -not -path './hs/*' -exec cat {} + | __doc_tools/gencomments | __doc_tools/genjson > $@
+
+clean:
+	rm -fr $(DOC_FILE)
+
+uninstall:
+	rm -v -f $(DOC_FILE)
+
+.PHONY: clean uninstall
