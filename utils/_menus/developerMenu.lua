@@ -3,6 +3,7 @@
 -- In this example, we are only looking for directories, and not files.
 
 local FLM = require("hs._asm.filelistmenu")
+local FS  = require("hs.fs")
 
 -- Here we define an action function which takes the modifiers pressed when the
 -- menu is clicked on so we can choose what action to perform.  This action function
@@ -46,7 +47,7 @@ devMenu:menuCriteria(function(file, path, purpose)
 
           -- we use hs.fs to determine if this a folder and return true and the filename
           -- (directory name) as the label if it is.
-          if hs.fs.attributes(path.."/"..file, "mode") == "directory" then return true, file end
+          if FS.attributes(path.."/"..file, "mode") == "directory" then return true, file end
           return false -- otherwise, return false
 
       elseif purpose == "update" then
@@ -57,7 +58,7 @@ devMenu:menuCriteria(function(file, path, purpose)
           -- admit looks more lua like, then this would cause an error if the file
           -- disappears quickly (e.g. a lock file) before the pathwatcher process
           -- completes.
-          if hs.fs.attributes(path.."/"..file, "mode") == "directory" then return true, file end
+          if FS.attributes(path.."/"..file, "mode") == "directory" then return true, file end
           return false
       end
     end
