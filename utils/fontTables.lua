@@ -26,6 +26,7 @@ local fDD = {}
       fDD.fontSize        = 14
 
       fDD.bgColor         = { red = 0, green = 0, blue = 0, alpha = 0.75 }
+      fDD.bgColorLighten  = { red = 0, green = 0, blue = 0, alpha = 0.25 }
       fDD.fgColor         = { red = 1, green = 1, blue = 1, alpha = 1    }
       fDD.rectCornerCurve = 20
 
@@ -56,15 +57,16 @@ local fDD = {}
 local cDD = {}          -- CharacterSetDisplayData
       cDD.labelFont       = "Menlo"
       cDD.labelFontSize   = 12
-      cDD.charFontSize    = 16
+      cDD.charFontSize    = 24
 
-      cDD.bgColor         = fDD.bgColor
-      cDD.fgColor         = fDD.fgColor
+      cDD.bgColor         = { red = 0, green = 0, blue = 0, alpha = 0.75 }
+      cDD.bgColorLighten  = { red = 0, green = 0, blue = 0, alpha = 0.25 }
+      cDD.fgColor         = { red = 1, green = 1, blue = 1, alpha = 1    }
       cDD.rectCornerCurve = 20
 
       cDD.edgeBuffer      = 20
-      cDD.charWidth       = 48
-      cDD.charHeight      = 48
+      cDD.charWidth       = 72
+      cDD.charHeight      = 72
       cDD.columns         = 16
       cDD.rows            = 8
       cDD.perPage         = cDD.columns   * cDD.rows
@@ -124,6 +126,16 @@ module.populateFontList = function()
     end
 end
 
+module.lightenFontList = function(toggle)
+    if fDD.background then
+        if toggle then
+            fDD.background:setFillColor(fDD.bgColorLighten)
+        else
+            fDD.background:setFillColor(fDD.bgColor)
+        end
+    end
+end
+
 module.depopulateFontList = function()
     if fDD.background then
         for _, v in pairs(fDD.fontListObjects) do v:delete() end
@@ -136,7 +148,7 @@ module.depopulateFontList = function()
 end
 
 module.displayFontList = function(pageNumber)
-    if cDD.beingDisplayed                        then module.clearCharacterSet()  end
+--    if cDD.beingDisplayed                        then module.clearCharacterSet()  end
     if screen.mainScreen() ~= fDD.lastMainScreen then module.depopulateFontList() end
     if not fDD.background                        then module.populateFontList()   end
 
@@ -152,7 +164,7 @@ module.displayFontList = function(pageNumber)
 
     for i = startAt,(startAt + fDD.perPage - 1) do
         local v = fDD.fontListObjects[i + 1 - startAt]
-        if (i + 1) < #fonts then
+        if (i + 1) <= #fonts then
             v:setTextFont(fonts[i + 1]):setText(tonumber(i)..":  "..fonts[i + 1])
         else
             v:setText("")
@@ -242,6 +254,16 @@ module.populateCharacterSet = function()
     end
 end
 
+module.lightenCharacterSet = function(toggle)
+    if cDD.background then
+        if toggle then
+            cDD.background:setFillColor(cDD.bgColorLighten)
+        else
+            cDD.background:setFillColor(cDD.bgColor)
+        end
+    end
+end
+
 module.depopulateCharacterSet = function()
     if cDD.background then
         for _,v in ipairs(cDD.labelSpots) do v:delete() end
@@ -256,7 +278,7 @@ module.depopulateCharacterSet = function()
 end
 
 module.displayCharacterSet = function(fontNumber, pageNumber)
-    if fDD.beingDisplayed                        then module.clearFontList()          end
+--    if fDD.beingDisplayed                        then module.clearFontList()          end
     if screen.mainScreen() ~= cDD.lastMainScreen then module.depopulateCharacterSet() end
     if not cDD.background                        then module.populateCharacterSet()   end
 
