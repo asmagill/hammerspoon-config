@@ -55,7 +55,7 @@ local charListInput = function(data)
     typedInput.exitHook = function(status)
         for _,v in ipairs(fontCharSet.keys) do v:enable() end
         if status then
-            local charCode = tonumber("0x"..typedInput.input)
+            local charCode = tonumber(typedInput.input)
             if charCode ~= nil then
                 fontCharSet.fontPage = math.floor(charCode / 128)
                 fontCharSet.fontNumber, fontCharSet.fontPage =
@@ -64,7 +64,7 @@ local charListInput = function(data)
         end
     end
 
-    typedInput:beginCapture(data)
+    typedInput:beginCapture("0x"..tostring(data))
 end
 
 -- Font List Display Keys

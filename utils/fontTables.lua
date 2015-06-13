@@ -189,10 +189,17 @@ end
 -- CharacterSetDisplay Functions
 
 -- Generates the appropriate UTF-8 sequence for the specified codepoint.  Valid
--- codepoints are from 0 to 1114111 (0x10FFFF).
+-- codepoints are from 0 to 1114111 (0x10FFFF).  Invalid codepoints are returned as
+-- the "replacement" character, 0xFFFD.
 module.generateUTF8Character = function(codePoint)
     local codePoint = tonumber(codePoint)
+
+    -- negatives not allowed
     if codePoint < 0 then return module.generateUTF8Character(0xFFFD) end
+
+    -- the surrogates cause print() to crash -- and they're invalid UTF-8 anyways
+    if codePoint >= 0xD800 and codePoint <=0xDFFF then return module.generateUTF8Character(0xFFFD) end
+
     if codePoint < 0x80          then
         return  string.char(codePoint)
     elseif codePoint <= 0x7FF    then
@@ -208,6 +215,8 @@ module.generateUTF8Character = function(codePoint)
                 string.char(bit32.band(bit32.rshift(codePoint,  6), 0x3F) + 0x80)..
                 string.char(bit32.band(             codePoint, 0x3F)      + 0x80)
     end
+
+    -- greater than 0x10FFFF is invalid UTF-8
     return module.generateUTF8Character(0xFFFD)
 end
 
