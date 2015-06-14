@@ -3,11 +3,13 @@
 --- A module which can be used to override the built in require and provide some additional features, including the ability to `unrequire` lua based modules, require an entire directory at a time, etc.
 ---
 --- Suggested use is by adding the following at the top of your ~/.hammerspoon/init.lua file:
---- <pre>
+---
 ---     require = require("utils.require")
---- </pre>
+---
 ---
 local module = {}
+
+local luafs = require("hs.fs")
 
 -- private variables and methods -----------------------------------------
 
@@ -133,16 +135,24 @@ module.require_path = function(path, output)
     local package_list, loaded = {}, {}
 
     for dir, ending in package.path:gmatch("([%w%._/-]+)%?([%w_/-]*.lua);?") do
-        local s = shell_exec("ls "..dir.."/"..prefix_dir.."/*"..ending)
-        for pkg in s:gmatch("([%w_]+)"..ending.."[\r\n]") do
-            if not package_list[pkg] then package_list[pkg] = true end
+        if luafs.attributes(dir.."/"..prefix_dir) then
+            for name in luafs.dir(dir.."/"..prefix_dir) do
+                local pkg = name:match("([%w_]+)"..ending.."$")
+                if pkg then
+                    if not package_list[pkg] then package_list[pkg] = true end
+                end
+            end
         end
     end
 
     for dir, ending in package.cpath:gmatch("([%w%._/-]+)%?([%w_/-]*.so);?") do
-        local s = shell_exec("ls "..dir.."/"..prefix_dir.."/*"..ending)
-        for pkg in s:gmatch("([%w_]+)"..ending.."[\r\n]") do
-            if not package_list[pkg] then package_list[pkg] = true end
+        if luafs.attributes(dir.."/"..prefix_dir) then
+            for name in luafs.dir(dir.."/"..prefix_dir) do
+                local pkg = name:match("([%w_]+)"..ending.."$")
+                if pkg then
+                    if not package_list[pkg] then package_list[pkg] = true end
+                end
+            end
         end
     end
 
