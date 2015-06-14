@@ -36,7 +36,8 @@ local function secsToMidnight(z)
     return os.time(t) + 86400 - os.time(os.date("*t",z))
 end
 
-local changeDay, changeDayFunction
+local changeDay, changeDayFunction, menu
+
 changeDayFunction = function()
     menu:setTitle(tostring(dayInUTF8(os.date("*t").day)))
     changeDay = timer.doAfter(secsToMidnight(), changeDayFunction)
@@ -87,8 +88,6 @@ local textRect   = drawing.text({
                   },""):setTextFont(textFont):setTextSize(textSize):setTextColor{
                       red = 1, blue = 1, green = 1, alpha = 1
                   }
-
-local menu
 
 module.start = function()
     menu = menubar.new()
