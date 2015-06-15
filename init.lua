@@ -1,6 +1,8 @@
 local R, M = pcall(require,"hs._asm.hotkey")
 if R then
+    print()
     print("**** Replacing internal hs.hotkey with experimental module.")
+    print()
     hs.hotkey = M
     package.loaded["hs.hotkey"] = M   -- make sure require("hs.hotkey") returns us
     package.loaded["hs/hotkey"] = M   -- make sure require("hs/hotkey") returns us

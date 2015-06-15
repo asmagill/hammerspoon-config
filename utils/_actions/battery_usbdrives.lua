@@ -9,10 +9,12 @@ return hs.battery.watcher.new(function()
     local CurrentPowerSource  = hs.battery.powerSource()
     if CurrentPowerSource ~= PreviousPowerSource then
         if CurrentPowerSource ~= "AC Power" then
-            for volume in string.gmatch(extras.exec("system_profiler SPUSBDataType | grep Mount\\ Point | sed 's/Mount Point: //'"),"%s+(/Volumes/[^\n\r]+)") do
-                local _,_,_,rc = extras.exec("diskutil umount '"..volume.."'")
-                total = total + 1
-                if tonumber(rc) == 0 then count = count + 1 end
+            for volume in require("hs.fs").dir("/Volumes") do
+                if not volume:match("^%.") and volume ~= "Yose" and volume ~= "DeepChaos" then
+                    local _,_,_,rc = extras.exec("diskutil umount '"..volume.."'")
+                    total = total + 1
+                    if tonumber(rc) == 0 then count = count + 1 end
+                end
             end
             if total > 0 then
                 hs.alert.show("Auto dismount: "..tostring(count).." of "..tostring(total).." dismounted.")
@@ -20,4 +22,4 @@ return hs.battery.watcher.new(function()
         end
         PreviousPowerSource = CurrentPowerSource
     end
-end) -- :start()
+end):start()

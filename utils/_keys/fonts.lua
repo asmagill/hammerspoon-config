@@ -12,7 +12,7 @@ local module = {
 -- private variables and methods -----------------------------------------
 
 local mods       = require("hs._asm.extras").mods
-local hotkey     = hs.hotkey
+local hotkey     = require("hs.hotkey")
 local fontTables = require("utils.fontTables")
 local typees     = require("utils.typee")
 
@@ -23,9 +23,13 @@ local typees     = require("utils.typee")
 local fontList = hotkey.modal.new(mods.CAsC, "f")
     fontList.pageNumber = 0
 
+    if fontList.desc then fontList:desc("FontList") end
+
 local fontCharSet = hotkey.modal.new(nil, nil)
     fontCharSet.fontNumber = 0
     fontCharSet.fontPage = 0
+
+    if fontCharSet.desc then fontCharSet:desc("FontCharSet") end
 
 local fontListInput = function(data)
     for _,v in ipairs(fontList.keys) do v:disable() end
