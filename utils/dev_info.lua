@@ -11,15 +11,15 @@ local module = {
 
 -- private variables and methods -----------------------------------------
 
-local window        = hs.window
-local application   = hs.application
-local screen        = hs.screen
-local battery       = hs.battery
-local mouse         = hs.mouse
-local audiodevice   = hs.audiodevice
-local brightness    = hs.brightness
+local window        = require("hs.window")
+local application   = require("hs.application")
+local screen        = require("hs.screen")
+local battery       = require("hs.battery")
+local mouse         = require("hs.mouse")
+local audiodevice   = require("hs.audiodevice")
+local brightness    = require("hs.brightness")
 
-local clipboard = hs.pasteboard
+local clipboard     = require("hs.pasteboard")
 
 local clipBufferIfRequested = function(buf, clip)
     buf = string.gsub(buf, "\n", " ")

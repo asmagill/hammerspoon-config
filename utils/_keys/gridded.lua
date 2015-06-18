@@ -31,7 +31,7 @@ local change = function(command, direction)
         local doChange = true
         local destScreen = win:screen()
         local state = grid.get(win)
-        oldWinAnimationDuration, hs.window.animationDuration = hs.window.animationDuration, 0
+        oldWinAnimationDuration, window.animationDuration = window.animationDuration, 0
 
         if command == "move" then
             if direction     == "left"  then
@@ -43,7 +43,7 @@ local change = function(command, direction)
             elseif direction == "down"  then
                 state.y = state.y + state.h < grid.GRIDHEIGHT  and state.y + 1 or state.y
             else
-                hs.alert.show("Invalid direction: "..direction)
+                alert.show("Invalid direction: "..direction)
             end
         elseif command == "stretch" then
             if direction == "left" then
@@ -75,7 +75,7 @@ local change = function(command, direction)
                     state.h = state.h < grid.GRIDHEIGHT and state.h + 1 or grid.GRIDHEIGHT
                 end
             else
-                hs.alert.show("Invalid direction: "..direction)
+                alert.show("Invalid direction: "..direction)
             end
         elseif command == "tall" then state.y = 0 ; state.h = grid.GRIDHEIGHT
         elseif command == "wide" then state.x = 0 ; state.w = grid.GRIDWIDTH
@@ -83,16 +83,16 @@ local change = function(command, direction)
         elseif command == "next" then destScreen = destScreen:next()
         elseif command == "prev" then destScreen = destScreen:previous()
         elseif command ~= "snap" then
-            hs.alert.show("Invalid command: "..command)
+            alert.show("Invalid command: "..command)
             doChange = false
         end
 
         if doChange then grid.set(win, state, destScreen) end
         --print((string.gsub(inspect({ destScreen:frame(), win:frame(), state }),"[\r\n ]+"," ")))
     else
-        hs.alert.show("No window currently focused")
+        alert.show("No window currently focused")
     end
-    hs.window.animationDuration = oldWinAnimationDuration
+    window.animationDuration = oldWinAnimationDuration
 end
 
 local adjust = function(rows, columns)
@@ -103,7 +103,7 @@ local adjust = function(rows, columns)
         if new_width  == 0 then new_width  = 1 end
 
         grid.GRIDHEIGHT, grid.GRIDWIDTH = new_height, new_width
-        hs.alert.show("Grid Size: "..grid.GRIDWIDTH.."x"..grid.GRIDHEIGHT)
+        alert.show("Grid Size: "..grid.GRIDWIDTH.."x"..grid.GRIDHEIGHT)
 end
 
 -- Public interface ------------------------------------------------------

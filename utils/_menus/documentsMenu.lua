@@ -1,7 +1,8 @@
 -- In this example we create a menu of the users Documents folder.  We
 -- want to match all files and folders (except for dot-files)
 
-local FLM = require("hs._asm.filelistmenu")
+local FLM =  require("hs._asm.filelistmenu")
+local hsfs = require("hs.fs")
 
 -- Here we define an action function which takes the modifiers pressed when the
 -- menu is clicked on so we can choose what action to perform.  This action function
@@ -39,12 +40,12 @@ docMenu:menuCriteria(function(file, path, purpose)
 
       -- For file checks, we want to ignore directories
       if purpose == "file" then
-          if hs.fs.attributes(path.."/"..file, "mode") == "directory" then return false end
+          if hsfs.attributes(path.."/"..file, "mode") == "directory" then return false end
           return true, file -- otherwise, return true and file as label
 
       -- We want all folders as well, when looking for them
       elseif purpose == "directory" then
-          if hs.fs.attributes(path.."/"..file, "mode") == "directory" then return true, file end
+          if hsfs.attributes(path.."/"..file, "mode") == "directory" then return true, file end
           return false -- otherwise, return false
 
       -- And any update which makes it this far should also be accepted

@@ -217,6 +217,9 @@ module.new = function(menuLabel)
     local tmp = setmetatable({}, _mt_typee)
 
     tmp.typees = modal.new(nil, nil)
+
+    if tmp.typees.desc then tmp.typees:desc("typee "..tostring(tmp)) end
+
         function tmp.typees:entered()
             drawText(tmp)
             tmp.textCursor.position = tmp.input:len()

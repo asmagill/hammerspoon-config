@@ -11,14 +11,14 @@ local module = {
 
 -- private variables and methods -----------------------------------------
 
-local hotkey        = hs.hotkey
-local mods          = require("hs._asm.extras").mods
-local window        = hs.window
-local fnutils       = hs.fnutils
-local mouse         = hs.mouse
-local alert         = hs.alert
-local pasteboard    = hs.pasteboard
-local devinfo       = require("utils.dev_info")
+local mouse       = require("hs.mouse")
+local pasteboard  = require("hs.pasteboard")
+local devinfo     = require("utils.dev_info")
+local mods        = require("hs._asm.extras").mods
+local hotkey      = require("hs.hotkey")
+local fnutils     = require("hs.fnutils")
+local alert       = require("hs.alert")
+local window      = require("hs.window")
 
 local point_in_rect = function(rect, point)
     return  point.x >= rect.x and

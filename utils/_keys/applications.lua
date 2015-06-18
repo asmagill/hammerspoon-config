@@ -11,11 +11,11 @@ local module = {
 
 -- private variables and methods -----------------------------------------
 
-local mods = require("hs._asm.extras").mods
-local hotkey = hs.hotkey
-local fnutils = hs.fnutils
-local application = hs.application
-local alert = hs.alert.show
+local mods        = require("hs._asm.extras").mods
+local hotkey      = require("hs.hotkey")
+local fnutils     = require("hs.fnutils")
+local application = require("hs.application")
+local alert       = require("hs.alert").show
 
 local app = hotkey.modal.new(mods.CAsC, "RETURN")
 

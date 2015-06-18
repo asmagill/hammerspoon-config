@@ -1,4 +1,4 @@
-return hs.pathwatcher.new(
+return require("hs.pathwatcher").new(
     os.getenv("HOME") .. '/.hammerspoon/',
     function (changedfiles)
         local function is_lua_file(filename)

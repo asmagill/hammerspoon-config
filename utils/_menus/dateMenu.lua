@@ -36,11 +36,13 @@ local function secsToMidnight(z)
     return os.time(t) + 86400 - os.time(os.date("*t",z))
 end
 
-local changeDay, changeDayFunction, menu
+module.changeDay = ""
+
+local changeDayFunction, menu
 
 changeDayFunction = function()
     menu:setTitle(tostring(dayInUTF8(os.date("*t").day)))
-    changeDay = timer.doAfter(secsToMidnight(), changeDayFunction)
+    module.changeDay = timer.doAfter(secsToMidnight(), changeDayFunction)
 end
 
 local visible = false
@@ -136,13 +138,13 @@ module.start = function()
         visible = not visible
     end)
 
-    changeDay = timer.doAfter(secsToMidnight(), changeDayFunction)
+    module.changeDay = timer.doAfter(secsToMidnight(), changeDayFunction)
     return module
 end
 
 module.stop = function()
-    changeDay:stop()
-    changeDay = nil
+    module.changeDay:stop()
+    module.changeDay = nil
 
     visible = false
     HL:hide()
