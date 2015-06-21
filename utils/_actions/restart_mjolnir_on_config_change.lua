@@ -5,7 +5,7 @@ return require("hs.pathwatcher").new(
             if string.match(filename, '%.lua$') then print(filename) end
             return string.match(filename, '%.lua$')
         end
-        if not require("hs._asm.extras").fnutils_every(changedfiles, is_lua_file) then return end
+        if not require("hs.fnutils").every(changedfiles, is_lua_file) then return end
 --        hs.reload()
         print("you might wanna reload!")
     end

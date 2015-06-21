@@ -15,8 +15,8 @@ local module = {
 
 
 local screen  = require("hs.screen")
-local extras  = require("hs._asm.extras")
 local drawing = require("hs.drawing")
+local utf8    = require("hs.utf8_53")
 
 -- private variables and methods -----------------------------------------
 
@@ -152,7 +152,7 @@ module.displayFontList = function(pageNumber)
     if screen.mainScreen() ~= fDD.lastMainScreen then module.depopulateFontList() end
     if not fDD.background                        then module.populateFontList()   end
 
-    local fonts       = extras.listFonts()
+    local fonts       = drawing.fontNames()
     table.sort(fonts)
 
     pageNumber = pageNumber or fDD.previousPage + 1
@@ -188,43 +188,11 @@ end
 
 -- CharacterSetDisplay Functions
 
--- Generates the appropriate UTF-8 sequence for the specified codepoint.  Valid
--- codepoints are from 0 to 1114111 (0x10FFFF).  Invalid codepoints are returned as
--- the "replacement" character, 0xFFFD.
-module.generateUTF8Character = function(codePoint)
-    local codePoint = tonumber(codePoint)
-
-    -- negatives not allowed
-    if codePoint < 0 then return module.generateUTF8Character(0xFFFD) end
-
-    -- the surrogates cause print() to crash -- and they're invalid UTF-8 anyways
-    if codePoint >= 0xD800 and codePoint <=0xDFFF then return module.generateUTF8Character(0xFFFD) end
-
-    if codePoint < 0x80          then
-        return  string.char(codePoint)
-    elseif codePoint <= 0x7FF    then
-        return  string.char(           bit32.rshift(codePoint,  6)        + 0xC0)..
-                string.char(bit32.band(             codePoint, 0x3F)      + 0x80)
-    elseif codePoint <= 0xFFFF   then
-        return  string.char(           bit32.rshift(codePoint, 12)        + 0xE0)..
-                string.char(bit32.band(bit32.rshift(codePoint,  6), 0x3F) + 0x80)..
-                string.char(bit32.band(             codePoint, 0x3F)      + 0x80)
-    elseif codePoint <= 0x10FFFF then
-        return  string.char(           bit32.rshift(codePoint, 18)        + 0xF0)..
-                string.char(bit32.band(bit32.rshift(codePoint, 12), 0x3F) + 0x80)..
-                string.char(bit32.band(bit32.rshift(codePoint,  6), 0x3F) + 0x80)..
-                string.char(bit32.band(             codePoint, 0x3F)      + 0x80)
-    end
-
-    -- greater than 0x10FFFF is invalid UTF-8
-    return module.generateUTF8Character(0xFFFD)
-end
-
 module.populateCharacterSet = function()
     local screenFrame = screen.mainScreen():frame()
     local bgX         = screenFrame.x + math.floor((screenFrame.w - cDD.bgWidth ) / 2)
     local bgY         = screenFrame.y + math.floor((screenFrame.h - cDD.bgHeight) / 2)
-    local fonts       = extras.listFonts()
+    local fonts       = drawing.fontNames()
     table.sort(fonts)
 
     if not cDD.background then
@@ -291,7 +259,7 @@ module.displayCharacterSet = function(fontNumber, pageNumber)
     if screen.mainScreen() ~= cDD.lastMainScreen then module.depopulateCharacterSet() end
     if not cDD.background                        then module.populateCharacterSet()   end
 
-    local fonts         = extras.listFonts()
+    local fonts         = drawing.fontNames()
     table.sort(fonts)
 
     fontNumber = fontNumber or cDD.previousFont
@@ -327,7 +295,7 @@ module.displayCharacterSet = function(fontNumber, pageNumber)
         end
         if (startChar + i - 1) < 0x110000 then
             v:setText(
-                      module.generateUTF8Character(startChar + i - 1)
+                     utf8.codepointToUTF8(startChar + i - 1)
                     )
         else
             v:setText("")

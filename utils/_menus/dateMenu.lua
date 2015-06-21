@@ -14,18 +14,18 @@ local module = {
 }
 
 local menubar    = require("hs.menubar")
-local fontTables = require("utils.fontTables")
 local alert      = require("hs.alert")
 local timer      = require("hs.timer")
 local drawing    = require("hs.drawing")
 local screen     = require("hs.screen")
 local mouse      = require("hs.mouse")
+local utf8       = require("hs.utf8_53")
 
 local dayInUTF8 = function(x)    --  U+2460-2473 = 1 - 20, U+3251-325F = 21 - 35
     if x < 21 then
-        return fontTables.generateUTF8Character(0x245F + x)
+        return utf8.codepointToUTF8(0x245F + x)
     else
-        return fontTables.generateUTF8Character(0x323C + x)
+        return utf8.codepointToUTF8(0x323C + x)
     end
 end
 
@@ -102,7 +102,7 @@ module.start = function()
             textRect:hide()
             rect:hide()
         else
-            local text    = _asm.extras.exec("cal")
+            local text    = hs.execute("cal")
             local frame   = screen.mainScreen():frame()
             local clickAt = mouse.getRelativePosition()
 

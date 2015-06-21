@@ -4,12 +4,13 @@
 
 local FLM = require("hs._asm.filelistmenu")
 local FS  = require("hs.fs")
+local eventtap = require("hs.eventtap")
 
 -- Here we define an action function which takes the modifiers pressed when the
 -- menu is clicked on so we can choose what action to perform.  This action function
 -- is used for both Files and Folders
 local actionFunction = function(x)
-    local mods = require("hs._asm.filelistmenu").keyModifiers()
+    local mods = eventtap.checkKeyboardModifiers()
     if mods["cmd"] then
         os.execute([[open -a Finder "]]..x..[["]])
     else

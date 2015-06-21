@@ -1,55 +1,38 @@
 [
   {
-    "name": "utils.require",
-    "desc": "A module which can be used to override the built in require and provide some additional features, including the ability to `unrequire` lua based modules, require an entire directory at a time, etc.",
-    "doc": "A module which can be used to override the built in require and provide some additional features, including the ability to `unrequire` lua based modules, require an entire directory at a time, etc.\n\nSuggested use is by adding the following at the top of your ~/.hammerspoon/init.lua file:\n<pre>\n    require = require(\"utils.require\")\n</pre>",
+    "name": "hs._asm.typee",
+    "desc": "In progress",
+    "doc": "In progress",
     "items": [
       {
-        "type": "Variable",
-        "name": "load_order",
-        "def": "utils.require.load_order[]",
-        "doc": "Array of require and unrequire actions taken on modules in the order in which they occurred.  Each entry contains { name = \"pkg\", require|unrequire = true }.  This array is cleared only by utils.require.clearall() or by a has.reload()."
+        "type": "Constructor",
+        "name": "new",
+        "def": "hs._asm.typee.new() -> typeeObject",
+        "doc": "Creates a new typee object.\n\nParameters:\n * None\n\nReturns:\n * returns typee object"
       },
       {
-        "type": "Variable",
-        "name": "loaded",
-        "def": "utils.require.loaded[]",
-        "doc": "Table of modules loaded, where the module name is the key and the module itself is the value."
-      },
-      {
-        "type": "Function",
-        "name": "clearall",
-        "def": "utils.require.clearall()",
-        "doc": "Clears all required modules that this tool has managed from package.loaded[...], the internally maintained array, utils.require.loaded[...], and _G[...] (if it is equal to a package itself).  This is an attempt to remove all loaded modules as completely as possible without actually restarting the Lua state. Note that binary modules (those from a compiled language) require a has.reload(), as there is no way to unload a dynamically loaded library without resetting the Lua state."
-      },
-      {
-        "type": "Function",
-        "name": "unrequire",
-        "def": "utils.require.unrequire(pkg)",
-        "doc": "Clears pkg, if it was loaded by this tool, from package.loaded[pkg], the internally maintained array, utils.require.loaded[pkg], and _G[pkg] (if it is equal to the package itself).  This is an attempt to remove a module as completely as possible, perhaps so a modified version can be reloaded, without requiring a restart. Note that binary modules (those from a compiled language) require a has.reload(), as there is no way to unload a dynamically loaded library without resetting the Lua state."
-      },
+        "type": "Method",
+        "name": "delete",
+        "def": "hs._asm.typee:delete() -> nil",
+        "doc": "Deletes the typee object.\n\nParameters:\n * None\n\nReturns:\n * None"
+      }
+    ]
+  },
+  {
+    "name": "utils.requirePlus",
+    "desc": "Some useful additions to requiring stuff",
+    "doc": "Some useful additions to requiring stuff",
+    "items": [
       {
         "type": "Function",
-        "name": "require",
-        "def": "utils.require.require(pkg)",
-        "doc": "Our require function, which tracks loaded modules for removal via unrequire/clearall.  If you load this module and assign it to `require`, then all subsequent require invocations will be tracked by this module.\n\n    e.g. require = require(\"..path../require\")\n\nThe metatable __call function for this module is set to invoke this function, so with the above example, you can override the builtin require function to use this version instead."
-      },
-      {
-        "type": "Function",
-        "name": "reset",
-        "def": "utils.require.reset()",
-        "doc": "Resets the `require` function back to the version stored when this module was loaded (which is likely the builtin version, unless you've loaded another module which overrides the `require` function for it's own reasons).  This function will only reset the `require` function if it is equal to this module."
-      },
-      {
-        "type": "Function",
-        "name": "require_path",
-        "def": "utils.require.require_path(path[, output]) -> table-of-modules",
+        "name": "requirePath",
+        "def": "utils.requirePlus.requirePath(path[, output]) -> table-of-modules",
         "doc": "Parses `package.path` and `package.cpath` by appending `path` to it and seeing what modules or files may exist at each location for loading, then requires them.  If `output` is true, then a log message is printed to the hammerspoon console for each file loaded. This function returns a table whose individual keys contain the loaded modules.\n\nThis only checks at the level of `path` for a match to ?.lua or ?/init.lua (or ?.so).  It does not recurse further subdirectories.  Load order is unspecified, so each module must (they really should anyways) make sure to require anything necessary for their successful loading internally, and not assume a specific load order."
       },
       {
         "type": "Function",
-        "name": "update_require_paths",
-        "def": "utils.require.update_require_paths(label, command|table[, append])",
+        "name": "updatePaths",
+        "def": "utils.requirePlus.updatePaths(label, command|table[, append])",
         "doc": "Updates package.path and package.cpath with the output of command or the contents of table.  Label is used to identify the source of the added paths in the output to the hammerspoon console.  If `append` is true, then the new paths are attached to the end of `path` and `cpath`, otherwise they are attached to the beginning.  Duplicates are pruned from the added paths.\n\nIf the additional paths are provided by a table, then the first entry should contain paths to add to package.path and the second entry to package.cpath.  If the additional paths are from a command, then they are assumed to be from a command similar to `luarocks path`, which prints lines suitable for including in a shell configuration script, and that the first line is for package.path, and the second is for package.cpath.\n\n    $ luarocks path\n    export LUA_PATH='/usr/local/share/lua/5.2/?.lua;...'\n    export LUA_CPATH='/usr/local/lib/lua/5.2/?.so;...'"
       }
     ]

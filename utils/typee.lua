@@ -10,10 +10,17 @@ local module = {
                         support completion
                         support position of input box
                         support left/center/right justify of input
+                        figure out more precise char positioning... I mean for fixedPitch fonts it shouldn't be this bitchy, should it?
+                        handle shift and printable char for input
     ]]
 
 --]=]
 }
+
+--- === hs._asm.typee ===
+---
+--- In progress
+---
 
 local _mt_index = {}
 
@@ -55,7 +62,7 @@ local drawText = function(self)
                         x = frame.x + frame.w/2 - (self.input:len() * self.displayBlockWidth) / 2,
                         y = frame.y + frame.h/2 - self.displayBlockHeight / 2,
                         h = self.displayBlockHeight,
-                        w = (self.input:len() * self.displayBlockWidth),
+                        w = (self.input:len() * (self.displayBlockWidth + 1)),
                       }
     self.textInputBlock:setFrame(textFrame):setText(self.input):show()
 --    self.textInputRect:setFrame(textFrame):show()
@@ -247,7 +254,7 @@ module.new = function(menuLabel)
 
     tmp.exitHook          = function(status) end
 
-    tmp.displayFont       = "Menlo" -- cursor works best with a monospace font
+    tmp.displayFont       = "Menlo-Regular" -- cursor works best with a monospace font
     tmp.displayFontSize   = 48
     tmp.displayBlockHeight= tmp.displayFontSize * 1.5
     tmp.displayBlockWidth = 30

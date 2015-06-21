@@ -5,7 +5,6 @@ local battery = require("hs.battery")
 local alert   = require("hs.alert")
 
 local PreviousPowerSource = battery.powerSource()
-local extras = require("hs._asm.extras")
 
 return battery.watcher.new(function()
     local total, count = 0, 0
@@ -14,7 +13,7 @@ return battery.watcher.new(function()
         if CurrentPowerSource ~= "AC Power" then
             for volume in require("hs.fs").dir("/Volumes") do
                 if not volume:match("^%.") and volume ~= "Yose" and volume ~= "DeepChaos" then
-                    local _,_,_,rc = extras.exec("diskutil umount '"..volume.."'")
+                    local _,_,_,rc = hs.execute("diskutil umount '"..volume.."'")
                     total = total + 1
                     if tonumber(rc) == 0 then count = count + 1 end
                 end

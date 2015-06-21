@@ -78,8 +78,12 @@ end
     end
         fontList:bind(mods.casc, "left",      function()
             fontList.pageNumber = fontTables.displayFontList(fontList.pageNumber - 1)
+        end, nil, function()
+            fontList.pageNumber = fontTables.displayFontList(fontList.pageNumber - 1)
         end)
         fontList:bind(mods.casc, "right",     function()
+            fontList.pageNumber = fontTables.displayFontList(fontList.pageNumber + 1)
+        end, nil, function()
             fontList.pageNumber = fontTables.displayFontList(fontList.pageNumber + 1)
         end)
 
@@ -101,16 +105,28 @@ end
         fontCharSet:bind(mods.casc, "left",   function()
             fontCharSet.fontNumber, fontCharSet.fontPage =
                     fontTables.displayCharacterSet(fontCharSet.fontNumber, fontCharSet.fontPage - 1)
+        end, nil, function()
+            fontCharSet.fontNumber, fontCharSet.fontPage =
+                    fontTables.displayCharacterSet(fontCharSet.fontNumber, fontCharSet.fontPage - 1)
         end)
         fontCharSet:bind(mods.casc, "right",  function()
+            fontCharSet.fontNumber, fontCharSet.fontPage =
+                    fontTables.displayCharacterSet(fontCharSet.fontNumber, fontCharSet.fontPage + 1)
+        end, nil, function()
             fontCharSet.fontNumber, fontCharSet.fontPage =
                     fontTables.displayCharacterSet(fontCharSet.fontNumber, fontCharSet.fontPage + 1)
         end)
         fontCharSet:bind(mods.casc, "up",     function()
             fontCharSet.fontNumber, fontCharSet.fontPage =
                     fontTables.displayCharacterSet(fontCharSet.fontNumber - 1, fontCharSet.fontPage)
+        end, nil, function()
+            fontCharSet.fontNumber, fontCharSet.fontPage =
+                    fontTables.displayCharacterSet(fontCharSet.fontNumber - 1, fontCharSet.fontPage)
         end)
         fontCharSet:bind(mods.casc, "down",   function()
+            fontCharSet.fontNumber, fontCharSet.fontPage =
+                    fontTables.displayCharacterSet(fontCharSet.fontNumber + 1, fontCharSet.fontPage)
+        end, nil, function()
             fontCharSet.fontNumber, fontCharSet.fontPage =
                     fontTables.displayCharacterSet(fontCharSet.fontNumber + 1, fontCharSet.fontPage)
         end)

@@ -39,17 +39,19 @@ end
 
 if settings.get("_asm.open_console_at_start") then
     hs.openConsole()
-    local where = settings.get("_asm.console_frame")
-    if where then
-        where = load(where)()
-        if type(where) == "table" then
-            if appfinder.windowFromWindowTitle("Hammerspoon Console") then
-                appfinder.windowFromWindowTitle("Hammerspoon Console"):setFrame(where, 0)
-            end
-        end
-    end
-end
 
-module.status()
+-- either load() is really slow, or moving the window during startup is really slow...
+-- main point is to make sure console is in last state, so...
+
+--    local where = settings.get("_asm.console_frame")
+--    if where then
+--        where = load(where)()
+--        if type(where) == "table" then
+--            if appfinder.windowFromWindowTitle("Hammerspoon Console") then
+--                appfinder.windowFromWindowTitle("Hammerspoon Console"):setFrame(where, 0)
+--            end
+--        end
+--    end
+end
 
 return module
