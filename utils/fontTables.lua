@@ -16,7 +16,9 @@ local module = {
 
 local screen  = require("hs.screen")
 local drawing = require("hs.drawing")
-local utf8    = require("hs.utf8_53")
+
+local R, utf8 = pcall(require,"hs.utf8_53")
+if not R then utf8 = require("hs.utf8") end
 
 -- private variables and methods -----------------------------------------
 

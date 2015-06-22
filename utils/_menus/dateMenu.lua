@@ -19,7 +19,9 @@ local timer      = require("hs.timer")
 local drawing    = require("hs.drawing")
 local screen     = require("hs.screen")
 local mouse      = require("hs.mouse")
-local utf8       = require("hs.utf8_53")
+
+local R, utf8 = pcall(require,"hs.utf8_53")
+if not R then utf8 = require("hs.utf8") end
 
 local dayInUTF8 = function(x)    --  U+2460-2473 = 1 - 20, U+3251-325F = 21 - 35
     if x < 21 then
