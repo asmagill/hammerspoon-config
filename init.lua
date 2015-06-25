@@ -6,6 +6,10 @@ if R then
     hs.hotkey = M
     package.loaded["hs.hotkey"] = M   -- make sure require("hs.hotkey") returns us
     package.loaded["hs/hotkey"] = M   -- make sure require("hs/hotkey") returns us
+else
+    print()
+    print("**** Error with experimental hs.hotkey: "..tostring(M))
+    print()
 end
 
 local requirePlus = require("utils.require")
@@ -41,10 +45,14 @@ _asm = {
     _keys     = requirePlus.requirePath("utils._keys", true),
     _actions  = requirePlus.requirePath("utils._actions", true),
     _menus    = requirePlus.requirePath("utils._menus", true),
+    relaunch = function()
+        os.execute([[ (while ps -p ]]..hs.processInfo.processID..[[ > /dev/null ; do sleep 1 ; done ; open -a "]]..hs.processInfo.bundlePath..[[" ) & ]])
+        hs._exit(true, true)
+    end,
 }
 
 hints.style = "vimperator"
 
-print("++ Running: ".._asm.extras._paths.bundlePath)
-print("++ Accessibility: "..tostring(_asm.extras.accessibility(true)))
+print("++ Running: "..hs.processInfo.bundlePath)
+print("++ Accessibility: "..tostring(hs.accessibilityState()))
 _asm._actions.timestamp.status()
