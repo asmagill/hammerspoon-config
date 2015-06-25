@@ -1,24 +1,7 @@
 -- Doc tools
 
 local module = {}
-
-local sorted_keys = function(t, f)
-    if t then
-        local a = {}
-        for n in pairs(t) do table.insert(a, n) end
-        table.sort(a, f)
-        local i = 0      -- iterator variable
-        local iter = function ()   -- iterator function
-            i = i + 1
-            if a[i] == nil then return nil
-                else return a[i], t[a[i]]
-            end
-        end
-        return iter
-    else
-        return function() return nil end
-    end
-end
+local fnutils = require("hs.fnutils")
 
 module.rdoc = function(thing)
     if type(thing) ~= "table" then
@@ -27,13 +10,7 @@ module.rdoc = function(thing)
         print(thing)
         print("--------------------------------------------------------------------------------")
         print()
-        for name, item in sorted_keys(thing,  function(m,n)
-                                                  if type(m) == type(n) then
-                                                      return m < n
-                                                  else
-                                                      return tostring(m) < tostring(n)
-                                                  end
-                                              end)
+        for name, item in fnutils.sortByKeys(thing)
         do
             if type(item) == "table" then module.rdoc(item) end
         end
