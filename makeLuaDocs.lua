@@ -7,7 +7,6 @@
 local http     = require("hs.http")
 local inspect  = require("hs.inspect")
 local timer    = require("hs.timer")
-local textConv = require("utils.textConv")
 local json     = require("hs.json")
 
 local verNum             = string.gsub(_VERSION,"Lua ","")
@@ -183,7 +182,7 @@ print("++ Parsing manual...")
             if Keys[k] then
                 table.insert(Keys[k].labels, v)
             else
-                Keys[k] = {labels = {(textConv.convertHtmlEntities(v))}}
+                Keys[k] = {labels = {(http.convertHtmlEntities(v))}}
             end
         end
     end
@@ -208,7 +207,7 @@ print("++ Parsing manual...")
                 if posTable then
                     table.insert(posTable, a - 1)
                     local actualText, _ = StripHTML(LuaManual:sub(posTable[1], posTable[2]), true)
-                    table.insert(text, (textConv.convertHtmlEntities(actualText)))
+                    table.insert(text, (http.convertHtmlEntities(actualText)))
                 end
                 posTable         = {a}
                 text             = {}
@@ -223,7 +222,7 @@ print("++ Parsing manual...")
     if not next(text) then
         table.insert(posTable, LuaManual:len() - 1)
         local actualText, _ = StripHTML(LuaManual:sub(posTable[1], posTable[2]), true)
-        table.insert(text, (textConv.convertHtmlEntities(actualText)))
+        table.insert(text, (http.convertHtmlEntities(actualText)))
     end
 
 -- Get function version -- this pass we capture for all keys that were found in the contents
@@ -243,7 +242,7 @@ print("++ Parsing manual...")
                 if posTable then
                     table.insert(posTable, a - 1)
                     local actualText, _ = StripHTML(LuaManual:sub(posTable[1], posTable[2]))
-                    table.insert(text, (textConv.convertHtmlEntities(actualText)))
+                    table.insert(text, (http.convertHtmlEntities(actualText)))
                 end
                 posTable         = {a}
                 text             = {}
@@ -258,7 +257,7 @@ print("++ Parsing manual...")
     if not next(text) then
         table.insert(posTable, LuaManual:len() - 1)
         local actualText, _ = StripHTML(LuaManual:sub(posTable[1], posTable[2]))
-        table.insert(text, (textConv.convertHtmlEntities(actualText)))
+        table.insert(text, (http.convertHtmlEntities(actualText)))
     end
 
 -- Turn into JSON for hs.doc
