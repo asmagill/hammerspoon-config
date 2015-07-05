@@ -22,7 +22,6 @@ module.heartbeat = timer.new(timer.minutes(1), function()
         settings.setDate("_asm.last_heartbeat",os.time())
         if appfinder.windowFromWindowTitle("Hammerspoon Console") then
             settings.set("_asm.open_console_at_start", true)
-            settings.set("_asm.console_frame", "return "..inspect(appfinder.windowFromWindowTitle("Hammerspoon Console"):frame()))
         else
             settings.set("_asm.open_console_at_start", false)
         end
@@ -39,19 +38,6 @@ end
 
 if settings.get("_asm.open_console_at_start") then
     hs.openConsole()
-
--- either load() is really slow, or moving the window during startup is really slow...
--- main point is to make sure console is in last state, so...
-
---    local where = settings.get("_asm.console_frame")
---    if where then
---        where = load(where)()
---        if type(where) == "table" then
---            if appfinder.windowFromWindowTitle("Hammerspoon Console") then
---                appfinder.windowFromWindowTitle("Hammerspoon Console"):setFrame(where, 0)
---            end
---        end
---    end
 end
 
 return module

@@ -74,7 +74,7 @@ devMenu:folderFunction(actionFunction)
 -- the given path.
 devMenu:rootDirectory({
                         ["Hammerspoon-Local"] = "/opt/amagill/src/hammerspoon/hammerspoon-local",
-                        ["Hammerspoon-Testing"] = "/opt/amagill/src/hammerspoon/hammerspoon-testing",
+--                        ["Hammerspoon-Testing"] = "/opt/amagill/src/hammerspoon/hammerspoon-testing",
                         ["HS Config"]   = os.getenv("HOME").."/.hammerspoon",
                         ["Arduino"]     = os.getenv("HOME").."/Documents/Arduino",
                         ["HS Modules"]  = "/opt/amagill/src/hammerspoon/_asm",
