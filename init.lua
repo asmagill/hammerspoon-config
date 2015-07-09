@@ -25,7 +25,7 @@ requirePlus.updatePaths("In Home", {
     os.getenv("HOME").."/.hammerspoon/?.lua;"..
     os.getenv("HOME").."/.hammerspoon/?/init.lua",
     os.getenv("HOME").."/.hammerspoon/?.so"}, false)
-requirePlus.updatePaths("Luarocks", "luarocks path", true)
+requirePlus.updatePaths("Luarocks", "luarocks-5.3 path", true)
 
 inspect = require("hs.inspect")
 inspect1 = function(what) return inspect(what, {depth=1}) end
@@ -50,6 +50,29 @@ _asm = {
         hs._exit(true, true)
     end,
 }
+
+if tonumber(_VERSION:match("5%.(%d+)$")) > 2 then
+-- wrapping this in load keeps lua 5.2 from crapping on the >> and &.
+    toBits = load([[
+        return function(num, bits)
+            bits = bits or (math.floor(math.log(num,2) / 8) + 1) * 8
+            local value = ""
+            for i = (bits - 1), 0, -1 do
+                value = value..tostring((num >> i) & 0x1)
+            end
+            return value
+        end
+    ]])()
+else
+    toBits = function(num, bits)
+        bits = bits or (math.floor(math.log(num,2) / 8) + 1) * 8
+        local value = ""
+        for i = (bits - 1), 0, -1 do
+            value = value..tostring(bit32.band(bit32.rshift(num, i), 0x1))
+        end
+        return value
+    end
+end
 
 hints.style = "vimperator"
 
