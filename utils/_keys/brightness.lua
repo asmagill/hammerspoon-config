@@ -66,7 +66,8 @@ local screenWatchFunction = function()
                 myScreens[tag] = {
                     rect = rect,
                     filter = drawing.rectangle(rect):setStroke(false):setFill(true):
-                                setFillColor{red=0, green=0, blue=0, alpha = brightnessSetting}:show(),
+                                setFillColor{red=0, green=0, blue=0, alpha = brightnessSetting}:
+                                setBehaviorByLabels{"canJoinAllSpaces", "stationary"}:show(),
                 }
             end
         else
@@ -81,39 +82,54 @@ end
 
 -- Public interface ------------------------------------------------------
 
-screenWatchFunction()
+screenWatchFunction() -- run the first time to setup any existing external monitors
+
+-- now setup the watcher to detect when screens change...
+
 module.screenWatcher = screen.watcher.new(screenWatchFunction):start()
 
-module.spaceWatcher = space.watcher.new(function(obj)
-    if verbose then print("++ spaceChange",os.date()) end
-    for i,v in pairs(myScreens) do
-        v.filter:hide():show()
-    end
-end)
-module.spaceWatcher:start()
+-- not needed if hs.drawing.setBehavior is accepted into core...
+--module.spaceWatcher = space.watcher.new(function(obj)
+--    if verbose then print("++ spaceChange",os.date()) end
+--    for i,v in pairs(myScreens) do
+--        v.filter:hide():show()
+--    end
+--end)
+--module.spaceWatcher:start()
 
-module.eventtap = eventtap.new({events.types.NSSystemDefined}, function(obj)
-    local sysKey = obj:systemKey()
 
-    -- exit ASAP if it isn't of interest to us
-    if not next(sysKey) then return false end
-    if sysKey.key ~= "BRIGHTNESS_UP" and sysKey.key ~= "BRIGHTNESS_DOWN" then return false end
+-- We do this because starting any eventtap before accessibility is enabled causes eventtaps which
+-- require keyUp/Down events to fail, even after accessibility is enabled until Hammerspoon is fully
+-- quit and restarted... probably not a huge issue to most, but I rebuild HS a lot...
+module.eventtap = hs.timer.new(1, function()
+        if hs.accessibilityState() then
+            module.eventtap:stop()
+            print("++ Starting brightness eventtap")
+            module.eventtap = eventtap.new({events.types.NSSystemDefined}, function(obj)
+                local sysKey = obj:systemKey()
 
-    -- because receiving the event means it hasn't been processed yet, the keyDown and repeat
-    -- events will always mean that the non-laptop monitors are a step behind the brightness the
-    -- laptop screen is going to be (when the event is passed on)... by doing this even for
-    -- keyDown == false, the key release will bring the external monitors in sync.
+                -- exit ASAP if it isn't of interest to us
+                if not next(sysKey) then return false end
+                if sysKey.key ~= "BRIGHTNESS_UP" and sysKey.key ~= "BRIGHTNESS_DOWN" then return false end
 
-    -- in hotkey parlance (where this may ultimately go, or at least a wrapper made), same
-    -- action for down, up, and repeat.
+                -- because receiving the event means it hasn't been processed yet, the keyDown and repeat
+                -- events will always mean that the non-laptop monitors are a step behind the brightness the
+                -- laptop screen is going to be (when the event is passed on)... by doing this even for
+                -- keyDown == false, the key release will bring the external monitors in sync.
 
-    local brightnessSetting = 1 - (brightness.get()/100)
-    for i,v in pairs(myScreens) do
-        v.filter:setFillColor{red=0, green=0, blue=0, alpha = brightnessSetting}:show()
-    end
+                -- in hotkey parlance (where this may ultimately go, or at least a wrapper made), same
+                -- action for down, up, and repeat.
 
-    return false -- allow event to fall through and do what it's gotta do
-end):start()
+                local brightnessSetting = 1 - (brightness.get()/100)
+                for i,v in pairs(myScreens) do
+                    v.filter:setFillColor{red=0, green=0, blue=0, alpha = brightnessSetting}
+                end
+
+                return false -- allow event to fall through and do what it's gotta do
+            end):start()
+        end
+    end):start()
+
 
 -- Return Module Object --------------------------------------------------
 module.myScreens = myScreens
