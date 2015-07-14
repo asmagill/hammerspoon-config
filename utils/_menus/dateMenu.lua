@@ -159,6 +159,7 @@ end
 
 module = setmetatable(module, {
   __gc = function(self)
+      if module.changeDay then module.changeDay:stop() ; module.changeDay = nil end
       if HL then HL:delete() ; HL = nil end
       if textRect then textRect:delete() ; textRect = nil end
       if rect then rect:delete() ; rect = nil end

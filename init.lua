@@ -56,6 +56,7 @@ if tonumber(_VERSION:match("5%.(%d+)$")) > 2 then
     toBits = load([[
         return function(num, bits)
             bits = bits or (math.floor(math.log(num,2) / 8) + 1) * 8
+            if bits == -(1/0) then bits = 8 end
             local value = ""
             for i = (bits - 1), 0, -1 do
                 value = value..tostring((num >> i) & 0x1)
@@ -66,6 +67,7 @@ if tonumber(_VERSION:match("5%.(%d+)$")) > 2 then
 else
     toBits = function(num, bits)
         bits = bits or (math.floor(math.log(num,2) / 8) + 1) * 8
+        if bits == -(1/0) then bits = 8 end
         local value = ""
         for i = (bits - 1), 0, -1 do
             value = value..tostring(bit32.band(bit32.rshift(num, i), 0x1))
