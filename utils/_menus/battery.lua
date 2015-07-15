@@ -47,10 +47,11 @@ local displayBatteryData = function(modifier)
     local menuTable = {}
 
     local pwrIcon = (battery.powerSource() == "AC Power") and onAC or onBattery
-    table.insert(menuTable, { title = pwrIcon.."  "..battery.powerSource() })
-
-    table.insert(menuTable, {
-        title = utf8.codepointToUTF8(0x1F6A6).."  "..(
+--    table.insert(menuTable, { title = pwrIcon.."  "..battery.powerSource() })
+--
+--    table.insert(menuTable, {
+--        title = utf8.codepointToUTF8(0x1F6A6).."  "..(
+    table.insert(menuTable, { title = pwrIcon.."  "..(
             (battery.isCharged()  and "Fully Charged") or
             (battery.isCharging() and (battery.isFinishingCharge() and "Finishing Charge" or "Charging")) or
             "On Battery"
