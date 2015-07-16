@@ -10,7 +10,12 @@ local module = {
           I already had a plan in mind, but the visual design is influenced by code found at
           http://applehelpwriter.com/2014/08/25/applescript-make-your-own-battery-health-meter/
     ]],
-    _TODO        = [[]],
+    _TODO        = [[
+
+          Possible additions -- issue warning for low battery?  System already does this, so...
+                                change menu title to icon with color change for battery state?
+
+    ]],
     _LICENSE     = [[ See README.md ]]
 --]=]
 }

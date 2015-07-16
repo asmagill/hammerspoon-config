@@ -1,3 +1,17 @@
+-- I do too much with developmental versions of HS -- I don't need
+-- extraneous info in the Console application for every require; very
+-- few of my crass  make it into Crashlytics anyways...
+--
+-- I don't recommend this unless you like doing your own troubleshooting
+-- since it defeats some of the data captured for crash reports.
+--
+
+hs.require = require
+require = rawrequire
+require("hs.crash").crashLog("Disabled require logging to make log file sane")
+
+-- Testing eventtap replacement for hotkey
+
 local R, M = pcall(require,"hs._asm.hotkey")
 if R then
     print()
@@ -11,6 +25,8 @@ else
     print("**** Error with experimental hs.hotkey: "..tostring(M))
     print()
 end
+
+-- normal init continues...
 
 local requirePlus = require("utils.require")
 local settings    = require("hs.settings")
@@ -77,6 +93,14 @@ else
 end
 
 hints.style = "vimperator"
+
+_asm._actions.autoQuitter.whiteList("Mail")       -- are allowed to have 0 open windows
+_asm._actions.autoQuitter.whiteList("Autoupdate")
+_asm._actions.autoQuitter.blackList("Preview")    -- not allowed to have 0 open windows
+_asm._actions.autoQuitter.blackList("Console")
+_asm._actions.autoQuitter.blackList("SmartGit")
+_asm._actions.autoQuitter.permissive(true)        -- only quit blacklisted apps for now
+_asm._actions.autoQuitter.enable()
 
 print("++ Running: "..hs.processInfo.bundlePath)
 print("++ Accessibility: "..tostring(hs.accessibilityState()))
