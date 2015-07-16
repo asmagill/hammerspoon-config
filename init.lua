@@ -94,12 +94,15 @@ end
 
 hints.style = "vimperator"
 
-_asm._actions.autoQuitter.whiteList("Mail")       -- are allowed to have 0 open windows
-_asm._actions.autoQuitter.whiteList("Autoupdate")
-_asm._actions.autoQuitter.blackList("Preview")    -- not allowed to have 0 open windows
-_asm._actions.autoQuitter.blackList("Console")
-_asm._actions.autoQuitter.blackList("SmartGit")
-_asm._actions.autoQuitter.permissive(true)        -- only quit blacklisted apps for now
+_asm._actions.autoQuitter.permissive(true)
+-- are allowed to have 0 open windows
+    _asm._actions.autoQuitter.whiteList("Mail")
+    _asm._actions.autoQuitter.whiteList("Autoupdate")
+
+-- not allowed to have 0 open windows
+    _asm._actions.autoQuitter.blackList("Preview")
+    _asm._actions.autoQuitter.blackList("Console")
+    _asm._actions.autoQuitter.blackList("SmartGit")
 _asm._actions.autoQuitter.enable()
 
 print("++ Running: "..hs.processInfo.bundlePath)

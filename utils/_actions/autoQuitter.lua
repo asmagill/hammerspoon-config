@@ -61,15 +61,17 @@ local autoQuitWatcher = timer.new(60, function()
                 print("+++ "..os.date("%Y/%m/%d %H:%M:%S").." autoQuitter nil app title?")
             else
                 if #app:allWindows() == 0 then
-                    if not fnutils.contains(whiteList, app:title()) and app:kind() > 0 then
-                        if permissiveMode and not fnutils.contains(blackList, app:title()) then
-                            if not beenWarned[app:title()] then
-                                beenWarned[app:title()] = os.time()
-                                print("+++ "..os.date("%Y/%m/%d %H:%M:%S").." autoQuitter detected "..app:title().." in permissive mode.")
+                    if app:title() ~= "Hammerspoon" then
+                        if not fnutils.contains(whiteList, app:title()) and app:kind() > 0 then
+                            if permissiveMode and not fnutils.contains(blackList, app:title()) then
+                                if not beenWarned[app:title()] then
+                                    beenWarned[app:title()] = os.time()
+                                    print("+++ "..os.date("%Y/%m/%d %H:%M:%S").." autoQuitter detected "..app:title().." in permissive mode.")
+                                end
+                            else
+                                print("+++ "..os.date("%Y/%m/%d %H:%M:%S").." autoQuitter quitting "..app:title())
+                                app:kill()
                             end
-                        else
-                            print("+++ "..os.date("%Y/%m/%d %H:%M:%S").." autoQuitter quitting "..app:title())
-                            app:kill()
                         end
                     end
                 end
