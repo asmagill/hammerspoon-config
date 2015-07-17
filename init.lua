@@ -1,3 +1,5 @@
+local minimal = false
+
 -- I do too much with developmental versions of HS -- I don't need
 -- extraneous info in the Console application for every require; very
 -- few of my crass  make it into Crashlytics anyways...
@@ -26,8 +28,6 @@ else
     print()
 end
 
--- normal init continues...
-
 local requirePlus = require("utils.require")
 local settings    = require("hs.settings")
 local ipc         = require("hs.ipc")
@@ -46,26 +46,9 @@ requirePlus.updatePaths("Luarocks", "luarocks-5.3 path", true)
 inspect = require("hs.inspect")
 inspect1 = function(what) return inspect(what, {depth=1}) end
 
-ipc.cliInstall("/opt/amagill")
-
 -- What can I say? I like the original Hydra's console documentation style,
 -- rather than help("...")
 doc = require("utils.docs")
-
-
--- For my convenience while testing and screwing around...
--- If something grows into usefulness, I'll modularize it.
-_asm = {
-    _ = package.loaded,
-    extras    = require("hs._asm.extras"),
-    _keys     = requirePlus.requirePath("utils._keys", true),
-    _actions  = requirePlus.requirePath("utils._actions", true),
-    _menus    = requirePlus.requirePath("utils._menus", true),
-    relaunch = function()
-        os.execute([[ (while ps -p ]]..hs.processInfo.processID..[[ > /dev/null ; do sleep 1 ; done ; open -a "]]..hs.processInfo.bundlePath..[[" ) & ]])
-        hs._exit(true, true)
-    end,
-}
 
 if tonumber(_VERSION:match("5%.(%d+)$")) > 2 then
 -- wrapping this in load keeps lua 5.2 from crapping on the >> and &.
@@ -92,6 +75,24 @@ else
     end
 end
 
+if not minimal then -- normal init continues...
+
+ipc.cliInstall("/opt/amagill")
+
+-- For my convenience while testing and screwing around...
+-- If something grows into usefulness, I'll modularize it.
+_asm = {
+    _ = package.loaded,
+    extras    = require("hs._asm.extras"),
+    _keys     = requirePlus.requirePath("utils._keys", true),
+    _actions  = requirePlus.requirePath("utils._actions", true),
+    _menus    = requirePlus.requirePath("utils._menus", true),
+    relaunch = function()
+        os.execute([[ (while ps -p ]]..hs.processInfo.processID..[[ > /dev/null ; do sleep 1 ; done ; open -a "]]..hs.processInfo.bundlePath..[[" ) & ]])
+        hs._exit(true, true)
+    end,
+}
+
 hints.style = "vimperator"
 
 _asm._actions.autoQuitter.permissive(true)
@@ -103,8 +104,16 @@ _asm._actions.autoQuitter.permissive(true)
     _asm._actions.autoQuitter.blackList("Preview")
     _asm._actions.autoQuitter.blackList("Console")
     _asm._actions.autoQuitter.blackList("SmartGit")
+    _asm._actions.autoQuitter.blackList("TextWrangler")
+    _asm._actions.autoQuitter.blackList("Safari")
+    _asm._actions.autoQuitter.blackList("Terminal")
 _asm._actions.autoQuitter.enable()
+
+_asm._actions.timestamp.status()
+
+else
+    print("++ Running minimal configuration")
+end
 
 print("++ Running: "..hs.processInfo.bundlePath)
 print("++ Accessibility: "..tostring(hs.accessibilityState()))
-_asm._actions.timestamp.status()
