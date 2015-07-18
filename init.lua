@@ -99,6 +99,7 @@ _asm._actions.autoQuitter.permissive(true)
 -- are allowed to have 0 open windows
     _asm._actions.autoQuitter.whiteList("Mail")
     _asm._actions.autoQuitter.whiteList("Autoupdate")
+    _asm._actions.autoQuitter.whiteList("Installer")
 
 -- not allowed to have 0 open windows
     _asm._actions.autoQuitter.blackList("Preview")
@@ -107,7 +108,8 @@ _asm._actions.autoQuitter.permissive(true)
     _asm._actions.autoQuitter.blackList("TextWrangler")
     _asm._actions.autoQuitter.blackList("Safari")
     _asm._actions.autoQuitter.blackList("Terminal")
-_asm._actions.autoQuitter.enable()
+-- wrongly kills all apps in other spaces... need to think about...
+-- _asm._actions.autoQuitter.enable()
 
 _asm._actions.timestamp.status()
 
