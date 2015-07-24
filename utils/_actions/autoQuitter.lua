@@ -8,6 +8,10 @@ local module = {
 
         Auto quit applications with no windows
 
+        Todo:  apps with odd window situations when idle (MS Word has 1 full screen invisible window)
+                 how to detect?  Check element watcher stuff...
+                 allow setting # to be less than
+
     ]],
 --]=]
 }

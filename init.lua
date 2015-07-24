@@ -10,6 +10,7 @@ local minimal = false
 
 hs.require = require
 require = rawrequire
+require("hs.crash").crashLogToNSLog = true
 require("hs.crash").crashLog("Disabled require logging to make log file sane")
 
 -- Testing eventtap replacement for hotkey
@@ -50,10 +51,10 @@ inspect1 = function(what) return inspect(what, {depth=1}) end
 -- rather than help("...")
 doc = require("utils.docs")
 
-if tonumber(_VERSION:match("5%.(%d+)$")) > 2 then
+-- if tonumber(_VERSION:match("5%.(%d+)$")) > 2 then
 -- wrapping this in load keeps lua 5.2 from crapping on the >> and &.
-    toBits = load([[
-        return function(num, bits)
+    tobits = -- load([[ return
+        function(num, bits)
             bits = bits or (math.floor(math.log(num,2) / 8) + 1) * 8
             if bits == -(1/0) then bits = 8 end
             local value = ""
@@ -62,18 +63,18 @@ if tonumber(_VERSION:match("5%.(%d+)$")) > 2 then
             end
             return value
         end
-    ]])()
-else
-    toBits = function(num, bits)
-        bits = bits or (math.floor(math.log(num,2) / 8) + 1) * 8
-        if bits == -(1/0) then bits = 8 end
-        local value = ""
-        for i = (bits - 1), 0, -1 do
-            value = value..tostring(bit32.band(bit32.rshift(num, i), 0x1))
-        end
-        return value
-    end
-end
+--    ]])()
+--else
+--    toBits = function(num, bits)
+--        bits = bits or (math.floor(math.log(num,2) / 8) + 1) * 8
+--        if bits == -(1/0) then bits = 8 end
+--        local value = ""
+--        for i = (bits - 1), 0, -1 do
+--            value = value..tostring(bit32.band(bit32.rshift(num, i), 0x1))
+--        end
+--        return value
+--    end
+--end
 
 if not minimal then -- normal init continues...
 
@@ -110,6 +111,8 @@ _asm._actions.autoQuitter.permissive(true)
     _asm._actions.autoQuitter.blackList("Terminal")
 -- wrongly kills all apps in other spaces... need to think about...
 -- _asm._actions.autoQuitter.enable()
+
+require("utils.clipboard")
 
 _asm._actions.timestamp.status()
 
