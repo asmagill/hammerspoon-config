@@ -5,9 +5,6 @@ Sample code showing the use of eventtap to capture Screen Brightness keys and ti
 filter (black rectangle with changing alpha value) to it for external monitors with
 a laptop.
 
-I don't know if we can get around the small time-slice of flashing with space change animation,
-but would love to here from anyone who knows of a way, even if it means objective-c code.
-
 Ideas for expansion --
     non-linear changes to alpha
     set color other than black for a "tint"
