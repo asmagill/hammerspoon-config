@@ -113,7 +113,7 @@ local powerSourceChangeFN = function(justOn)
                             shouldWeDoSomething = (test.percentage - v.percentage) > 0
                         end
                     elseif v.timeRemaining then
-                        if v.onBattery then
+                        if v.onBattery and test.timeRemaining > 0 then
                             shouldWeDoSomething = (test.timeRemaining - v.timeRemaining) < 0
                         else
                             shouldWeDoSomething = (test.timeRemaining - v.timeRemaining) > 0
