@@ -15,11 +15,17 @@ local settings = require("hs.settings")
 local mods     = require("hs._asm.extras").mods
 local hotkey   = require("hs.hotkey")
 local window   = require("hs.window")
+local alert    = require("hs.alert")
 
 grid.GRIDHEIGHT = settings.get("_asm.gridHeight")  or 2
 grid.GRIDWIDTH  = settings.get("_asm.gridWidth")   or 3
 grid.MARGINX    = settings.get("_asm.gridMarginX") or 1
 grid.MARGINY    = settings.get("_asm.gridMarginY") or 1
+
+grid.GRIDHEIGHT = math.floor(grid.GRIDHEIGHT)
+grid.GRIDWIDTH  = math.floor(grid.GRIDWIDTH)
+grid.MARGINX    = math.floor(grid.MARGINX)
+grid.MARGINY    = math.floor(grid.MARGINY)
 
 local change = function(command, direction)
     command = tostring(command)

@@ -12,6 +12,8 @@ local module = {
                  how to detect?  Check element watcher stuff...
                  allow setting # to be less than
 
+        ****  wrongly kills all apps in other spaces... need to think about this more...
+
     ]],
 --]=]
 }

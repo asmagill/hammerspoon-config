@@ -38,6 +38,16 @@ end
 
 if settings.get("_asm.open_console_at_start") then
     hs.openConsole()
+    local console = appfinder.appFromName("Hammerspoon"):allWindows()[1]
+    if console then
+        local screen = console:screen()
+        console:setFrame{
+            x = screen:frame().x + screen:frame().w - 821,
+            y = screen:frame().y + screen:frame().h - 593,
+            h = 593,
+            w = 821
+        }
+    end
 end
 
 return module
