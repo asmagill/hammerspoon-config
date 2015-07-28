@@ -84,9 +84,13 @@ hints.style = "vimperator"
 
 require("utils.clipboard")
 
+-- terminal shell equivalencies...
 edit = function(where)
     where = where or "."
     os.execute("/usr/local/bin/edit "..where)
+end
+m = function(which)
+    os.execute("open x-man-page://"..tostring(which))
 end
 
 _asm._actions.timestamp.status()

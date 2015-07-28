@@ -29,6 +29,7 @@ local events      = eventtap.event
 local space       = require("hs.spaces")
 local screen      = require("hs.screen")
 local drawing     = require("hs.drawing")
+local timer       = require("hs.timer")
 
 local myScreens = {}
 
@@ -98,7 +99,7 @@ module.screenWatcher = screen.watcher.new(screenWatchFunction):start()
 -- We do this because starting any eventtap before accessibility is enabled causes eventtaps which
 -- require keyUp/Down events to fail, even after accessibility is enabled until Hammerspoon is fully
 -- quit and restarted... probably not a huge issue to most, but I rebuild HS a lot...
-module.eventtap = hs.timer.new(1, function()
+module.eventtap = timer.new(1, function()
         if hs.accessibilityState() then
             module.eventtap:stop()
             print("++ Starting brightness eventtap")

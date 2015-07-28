@@ -33,12 +33,12 @@ module.wininfo = function(win,clip)
     clip = clip or false
     if not win then return end
     local buf = ""
-    buf = buf.."name = "..tostring(win:title()).."\r"
-    buf = buf.."id = "..tostring(win:id()).."\r"
-    buf = buf.."pid = "..tostring(win:pid()).."\r"
+    buf = buf.."name = "..tostring(win:title() or "-- unset --").."\r"
+    buf = buf.."id = "..tostring(win:id() or "-- unset --").."\r"
+    buf = buf.."pid = "..tostring(win:pid() or "-- unset --").."\r"
     buf = buf.."frame = "..tostring(inspect(win:frame())).."\r"
-    buf = buf.."role = "..tostring(win:role()).."\r"
-    buf = buf.."subrole = "..tostring(win:subrole()).."\r"
+    buf = buf.."role = "..tostring(win:role() or "-- unset --").."\r"
+    buf = buf.."subrole = "..tostring(win:subrole() or "-- unset --").."\r"
     buf = buf.."isStandard = "..tostring(win:isStandard()).."\r"
     buf = buf.."isFullScreen = "..tostring(win:isFullScreen()).."\r"
     buf = buf.."isVisible = "..tostring(win:isVisible()).."\r"

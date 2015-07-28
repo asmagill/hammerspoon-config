@@ -16,6 +16,7 @@ local mods     = require("hs._asm.extras").mods
 local hotkey   = require("hs.hotkey")
 local window   = require("hs.window")
 local alert    = require("hs.alert")
+local fnutils  = require("hs.fnutils")
 
 grid.GRIDHEIGHT = settings.get("_asm.gridHeight")  or 2
 grid.GRIDWIDTH  = settings.get("_asm.gridWidth")   or 3
@@ -88,6 +89,13 @@ local change = function(command, direction)
         elseif command == "max"  then state = { x = 0, y = 0, w = grid.GRIDWIDTH, h = grid.GRIDHEIGHT }
         elseif command == "next" then destScreen = destScreen:next()
         elseif command == "prev" then destScreen = destScreen:previous()
+        elseif command == "center" then
+            doChange = false -- this one is special and outside of grid's prevue
+            local wFrame = win:frame()
+            local sFrame = destScreen:frame()
+            wFrame.x = sFrame.x + (sFrame.w - wFrame.w) / 2
+            wFrame.y = sFrame.y + (sFrame.h - wFrame.h) / 2
+            win:setFrame(wFrame)
         elseif command ~= "snap" then
             alert.show("Invalid command: "..command)
             doChange = false
@@ -95,10 +103,10 @@ local change = function(command, direction)
 
         if doChange then grid.set(win, state, destScreen) end
         --print((string.gsub(inspect({ destScreen:frame(), win:frame(), state }),"[\r\n ]+"," ")))
+        window.animationDuration = oldWinAnimationDuration
     else
         alert.show("No window currently focused")
     end
-    window.animationDuration = oldWinAnimationDuration
 end
 
 local adjust = function(rows, columns)
@@ -114,35 +122,41 @@ end
 
 -- Public interface ------------------------------------------------------
 
--- slide window
-    hotkey.bind(mods.CASC, 'h', function() change("stretch", "left")  end, nil)
-    hotkey.bind(mods.CASC, 'k', function() change("stretch", "up")    end, nil)
-    hotkey.bind(mods.CASC, 'j', function() change("stretch", "down")  end, nil)
-    hotkey.bind(mods.CASC, 'l', function() change("stretch", "right") end, nil)
-    hotkey.bind(mods.CAsC, 'h', function() change("move",    "left")  end, nil)
-    hotkey.bind(mods.CAsC, 'k', function() change("move",    "up")    end, nil)
-    hotkey.bind(mods.CAsC, 'j', function() change("move",    "down")  end, nil)
-    hotkey.bind(mods.CAsC, 'l', function() change("move",    "right") end, nil)
+-- slide/stretch window
+    hotkey.bind(mods.CASC, 'h', function() change("stretch", "left")  end)
+    hotkey.bind(mods.CASC, 'k', function() change("stretch", "up")    end)
+    hotkey.bind(mods.CASC, 'j', function() change("stretch", "down")  end)
+    hotkey.bind(mods.CASC, 'l', function() change("stretch", "right") end)
+    hotkey.bind(mods.CAsC, 'h', function() change("move",    "left")  end)
+    hotkey.bind(mods.CAsC, 'k', function() change("move",    "up")    end)
+    hotkey.bind(mods.CAsC, 'j', function() change("move",    "down")  end)
+    hotkey.bind(mods.CAsC, 'l', function() change("move",    "right") end)
+
 -- snap in place
-    hotkey.bind(mods.CAsC, '.', function() change("snap") end, nil)
+    hotkey.bind(mods.CAsC, '.', function() change("snap") end)
+    hotkey.bind(mods.CAsC, ',', function() fnutils.map(window.visibleWindows(), grid.snap) end)
+
 -- push window to different screen
-    hotkey.bind(mods.CAsC, '[', function() change("prev") end, nil)
-    hotkey.bind(mods.CAsC, ']', function() change("next") end, nil)
+    hotkey.bind(mods.CAsC, '[', function() change("prev") end)
+    hotkey.bind(mods.CAsC, ']', function() change("next") end)
+
 -- full-height window, full-width window, and a maximize
-    hotkey.bind(mods.CAsC, 'm', function() change("max")  end, nil)
-    hotkey.bind(mods.CAsC, 't', function() change("tall") end, nil)
-    hotkey.bind(mods.CAsC, 'w', function() change("wide") end, nil)
+    hotkey.bind(mods.CAsC, 'm', function() change("max")  end)
+    hotkey.bind(mods.CAsC, 't', function() change("tall") end)
+    hotkey.bind(mods.CAsC, 'w', function() change("wide") end)
 
 -- adjust grid settings
-    hotkey.bind(mods.CAsC, "up",    function() adjust( 1,  0) end, nil)
-    hotkey.bind(mods.CAsC, "down",  function() adjust(-1,  0) end, nil)
-    hotkey.bind(mods.CAsC, "left",  function() adjust( 0, -1) end, nil)
-    hotkey.bind(mods.CAsC, "right", function() adjust( 0,  1) end, nil)
-    hotkey.bind(mods.CAsC, "/",     function() adjust( 0,  0) end, nil) -- show current
+    hotkey.bind(mods.CAsC, "up",    function() adjust( 1,  0) end)
+    hotkey.bind(mods.CAsC, "down",  function() adjust(-1,  0) end)
+    hotkey.bind(mods.CAsC, "left",  function() adjust( 0, -1) end)
+    hotkey.bind(mods.CAsC, "right", function() adjust( 0,  1) end)
+    hotkey.bind(mods.CAsC, "/",     function() adjust( 0,  0) end) -- show current
+
+-- visual aid
+    hotkey.bind(mods.CAsC, "'",     grid.show)
 
 -- center window
---hotkey.bind(mods.CAsC, 'c', function()actualWindow(winter:focused():vcenter():hcenter():place()), nil)
---
+hotkey.bind(mods.CAsC, 'c', function() change("center") end)
 
 -- Return Module Object --------------------------------------------------
 
