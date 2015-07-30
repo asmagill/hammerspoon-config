@@ -95,6 +95,7 @@ local textRect   = drawing.text({
 
 module.start = function()
     menu = menubar.new()
+    module.menuUserdata = menu
     menu:setTitle(tostring(dayInUTF8(os.date("*t").day)))
     menu:setClickCallback(function()
         menu:setTitle(tostring(dayInUTF8(os.date("*t").day))) -- just in case timing off

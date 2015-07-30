@@ -64,6 +64,8 @@ end
 
 if not minimal then -- normal init continues...
 
+require("hs.window").animationDuration = 0 -- I'm a philistine, sue me
+
 ipc.cliInstall("/opt/amagill")
 
 -- For my convenience while testing and screwing around...

@@ -43,8 +43,8 @@ if settings.get("_asm.open_console_at_start") then
         local screen = console:screen()
         console:setFrame{
             x = screen:frame().x + screen:frame().w - 862,
-            y = screen:frame().y + screen:frame().h - 331,
-            h = 331,
+            y = screen:frame().y + screen:frame().h - 496,
+            h = 496,
             w = 862
         }
     end
