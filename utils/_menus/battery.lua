@@ -83,9 +83,27 @@ local notificationStatus = {}
 
 local powerSourceChangeFN = function(justOn)
     local newPowerSource = battery.powerSource()
+    local test = {
+        percentage = battery.percentage(),
+        onBattery = battery.powerSource() == "Battery Power",
+        timeRemaining = battery.timeRemaining(),
+        timeStamp = os.time()
+    }
 
     if currentPowerSource ~= newPowerSource then
         currentPowerSource = newPowerSource
+        for i,v in ipairs(module.batteryNotifications) do
+            if newPowerSource == "AC Power" then
+                if not v.onBattery then
+                    if v.percentage and test.percentage > v.percentage then notificationStatus[i] = test.timeStamp end
+                end
+            else
+                if v.onBattery then
+                    if v.percentage and test.percentage < v.percentage then notificationStatus[i] = test.timeStamp end
+                    if v.timeRemaining and test.timeRemaining < v.timeRemaining then notificationStatus[i] = test.timeStamp end
+                end
+            end
+        end
         if menuUserData then
             if currentPowerSource == "AC Power" then
                 menuUserData:setTitle(onAC)
@@ -95,13 +113,6 @@ local powerSourceChangeFN = function(justOn)
         end
     end
     if not justOn then
-        local test = {
-            percentage = battery.percentage(),
-            onBattery = battery.powerSource() == "Battery Power",
-            timeRemaining = battery.timeRemaining(),
-            timeStamp = os.time()
-        }
-
         for i,v in ipairs(module.batteryNotifications) do
             if v.onBattery == test.onBattery then
                 local shouldWeDoSomething = false
@@ -133,6 +144,29 @@ local powerSourceChangeFN = function(justOn)
             else
             -- remove stored status for wrong onBattery types...
                 if notificationStatus[i] then notificationStatus[i] = nil end
+            end
+        end
+    else
+        for i,v in ipairs(module.batteryNotifications) do
+            if v.onBattery == test.onBattery then
+                local shouldWeDoSomething = false
+                if v.percentage then
+                    if v.onBattery then
+                        shouldWeDoSomething = (test.percentage - v.percentage) < 0
+                    else
+                        shouldWeDoSomething = (test.percentage - v.percentage) > 0
+                    end
+                elseif v.timeRemaining then
+                    if v.onBattery and test.timeRemaining > 0 then
+                        shouldWeDoSomething = (test.timeRemaining - v.timeRemaining) < 0
+                    else
+                        shouldWeDoSomething = (test.timeRemaining - v.timeRemaining) > 0
+                    end
+                else
+                    print("++ unknown test for battery notification #"..tostring(i))
+                end
+
+                if shouldWeDoSomething then notificationStatus[i] = test.timeStamp end
             end
         end
     end
