@@ -27,23 +27,27 @@ local module = {
     ]],
     _TODO        = [[
 
-        [x] Document methods
-        [-] Update hs.menubar so that there are "getters" for the title and icon
+        [X] Document methods
+        [ ] timer to check on changes to titles and icons
+        [ ] with timer, can also set up autohide
         [ ] Allow the panel to be placed elsewhere
         [ ] Allow panel icons, color, etc. to be set via methods
-        [ ] timer to check on changes to titles and icons
-        [ ] test the hell out of this
-        [ ] Update hs.drawing to allow right click on ClickCallbacks
-        [ ] with timer, can also set up autohide
         [X] cleanup menuRemove -- too much repitition
+
+        [X] Update hs.menubar so that there are "getters" for the title and icon
+        [ ] Update hs.drawing to allow right click on ClickCallbacks
+        [ ] Update hs.image to allow comparison of NSImages (__eq)
+
+        [ ] test the hell out of this
         [ ] proper __gc; not sure about this one, but it isn't crashing on reload, so...
 
         Maybe:
 
         [ ] update hs.image and/or hs.drawing so it can provide an "inverse" of an image
               to allow mimicking OS X's dark style
-        [ ] allow cmd clicking on items to move them around?
+        [ ] allow [mod] clicking on items to move them around?
               will need to understand dragging events better
+        [ ] allow [mod2] clicking to add/remove from status panel/menubar?
         [ ] can hs.drawing be updated so ClickCallback doesn't bring Hammerspoon forward?
               if not, may need to add a module to create regions (invisible rectangular areas)
               which can receive events and handle it that way... ugh
@@ -150,22 +154,32 @@ end
 ---  * true
 module.panelToggle = panelToggle
 
---- utils.consolidateMenus.addMenu(menu, icon, [position[, autoRemove]]) -> table
+--- utils.consolidateMenus.addMenu(menu, icon, [position], [autoRemove]) -> table
 --- Function
 --- Add a menubar item to the status panel.
 ---
 --- Parameters:
 ---  * menu - the menu item to be added to the status panel.  This must be the menubar userdata returned when the menu was created with hs.menubar.new
----  * icon - currently limited to an hs.image or a string to be displayed as the menus icon in the status panel.  Currently this is only really useful if the string consists of 1 or 2 unicode characters, as it doesn't grow the space and will be truncated to fit.
----  * position - optional parameter specifying where to insert the new item.  Defaults to 1, which is the leftmost position.  If the number is less than 1, then it will be subtracted from the number of items currently in the panel (e.g. 0 is the rightmost position, shifting everything else left)
+---  * icon - an hs.image or string to be displayed as the menus icon in the status panel. Special string names are defined as follows:
+---    * "icon" - the current icon defined for the menubar item is used, if available.
+---    * "dynamicIcon" - the current icon defined for the menubar item is used, and the menubar item is polled periodically for updates.
+---    * "title" - the current title defined for the menubar item is used, if available.
+---    * "dynamicTitle" - the current title defined for the menubar item is used, and the menubar item is polled periodically for updates.
+---  * position - optional parameter specifying where to insert the new item.  Defaults to 1.
+---    * positive numbers start at the left, with 1 being the first position in the panel. The new item is inserted to the left of any existing item at this location.
+---    * negative numbers start at the right, with -1 being the last position in the panel. The new item is inserted to the right of any existing item at this location.
 ---  * autoremove - optional parameter which defaults to false.  If this is true, then the menu will be automatically removed from the menubar when it is inserted into the panel.
 ---
 --- Returns:
 ---  * a table containing the hs.menubar userdata the hs.drawing userdata, and some other relevant information about this status item.  Usually you will not need this, but it might be handy to cache or save if you intend to remove the menu later, as this is one method of removal which doesn't rely on the menus position.  See utils.consolidateMenus.removeMenu()
 ---
 --- Notes:
+---  * Because the status panel uses fixed widths for each item, string titles are usually truncated to their first character.  This may change in the future.
 ---  * if the menu is autoremoved from the menubar when it is added, it will be returned to the menubar when it is removed from the panel.
 module.addMenu = function(menu, icon, position, autoRemove)
+    if type(position) == "boolean" and type(autoRemove) == "nil" then
+        position, autoRemove = 1, position
+    end
     if type(autoRemove) ~= "boolean" then autoRemove = false end
     if type(menu) ~= "userdata" then
         hs.showError("menu must be hs.menubar userdata in addMenu")
@@ -176,7 +190,11 @@ module.addMenu = function(menu, icon, position, autoRemove)
         return nil
     end
     position = position or 1
-    if position < 1 then position = #myMenuItems + 1 - position end
+    if position == 0 then
+        showError("position of menu cannot be 0 in addMenu")
+        return nil
+    end
+    if position < 0 then position = #myMenuItems + 1 - (math.abs(position) - 1) end
 
     CMIcount = CMIcount + 1
 
@@ -186,10 +204,17 @@ module.addMenu = function(menu, icon, position, autoRemove)
         end,
     })
 
-    if type(icon) == "string" then
-        CMI.recheckTitle = (icon == "title") -- need to implement getters for menubar icon and text first
+    if type(icon) == "string" and not icon:match("[iI]con$") then
+        CMI.recheckTitle = (icon:match"^dynamic[tT]itle$")
+        if icon:match("[tT]itle$") then
+            icon = menu:title()
+        end
         CMI.drawing = drawing.text({h = iconHeight, w = iconWidth}, icon):setTextSize(iconHeight * .75):setTextColor(boxStroke):setAlpha(boxStroke.alpha)
     else
+        if type(icon) == "string" then
+            CMI.recheckIcon = (icon == "^dynamic[iI]con$")
+            icon = menu:icon()
+        end
         CMI.drawing = drawing.image({h = iconHeight, w = iconWidth}, icon):setAlpha(boxStroke.alpha)
     end
     CMI.drawing:setBehaviorByLabels{"canJoinAllSpaces"}:setClickCallback(function()

@@ -109,9 +109,21 @@ module.start = function()
             local frame   = screen.mainScreen():frame()
             local clickAt = mouse.getRelativePosition()
 
+-- newX and newY are approximate fixes for consolidateMenus.lua... now that we can't
+-- assume we're in the menubar, gotta take some guesses and make some allowances...
+            local newX = frame.x + clickAt.x
+            if newX + rectWidth > frame.x + frame.w then
+                newX = frame.x + frame.w - rectWidth * .5
+            end
+
+            local newY = frame.y
+            if clickAt.y > frame.y then
+                newY =  screen:mainScreen():fullFrame().y + (frame.y - screen:mainScreen():fullFrame().y) * 2 + 6
+            end
+
             rect:setTopLeft{
-                x = frame.x + clickAt.x - rectWidth * .5,
-                y = frame.y
+                x = newX - rectWidth * .5,
+                y = newY
             }:show()
 
             local t = os.date("*t")
@@ -128,13 +140,13 @@ module.start = function()
 --                  dayOffset  = (1 - 1) * 3 * (blockSizeW - .75)
 --                  weekOffset = (2 + 2) * (blockSizeH + 2.5)
             HL:setTopLeft{
-                x = frame.x + clickAt.x - textWidth * .5 + dayOffset,
-                y = frame.y + edgeBuffer + weekOffset
+                x = newX - textWidth * .5 + dayOffset,
+                y = newY + edgeBuffer + weekOffset
             }:show()
 
             textRect:setTopLeft{
-                x = frame.x + clickAt.x - textWidth * .5,
-                y = frame.y + edgeBuffer
+                x = newX - textWidth * .5,
+                y = newY + edgeBuffer
             }:setText(text):show()
 
         end

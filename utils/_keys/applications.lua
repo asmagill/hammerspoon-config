@@ -17,7 +17,7 @@ local fnutils     = require("hs.fnutils")
 local application = require("hs.application")
 local alert       = require("hs.alert").show
 
-local app = hotkey.modal.new(mods.CAsC, "RETURN")
+local app = hotkey.modal.new(mods.CAsC, "a")
 
     fnutils.each({
         { key = "a", app = "Arduino" },

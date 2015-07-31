@@ -94,20 +94,12 @@ end
 m = function(which)
     os.execute("open x-man-page://"..tostring(which))
 end
-
-_asm._CMI.addMenu(_asm._menus.applicationMenu.menuUserdata,
-                  hs.image.imageFromASCII(_asm._menus.applicationMenu.icon),
-                  1, true)
-_asm._CMI.addMenu(_asm._menus.developerMenu.menuUserdata,
-                  hs.image.imageFromASCII(_asm._menus.developerMenu.icon),
-                  0, true)
-_asm._CMI.addMenu(_asm._menus.clipboard,
-                  utf8.codepointToUTF8("U+2702"),
-                  0, true)
-_asm._CMI.addMenu(_asm._menus.battery.menuUserdata,
-                  utf8.codepointToUTF8("U+1F50C"),
-                  0, true)
-
+-- utf8.codepointToUTF8("U+2702")
+_asm._CMI.addMenu(_asm._menus.applicationMenu.menuUserdata,      "icon",     true)
+_asm._CMI.addMenu(_asm._menus.developerMenu.menuUserdata,        "icon", -1, true)
+_asm._CMI.addMenu(_asm._menus.clipboard,                 "dynamicTitle", -1, true)
+_asm._CMI.addMenu(_asm._menus.battery.menuUserdata,      "dynamicTitle", -1, true)
+_asm._CMI.addMenu(_asm._menus.dateMenu.menuUserdata,     "dynamicTitle", -2, true)
 _asm._CMI.panelShow()
 
 _asm._actions.timestamp.status()

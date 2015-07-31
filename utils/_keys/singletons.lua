@@ -22,6 +22,11 @@ local window      = require("hs.window")
 
 local AppName   = (mjolnir and "mjolnir") or (hs and "hammerspoon") or "hellifino"
 
+hotkey.bind(mods.CAsC, "return", function()
+    _asm._menus.applicationMenu.menuUserdata:popupMenu(require("hs.mouse").get())
+end)
+hotkey.bind(mods.casc, "f12", function() _asm._CMI.panelToggle() end)
+
 hotkey.bind(mods.CAsC, "d", function() application.launchOrFocus("Dash") end, nil)
 hotkey.bind(mods.CAsC, "n", function() application.launchOrFocus("Notational Velocity") end, nil)
 hotkey.bind(mods.CASC, "b", function()

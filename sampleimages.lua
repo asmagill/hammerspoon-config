@@ -1,13 +1,13 @@
 
-a = {
+local a = {
   hs.drawing.rectangle{x=10, y=40, w=1420, h=720}
       :setRoundedRectRadii(20,20):setStroke(true):setStrokeWidth(10)
       :setFill(true):setFillColor{red=1, blue=1, green = 1, alpha = 1}:show()
 }
 
-c = 0
+local c = 0
 
-for i,v in pairs(hs.image.systemImageNames) do
+for i,v in hs.fnutils.sortByKeys(hs.image.systemImageNames) do
     c = c + 1
     table.insert(a, hs.drawing.image({
           x=20 + ((c - 1) % 14) * 100,
@@ -21,4 +21,9 @@ for i,v in pairs(hs.image.systemImageNames) do
           :setTextFont("Menlo"):show())
 end
 
-b = function() hs.fnutils.map(a, function(a) a:delete() end) end
+local esc = function() hs.fnutils.map(a, function(a) a:delete() end) end
+
+xyzzy = hs.hotkey.bind({},"escape",
+    function() esc() end,
+    function() xyzzy:disable() end
+)
