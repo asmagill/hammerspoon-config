@@ -28,7 +28,7 @@ local module = {
     _TODO        = [[
 
         [X] Document methods
-        [ ] timer to check on changes to titles and icons
+        [X] timer to check on changes to titles and icons
         [ ] with timer, can also set up autohide
         [ ] Allow the panel to be placed elsewhere
         [ ] Allow panel icons, color, etc. to be set via methods
@@ -36,7 +36,7 @@ local module = {
 
         [X] Update hs.menubar so that there are "getters" for the title and icon
         [ ] Update hs.drawing to allow right click on ClickCallbacks
-        [ ] Update hs.image to allow comparison of NSImages (__eq)
+        [X] Update hs.image to allow comparison of NSImages (__eq)
 
         [ ] test the hell out of this
         [ ] proper __gc; not sure about this one, but it isn't crashing on reload, so...
@@ -62,8 +62,10 @@ local screen  = require("hs.screen")
 local drawing = require("hs.drawing")
 local image   = require("hs.image")
 local mouse   = require("hs.mouse")
+local timer   = require("hs.timer")
 
-local hMargin, wMargin = 2, 2
+local hMargin, wMargin  = 2, 2
+local dynamicCheckEvery = 1.0
 
 local boxStroke   = { red = 0.0, green = 0.0, blue = 0.0, alpha = 0.8 }
 local boxStrokeW  = 2
@@ -90,6 +92,23 @@ local myMenu
 
 local panelToggle = function() return myMenuVisible and module.panelHide() or module.panelShow() end
 myMenu = menubar.new():setClickCallback(panelToggle):setIcon(myMenuImageOff)
+
+local dynamicCheck = timer.new(dynamicCheckEvery, function()
+    fnutils.map(myMenuItems, function(a)
+--        print("checking...")
+        if a.recheckTitle then
+            if a.menu:title() ~= a.icon then
+                a.icon = a.menu:title()
+                a.drawing:setText(a.icon)
+            end
+        elseif a.recheckIcon then
+            if a.menu:icon() ~= a.icon then
+                a.icon = a.menu:icon()
+                a.drawing:setImage(a.icon)
+            end
+        end
+    end)
+end):start()
 
 -- Public interface ------------------------------------------------------
 
@@ -161,17 +180,15 @@ module.panelToggle = panelToggle
 --- Parameters:
 ---  * menu - the menu item to be added to the status panel.  This must be the menubar userdata returned when the menu was created with hs.menubar.new
 ---  * icon - an hs.image or string to be displayed as the menus icon in the status panel. Special string names are defined as follows:
----    * "icon" - the current icon defined for the menubar item is used, if available.
----    * "dynamicIcon" - the current icon defined for the menubar item is used, and the menubar item is polled periodically for updates.
----    * "title" - the current title defined for the menubar item is used, if available.
----    * "dynamicTitle" - the current title defined for the menubar item is used, and the menubar item is polled periodically for updates.
+---    * "icon" - the current icon defined for the menubar item is used, and the menubar item is polled periodically for updates.
+---    * "title" - the current title defined for the menubar item is used, and the menubar item is polled periodically for updates.
 ---  * position - optional parameter specifying where to insert the new item.  Defaults to 1.
 ---    * positive numbers start at the left, with 1 being the first position in the panel. The new item is inserted to the left of any existing item at this location.
 ---    * negative numbers start at the right, with -1 being the last position in the panel. The new item is inserted to the right of any existing item at this location.
 ---  * autoremove - optional parameter which defaults to false.  If this is true, then the menu will be automatically removed from the menubar when it is inserted into the panel.
 ---
 --- Returns:
----  * a table containing the hs.menubar userdata the hs.drawing userdata, and some other relevant information about this status item.  Usually you will not need this, but it might be handy to cache or save if you intend to remove the menu later, as this is one method of removal which doesn't rely on the menus position.  See utils.consolidateMenus.removeMenu()
+---  * a table containing the hs.menubar userdata the hs.drawing userdata, and some other relevant information about this status item.  Usually you will not need this, but it might be handy to cache or save if you intend to remove the menu later, as this is one method of removal which doesn't rely on knowing the menus position.  See utils.consolidateMenus.removeMenu()
 ---
 --- Notes:
 ---  * Because the status panel uses fixed widths for each item, string titles are usually truncated to their first character.  This may change in the future.
@@ -204,19 +221,22 @@ module.addMenu = function(menu, icon, position, autoRemove)
         end,
     })
 
-    if type(icon) == "string" and not icon:match("[iI]con$") then
-        CMI.recheckTitle = (icon:match"^dynamic[tT]itle$")
-        if icon:match("[tT]itle$") then
+    if type(icon) == "string" and not icon:match("^icon$") then
+        if icon:match("^title$") then
+            CMI.recheckTitle = true
             icon = menu:title()
         end
         CMI.drawing = drawing.text({h = iconHeight, w = iconWidth}, icon):setTextSize(iconHeight * .75):setTextColor(boxStroke):setAlpha(boxStroke.alpha)
     else
         if type(icon) == "string" then
-            CMI.recheckIcon = (icon == "^dynamic[iI]con$")
+            CMI.recheckIcon = true
             icon = menu:icon()
         end
         CMI.drawing = drawing.image({h = iconHeight, w = iconWidth}, icon):setAlpha(boxStroke.alpha)
     end
+
+    CMI.icon = icon
+
     CMI.drawing:setBehaviorByLabels{"canJoinAllSpaces"}:setClickCallback(function()
         CMI.menu:popupMenu{
             x = (screen.mainScreen():frame().x + screen.mainScreen():frame().w) - (#myMenuItems + .5 - math.ceil((screen.mainScreen():frame().w - mouse.get().x) / boxWidth)) * boxWidth,

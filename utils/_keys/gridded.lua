@@ -34,7 +34,7 @@ grid.MARGINX    = math.floor(grid.MARGINX)
 grid.MARGINY    = math.floor(grid.MARGINY)
 
 --grid.ui.fontName = "Papyrus"
-grid.ui.textSize = 64
+grid.ui.textSize = 32
 
 local change = function(command, direction, win)
     if type(direction) == "userdata" then
