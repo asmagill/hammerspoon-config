@@ -33,6 +33,7 @@ local requirePlus = require("utils.require")
 local settings    = require("hs.settings")
 local ipc         = require("hs.ipc")
 local hints       = require("hs.hints")
+local utf8        = require("hs.utf8")
 
 -- Set to True or False indicating if you want a crash report when lua is invoked on  threads other than main (0) -- this should not happen, as lua is only supposed to execute in the main thread (unsupported and scary things can happen otherwise).  There is a performance hit, though, since the debug hook will be invoked for every call to a lua function, so usually this should be enabled only when testing in-development modules.
 
@@ -76,6 +77,7 @@ _asm = {
     _keys     = requirePlus.requirePath("utils._keys", true),
     _actions  = requirePlus.requirePath("utils._actions", true),
     _menus    = requirePlus.requirePath("utils._menus", true),
+    _CMI      = require("utils.consolidateMenus"),
     relaunch = function()
         os.execute([[ (while ps -p ]]..hs.processInfo.processID..[[ > /dev/null ; do sleep 1 ; done ; open -a "]]..hs.processInfo.bundlePath..[[" ) & ]])
         hs._exit(true, true)
@@ -83,8 +85,6 @@ _asm = {
 }
 
 hints.style = "vimperator"
-
-require("utils.clipboard")
 
 -- terminal shell equivalencies...
 edit = function(where)
@@ -94,6 +94,21 @@ end
 m = function(which)
     os.execute("open x-man-page://"..tostring(which))
 end
+
+_asm._CMI.addMenu(_asm._menus.applicationMenu.menuUserdata,
+                  hs.image.imageFromASCII(_asm._menus.applicationMenu.icon),
+                  1, true)
+_asm._CMI.addMenu(_asm._menus.developerMenu.menuUserdata,
+                  hs.image.imageFromASCII(_asm._menus.developerMenu.icon),
+                  0, true)
+_asm._CMI.addMenu(_asm._menus.clipboard,
+                  utf8.codepointToUTF8("U+2702"),
+                  0, true)
+_asm._CMI.addMenu(_asm._menus.battery.menuUserdata,
+                  utf8.codepointToUTF8("U+1F50C"),
+                  0, true)
+
+_asm._CMI.panelShow()
 
 _asm._actions.timestamp.status()
 

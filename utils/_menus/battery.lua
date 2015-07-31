@@ -231,7 +231,7 @@ local displayBatteryData = function(modifier)
     return menuTable
 end
 
-module.menuUserdata = menuUserdata -- for debugging, may remove in the future
+--module.menuUserdata = menuUserData -- for debugging, may remove in the future
 
 module.start = function()
     menuUserData, currentPowerSource = menubar.new(), ""
@@ -240,6 +240,8 @@ module.start = function()
     powerWatcher:start()
 
     menuUserData:setMenu(displayBatteryData)
+
+    module.menuUserdata = menuUserData -- for debugging, may remove in the future
     return module
 end
 

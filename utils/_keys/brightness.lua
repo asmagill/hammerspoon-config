@@ -86,16 +86,6 @@ screenWatchFunction() -- run the first time to setup any existing external monit
 
 module.screenWatcher = screen.watcher.new(screenWatchFunction):start()
 
--- not needed if hs.drawing.setBehavior is accepted into core...
---module.spaceWatcher = space.watcher.new(function(obj)
---    if verbose then print("++ spaceChange",os.date()) end
---    for i,v in pairs(myScreens) do
---        v.filter:hide():show()
---    end
---end)
---module.spaceWatcher:start()
-
-
 -- We do this because starting any eventtap before accessibility is enabled causes eventtaps which
 -- require keyUp/Down events to fail, even after accessibility is enabled until Hammerspoon is fully
 -- quit and restarted... probably not a huge issue to most, but I rebuild HS a lot...

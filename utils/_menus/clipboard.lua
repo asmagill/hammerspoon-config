@@ -123,3 +123,5 @@ timer:start()
 
 setTitle() --Avoid wrong title if the user already has something on his saved history
 jumpcut:setMenu(populateMenu)
+
+return jumpcut

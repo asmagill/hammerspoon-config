@@ -36,18 +36,19 @@ module.status = function()
     print("-------------------------------------------------")
 end
 
-if settings.get("_asm.open_console_at_start") then
-    hs.openConsole()
-    local console = appfinder.appFromName("Hammerspoon"):allWindows()[1]
-    if console then
-        local screen = console:screen()
-        console:setFrame{
-            x = screen:frame().x + screen:frame().w - 862,
-            y = screen:frame().y + screen:frame().h - 496,
-            h = 496,
-            w = 862
-        }
-    end
-end
+--if settings.get("_asm.open_console_at_start") then
+--    hs.openConsole()
+---- Re-selecting "Allow Apps Downloaded From: Anywhere" seems to have returned the console appearing in it's "last" place, so... try without this for a bit...
+----    local console = appfinder.appFromName("Hammerspoon"):allWindows()[1]
+----    if console then
+----        local screen = console:screen()
+----        console:setFrame{
+----            x = screen:frame().x + screen:frame().w - 862,
+----            y = screen:frame().y + screen:frame().h - 496,
+----            h = 496,
+----            w = 862
+----        }
+----    end
+--end
 
 return module
