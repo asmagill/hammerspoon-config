@@ -99,6 +99,7 @@ _asm._CMI.addMenu(_asm._menus.applicationMenu.menuUserdata, "icon",      true)
 _asm._CMI.addMenu(_asm._menus.developerMenu.menuUserdata,   "icon",  -1, true)
 _asm._CMI.addMenu(_asm._menus.clipboard,                    "title", -1, true)
 _asm._CMI.addMenu(_asm._menus.battery.menuUserdata,         "title", -1, true)
+_asm._CMI.addMenu(_asm._menus.autoCloseHS.menuUserdata,     "icon" , -1, true)
 _asm._CMI.addMenu(_asm._menus.dateMenu.menuUserdata,        "title", -2, true)
 _asm._CMI.panelShow()
 

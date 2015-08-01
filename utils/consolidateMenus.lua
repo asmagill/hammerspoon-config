@@ -45,7 +45,7 @@ local module = {
 
         [ ] update hs.image and/or hs.drawing so it can provide an "inverse" of an image
               to allow mimicking OS X's dark style
-        [ ] allow [mod] clicking on items to move them around?
+        [ ] allow [mod] clicking on items to move them around? -- see Cocoa Event Handling Guide, mouse events
               will need to understand dragging events better
         [ ] allow [mod2] clicking to add/remove from status panel/menubar?
         [ ] can hs.drawing be updated so ClickCallback doesn't bring Hammerspoon forward?
@@ -237,7 +237,7 @@ module.addMenu = function(menu, icon, position, autoRemove)
 
     CMI.icon = icon
 
-    CMI.drawing:setBehaviorByLabels{"canJoinAllSpaces"}:setClickCallback(function()
+    CMI.drawing:setBehaviorByLabels{"canJoinAllSpaces"}:setClickCallback(nil, function()
         CMI.menu:popupMenu{
             x = (screen.mainScreen():frame().x + screen.mainScreen():frame().w) - (#myMenuItems + .5 - math.ceil((screen.mainScreen():frame().w - mouse.get().x) / boxWidth)) * boxWidth,
             y = screen.mainScreen():frame().y + boxHeight + 2 * hMargin,
