@@ -33,24 +33,35 @@ local module = {
         [ ] Allow the panel to be placed elsewhere
         [ ] Allow panel icons, color, etc. to be set via methods
         [X] cleanup menuRemove -- too much repitition
+        [ ] add close icon to the panel itself
 
         [X] Update hs.menubar so that there are "getters" for the title and icon
-        [ ] Update hs.drawing to allow right click on ClickCallbacks
+        [X] Update hs.drawing to allow right click on ClickCallbacks
         [X] Update hs.image to allow comparison of NSImages (__eq)
 
         [ ] test the hell out of this
-        [ ] proper __gc; not sure about this one, but it isn't crashing on reload, so...
+        [ ] proper __gc; not sure about this one, but it isn't crashing on reload,
+            so... probably more important if multiple panels allowed.
 
-        Maybe:
+    Maybe:
 
-        [ ] update hs.image and/or hs.drawing so it can provide an "inverse" of an image
-              to allow mimicking OS X's dark style
-        [ ] allow [mod] clicking on items to move them around? -- see Cocoa Event Handling Guide, mouse events
-              will need to understand dragging events better
+        [ ] update hs.image and/or hs.drawing so it can provide an "inverse" of an
+            image to allow mimicking OS X's dark style
+        [ ] allow [mod] clicking on items to move them around?
+            -- see Cocoa Event Handling Guide, mouse events
+               will need to understand dragging events better
         [ ] allow [mod2] clicking to add/remove from status panel/menubar?
-        [ ] can hs.drawing be updated so ClickCallback doesn't bring Hammerspoon forward?
-              if not, may need to add a module to create regions (invisible rectangular areas)
-              which can receive events and handle it that way... ugh
+        [ ] can hs.drawing be updated so ClickCallback doesn't bring Hammerspoon
+            forward? if not, may need to add a module to create regions (invisible
+            rectangular areas) which can receive events and handle it that way...
+            ugh.
+
+    Probably Not, but "What If..."
+
+        [ ] Can we get non Hammerspoon StatusBarItems?  I know getting Apple's menu
+            items will be hard/impossible (even Bartender devs are indicating that
+            they may not be able to work around it for 10.11), but some of them are
+            actually NSStatusBarItems, like ours...
 
     ]]
 --]=]
@@ -202,6 +213,12 @@ module.addMenu = function(menu, icon, position, autoRemove)
         hs.showError("menu must be hs.menubar userdata in addMenu")
         return nil
     end
+
+    if autoRemove and menu == myMenu then
+        print("++ Auto removal of the panel toggle is not allowed. Ignoring auto-remove request.")
+        autoRemove = false
+    end
+
     if type(icon) ~= "string" and type(icon) ~= "userdata" then
         hs.showError("icon must be hs.image userdata or string in addMenu")
         return nil

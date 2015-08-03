@@ -1,4 +1,8 @@
 local minimal = false
+local oldPrint = print
+print = function(...)
+    oldPrint(os.date("%H:%M:%S: "), ...)
+end
 
 -- I do too much with developmental versions of HS -- I don't need
 -- extraneous info in the Console application for every require; very
@@ -34,6 +38,7 @@ local settings    = require("hs.settings")
 local ipc         = require("hs.ipc")
 local hints       = require("hs.hints")
 local utf8        = require("hs.utf8")
+local image       = require("hs.image")
 
 -- Set to True or False indicating if you want a crash report when lua is invoked on  threads other than main (0) -- this should not happen, as lua is only supposed to execute in the main thread (unsupported and scary things can happen otherwise).  There is a performance hit, though, since the debug hook will be invoked for every call to a lua function, so usually this should be enabled only when testing in-development modules.
 
@@ -101,9 +106,21 @@ _asm._CMI.addMenu(_asm._menus.clipboard,                    "title", -1, true)
 _asm._CMI.addMenu(_asm._menus.battery.menuUserdata,         "title", -1, true)
 _asm._CMI.addMenu(_asm._menus.autoCloseHS.menuUserdata,     "icon" , -1, true)
 _asm._CMI.addMenu(_asm._menus.dateMenu.menuUserdata,        "title", -2, true)
+
+-- better to add close icon directly
+--_asm._CMI.addMenu(_asm._CMI.menuUserdata,
+--    image.imageFromName(image.systemImageNames.StopProgressFreestandingTemplate), -1)
 _asm._CMI.panelShow()
 
 _asm._actions.timestamp.status()
+
+hs.openConsole(false)
+local screen = require("hs.screen")
+local appfinder = require("hs.appfinder")
+appfinder.windowFromWindowTitle("Hammerspoon Console"):setTopLeft({
+    x = screen.mainScreen():frame().x + screen.mainScreen():frame().w - appfinder.windowFromWindowTitle("Hammerspoon Console"):size().w,
+    y = screen.mainScreen():frame().y + screen.mainScreen():frame().h - appfinder.windowFromWindowTitle("Hammerspoon Console"):size().h
+})
 
 else
     print("++ Running minimal configuration")

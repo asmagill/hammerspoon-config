@@ -26,9 +26,11 @@ local image     = require("hs.image")
 local hsWatcherIsOn   = false
 
 local hsConsoleWatcherFN = function(name,event,hsapp)
-    if name:match("Hammerspoon") and event == appwatch.deactivated then
-        local test = appfinder.windowFromWindowTitle("Hammerspoon Console")
-        if test then test:close() end
+    if name then
+        if name:match("Hammerspoon") and event == appwatch.deactivated then
+            local test = appfinder.windowFromWindowTitle("Hammerspoon Console")
+            if test then test:close() end
+        end
     end
 end
 
@@ -51,14 +53,50 @@ local watcherMenu = menubar.new():setIcon(image.imageFromName("statusicon")) -- 
 -- image.imageFromName(image.systemImageNames.ApplicationIcon)) -- the same...
       :setMenu(function(_) return
           {
-              { title = "Open Console", fn = function() hs.openConsole() end },
-              { title = "Close Console", fn = function()
-                                appfinder.windowFromWindowTitle("Hammerspoon Console"):close()
-                            end,
-                  disabled = not appfinder.windowFromWindowTitle("Hammerspoon Console")
+              { title = "Reload Config", fn = hs.reload },
+              { title = "Open Config", fn = function() os.execute("open ~/.hammerspoon/init.lua") end },
+              { title = "-" },
+              { title = "Console...", menu = {
+                      { title = "Open", fn = function() hs.openConsole() end },
+                      { title = "-" },
+                      { title = "Reveal", fn = function() hs.openConsole(false) end },
+                      { title = "Close", fn = function()
+                              appfinder.windowFromWindowTitle("Hammerspoon Console"):close()
+                          end,
+                          disabled = not (
+                              appfinder.windowFromWindowTitle("Hammerspoon Console") and
+                              appfinder.windowFromWindowTitle("Hammerspoon Console"):isVisible()
+                          )
+                      },
+                      { title = "-" },
+                      { title = "Auto-Close Console", fn = toggleWatcher,
+                          checked = hsWatcherIsOn
+                      },
+                  },
+              },
+              { title = "Preferences...", menu = {
+                      { title = "Open", fn = hs.openPreferences },
+                      { title = "-" },
+                      { title = "Dock Icon", checked = hs.dockIcon(), fn = function()
+                              hs.dockIcon(not hs.dockIcon())
+                          end
+                      },
+                      { title = "Menu Icon", checked = hs.menuIcon(), fn = function()
+                              hs.menuIcon(not hs.menuIcon())
+                          end
+                      },
+                  },
               },
               { title = "-" },
-              { title = "Auto-Hide Console", fn = toggleWatcher, checked = hsWatcherIsOn },
+              { title = "About Hammerspoon", fn = hs.openAbout },
+              { title = "Check For Updates", disabled = true },
+              { title = "-" },
+              { title = "Relaunch Hammerspoon", fn = function()
+                      os.execute([[ (while ps -p ]]..hs.processInfo.processID..[[ > /dev/null ; do sleep 1 ; done ; open -a "]]..hs.processInfo.bundlePath..[[" ) & ]])
+                      hs._exit(true, true)
+                  end,
+              },
+              { title = "Quit Hammerspoon", fn = function() hs._exit(true, true) end },
           }
       end
 )

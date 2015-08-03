@@ -73,11 +73,12 @@ devMenu:folderFunction(actionFunction)
 -- the top level menu entry in the menu created, and it's submenu will be what matches for
 -- the given path.
 devMenu:rootDirectory({
-                        ["Hammerspoon-Local"] = "/opt/amagill/src/hammerspoon/hammerspoon-local",
+                        ["Hammerspoon"] = "/opt/amagill/src/hammerspoon/hammerspoon-local",
 --                        ["Hammerspoon-Testing"] = "/opt/amagill/src/hammerspoon/hammerspoon-testing",
                         ["HS Config"]   = os.getenv("HOME").."/.hammerspoon",
                         ["Arduino"]     = os.getenv("HOME").."/Documents/Arduino",
-                        ["HS Modules"]  = "/opt/amagill/src/hammerspoon/_asm",
+                        ["Modules-WIP"]  = "/opt/amagill/src/hammerspoon/_asm/wip",
+                        ["Modules-Core"]  = "/opt/amagill/src/hammerspoon/_asm/core",
                       })
 
 devMenu:subFolderDepth(15)
