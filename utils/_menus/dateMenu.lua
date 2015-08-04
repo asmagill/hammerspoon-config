@@ -107,11 +107,11 @@ module.start = function()
         else
             local text    = hs.execute("cal")
             local frame   = screen.mainScreen():frame()
-            local clickAt = mouse.getRelativePosition()
+            local clickAt = mouse.getAbsolutePosition()
 
 -- newX and newY are approximate fixes for consolidateMenus.lua... now that we can't
 -- assume we're in the menubar, gotta take some guesses and make some allowances...
-            local newX = frame.x + clickAt.x
+            local newX = clickAt.x
             if newX + rectWidth > frame.x + frame.w then
                 newX = frame.x + frame.w - rectWidth * .5
             end

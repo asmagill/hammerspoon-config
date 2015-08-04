@@ -15,13 +15,15 @@ local module = {
 
 -- private variables and methods -----------------------------------------
 
-local grid     = require("hs.grid")
-local settings = require("hs.settings")
-local mods     = require("hs._asm.extras").mods
-local hotkey   = require("hs.hotkey")
-local window   = require("hs.window")
-local alert    = require("hs.alert")
-local fnutils  = require("hs.fnutils")
+local grid        = require("hs.grid")
+local settings    = require("hs.settings")
+local mods        = require("hs._asm.extras").mods
+local hotkey      = require("hs.hotkey")
+local window      = require("hs.window")
+local application = require("hs.application")
+local alert       = require("hs.alert")
+local fnutils     = require("hs.fnutils")
+local mouse       = require("hs.mouse")
 
 grid.GRIDHEIGHT = settings.get("_asm.gridHeight")  or 2
 grid.GRIDWIDTH  = settings.get("_asm.gridWidth")   or 3
@@ -33,6 +35,13 @@ grid.GRIDWIDTH  = math.floor(grid.GRIDWIDTH)
 grid.MARGINX    = math.floor(grid.MARGINX)
 grid.MARGINY    = math.floor(grid.MARGINY)
 
+local point_in_rect = function(rect, point)
+    return  point.x >= rect.x and
+            point.y >= rect.y and
+            point.x <= rect.x + rect.w and
+            point.y <= rect.y + rect.h
+end
+
 --grid.ui.fontName = "Papyrus"
 grid.ui.textSize = 32
 
@@ -42,6 +51,18 @@ local change = function(command, direction, win)
         direction = nil
     end
     win = win or window.focusedWindow()
+--    if not win then
+--    -- no window returned by focusedWindow, so check for window under mouse
+--        local pos = mouse.get()
+--        win = fnutils.find(window.orderedWindows(), function(window)
+--            return point_in_rect(window:frame(), pos)
+--        end)
+--    -- if we got one, make sure it's in the active app
+--        if win then print(win:application():title(),application.frontmostApplication():title()) end
+--        if win and win:application():title() ~= application.frontmostApplication():title() then
+--            win = nil
+--        end
+--    end
 
     if win then
         local oldWinAnimationDuration = window.animationDuration

@@ -26,7 +26,7 @@ module.heartbeat = timer.new(timer.minutes(1), function()
             settings.set("_asm.open_console_at_start", false)
         end
     end
-):start()
+) -- :start()
 
 module.status = function()
     print("-------------------------------------------------")
@@ -35,20 +35,5 @@ module.status = function()
     print("Configuration loaded:", os.date("%c", settings.get("_asm.last_loaded") or 0))
     print("-------------------------------------------------")
 end
-
---if settings.get("_asm.open_console_at_start") then
---    hs.openConsole()
----- Re-selecting "Allow Apps Downloaded From: Anywhere" seems to have returned the console appearing in it's "last" place, so... try without this for a bit...
-----    local console = appfinder.appFromName("Hammerspoon"):allWindows()[1]
-----    if console then
-----        local screen = console:screen()
-----        console:setFrame{
-----            x = screen:frame().x + screen:frame().w - 862,
-----            y = screen:frame().y + screen:frame().h - 496,
-----            h = 496,
-----            w = 862
-----        }
-----    end
---end
 
 return module

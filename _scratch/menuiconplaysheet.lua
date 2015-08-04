@@ -2,6 +2,40 @@
 -- Some sample generic icons
 --
 
+
+hs.drawing.image({x=100,y=100,h=400,w=400},
+    hs.image.imageFromASCII([[
+....5....
+....#....
+....#....
+....#....
+..1.#.3..
+...#5#...
+6...2...9
+#.......#
+7#######8
+]])
+):show()
+
+hs.drawing.image({x=600,y=100,h=400,w=400},
+    hs.image.imageFromASCII([[
+....5....
+....#....
+....#....
+....#....
+..1.#.3..
+...#5#...
+6...2...9
+#.......#
+7#######8
+]], {
+    {shouldClose=false},
+    nil,
+    {shouldClose=false,strokeColor={red=1}},
+    {antialias=true,fillColor={alpha=0}}
+})):show()
+
+
 local ApplicationIcon = "ASCII:....................\n"..
                               "............1..4....\n"..
                               "....................\n"..

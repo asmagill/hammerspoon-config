@@ -29,15 +29,11 @@ local module = {
 
         [X] Document methods
         [X] timer to check on changes to titles and icons
-        [ ] with timer, can also set up autohide
+        [ ] with timer, can also set up autohide/autominimize
         [ ] Allow the panel to be placed elsewhere
         [ ] Allow panel icons, color, etc. to be set via methods
         [X] cleanup menuRemove -- too much repitition
-        [ ] add close icon to the panel itself
-
-        [X] Update hs.menubar so that there are "getters" for the title and icon
-        [X] Update hs.drawing to allow right click on ClickCallbacks
-        [X] Update hs.image to allow comparison of NSImages (__eq)
+        [X] add close icon to the panel itself
 
         [ ] test the hell out of this
         [ ] proper __gc; not sure about this one, but it isn't crashing on reload,
@@ -45,8 +41,12 @@ local module = {
 
     Maybe:
 
+        [ ] add mouse regions which trigger callbacks
+              add mouseEnter/mouseLeave to hs.drawing
+              invisible rectangles act as region
+              allow cursor change as well?
         [ ] update hs.image and/or hs.drawing so it can provide an "inverse" of an
-            image to allow mimicking OS X's dark style
+            image to allow mimicking OS X's dark style -- see Core Image filters
         [ ] allow [mod] clicking on items to move them around?
             -- see Cocoa Event Handling Guide, mouse events
                will need to understand dragging events better
@@ -76,11 +76,11 @@ local mouse   = require("hs.mouse")
 local timer   = require("hs.timer")
 
 local hMargin, wMargin  = 2, 2
-local dynamicCheckEvery = 1.0
+local checkForChanges   = 1.0     -- changes to icons, active monitor, etc.
 
 local boxStroke   = { red = 0.0, green = 0.0, blue = 0.0, alpha = 0.8 }
 local boxStrokeW  = 2
-local boxFill     = { red = 1.0, green = 1.0, blue = 1.0, alpha = 0.7 }
+local boxFill     = { red = 0.9, green = 0.9, blue = 0.7, alpha = 0.6 }
 local boxHeight   = 2 * hMargin + screen.mainScreen():frame().y - screen.mainScreen():fullFrame().y
 local boxWidth    = boxHeight
 local iconHeight  = boxHeight - 2 * hMargin
@@ -96,15 +96,129 @@ local myMenuBar = drawing.rectangle{}:setRoundedRectRadii(wMargin, hMargin):
                       setStroke(boxStroke ~= nil):setStrokeWidth(boxStrokeW or 0):setStrokeColor(boxStroke):
                       setFill(boxFill ~= nil):setFillColor(boxFill):setBehaviorByLabels{"canJoinAllSpaces"}
 
+local panelControl = {
+open = { icon = [[
+. 1 # # # # # # 2 .
+8 . . . . . . . . 3
+# . A . . . . E . #
+# . . # . . # . . #
+# . . . # # . . . #
+# . . . # # . . . #
+# . . # . . # . . #
+# . D . . . . B . #
+# . . . . . . . . #
+# e # # # # # # f #
+# . . . . . . . . #
+# . . . . . . a . #
+# . . . . # # . . #
+# . . # # . . . . #
+# . b . . . . . . #
+# . . # # . . . . #
+# . . . . # # . . #
+# . . . . . . c . #
+7 . . . . . . . . 4
+. 6 # # # # # # 5 .
+]], context = {
+    { fillColor   = { alpha = 0 } },
+    { strokeColor = { red = 0.5 }, lineWidth = 2 },
+    { strokeColor = { red = 0.5 }, lineWidth = 2 },
+    {
+        strokeColor = { green = 0.75 },
+        fillColor   = { green = 0.5 , alpha = 0  },
+        shouldClose = false
+    }, {  -- safest to always make sure the last one is a decent default
+        strokeColor = boxStroke,
+        fillColor   = boxFill,
+        antialias   = true,
+        shouldClose = true
+    }
+}},
+close = {
+    icon = [[
+. 1 # # # # # # 2 .
+8 . . . . . . . . 3
+# . A . . . . E . #
+# . . # . . # . . #
+# . . . # # . . . #
+# . . . # # . . . #
+# . . # . . # . . #
+# . D . . . . B . #
+# . . . . . . . . #
+# e # # # # # # f #
+# . . . . . . . . #
+# . a . . . . . . #
+# . . # # . . . . #
+# . . . . # # . . #
+# . . . . . . b . #
+# . . . . # # . . #
+# . . # # . . . . #
+# . c . . . . . . #
+7 . . . . . . . . 4
+. 6 # # # # # # 5 .
+]], context = {
+    { fillColor   = { alpha = 0 } },
+    { strokeColor = { red = 0.5 }, lineWidth = 2 },
+    { strokeColor = { red = 0.5 }, lineWidth = 2 },
+    {
+        strokeColor = { green = 0.75 },
+        fillColor   = { green = 0.5 , alpha = 0  },
+        shouldClose = false
+    }, {  -- safest to always make sure the last one is a decent default
+        strokeColor = boxStroke,
+        fillColor   = boxFill,
+        antialias   = true,
+        shouldClose = true
+    }
+}}}
+
+panelControl.open.drawing =  drawing.image({},
+    image.imageFromASCII(panelControl.open.icon, panelControl.open.context))
+    :setBehaviorByLabels{"canJoinAllSpaces"}
+    :orderAbove(myMenuBar)
+panelControl.close.drawing = drawing.image({},
+    image.imageFromASCII(panelControl.close.icon, panelControl.close.context))
+    :setBehaviorByLabels{"canJoinAllSpaces"}
+    :orderAbove(myMenuBar)
+
 -- private variables and methods -----------------------------------------
 
 local myMenuVisible = false
+local myMenuMinimized = false
+
 local myMenu
 
 local panelToggle = function() return myMenuVisible and module.panelHide() or module.panelShow() end
 myMenu = menubar.new():setClickCallback(panelToggle):setIcon(myMenuImageOff)
 
-local dynamicCheck = timer.new(dynamicCheckEvery, function()
+local minimizeFN = function()
+    local mouseY = mouse.get().y
+    local iconTop = screen.mainScreen():frame().y
+    local iconMid = iconTop + boxHeight / 2
+
+    if mouseY < iconMid then
+        module.panelToggle()
+    else
+        module.minToggle()
+    end
+end
+
+panelControl.open.drawing:setClickCallback(minimizeFN)
+panelControl.close.drawing:setClickCallback(minimizeFN)
+
+
+local monitorRightX = screen.mainScreen():frame().x + screen.mainScreen():frame().w
+local monitorTopY   = screen.mainScreen():frame().y
+local monitorID     = screen.mainScreen():id()
+
+local dynamicCheck = timer.new(checkForChanges, function()
+    if monitorID ~= screen.mainScreen():id() then
+        monitorRightX = screen.mainScreen():frame().x + screen.mainScreen():frame().w
+        monitorTopY  = screen.mainScreen():frame().y
+        if myMenuVisible then
+            module.panelShow()
+        end
+        monitorID = screen.mainScreen():id()
+    end
     fnutils.map(myMenuItems, function(a)
 --        print("checking...")
         if a.recheckTitle then
@@ -136,22 +250,45 @@ module.CMImenuItems = myMenuItems
 --- Returns:
 ---  * true
 module.panelShow = function()
-    myMenu:setIcon(myMenuImageOn)
-    myMenuBar:setFrame{
-        x = screen.mainScreen():fullFrame().x + screen.mainScreen():fullFrame().w - boxWidth * (1 + #myMenuItems),
-        y = screen.mainScreen():frame().y,
-        h = boxHeight,
-        w = boxWidth * (1 + #myMenuItems)
-    }
-    myMenuBar:show()
-    local i = 0
-    fnutils.map(myMenuItems, function(menu)
-        menu.drawing:setTopLeft{
-            x = (screen.mainScreen():frame().x + screen.mainScreen():frame().w) - (#myMenuItems + .5 - i) * boxWidth + wMargin,
-            y = screen.mainScreen():frame().y + hMargin,
+    if myMenuMinimized then
+        panelControl.close.drawing:hide()
+        myMenuBar:setFrame{
+            x = monitorRightX - boxWidth / 2,
+            y = monitorTopY,
+            h = boxHeight,
+            w = boxWidth / 2
         }:show()
-        i = i + 1
-    end)
+        panelControl.open.drawing:setFrame{
+            x = monitorRightX - boxWidth / 2,
+            y = monitorTopY,
+            h = boxHeight,
+            w = boxWidth / 2
+        }:show()
+    else
+        myMenuBar:setFrame{
+            x = monitorRightX - boxWidth * (1 + #myMenuItems),
+            y = monitorTopY,
+            h = boxHeight,
+            w = boxWidth * (1 + #myMenuItems)
+        }:show()
+        panelControl.open.drawing:hide()
+        panelControl.close.drawing:setFrame{
+            x = monitorRightX - boxWidth / 2,
+            y = monitorTopY,
+            h = boxHeight,
+            w = boxWidth / 2
+        }:show()
+        local i = 0
+        fnutils.map(myMenuItems, function(menu)
+            menu.drawing:setTopLeft{
+                x = (monitorRightX) - (#myMenuItems + .5 - i) * boxWidth + wMargin,
+                y = monitorTopY + hMargin,
+            }:show()
+            i = i + 1
+        end)
+    end
+
+    myMenu:setIcon(myMenuImageOn)
     myMenuVisible = true
     return true
 end
@@ -167,6 +304,8 @@ end
 ---  * true
 module.panelHide = function()
     fnutils.map(myMenuItems, function(menu) menu.drawing:hide() end)
+    panelControl.open.drawing:hide()
+    panelControl.close.drawing:hide()
     myMenuBar:hide()
     myMenu:setIcon(myMenuImageOff)
     myMenuVisible = false
@@ -183,6 +322,26 @@ end
 --- Returns:
 ---  * true
 module.panelToggle = panelToggle
+
+--- utils.consolidateMenus.minToggle()
+--- Function
+--- Toggles whether or not the panel is minimized.
+---
+--- Parameters:
+---  * None
+---
+--- Returns:
+---  * None
+module.minToggle = function()
+    myMenuMinimized = not myMenuMinimized
+    if myMenuVisible then
+        if myMenuMinimized then
+            module.panelHide()
+            myMenuVisible = true -- undo the flag change in hide
+        end
+        module.panelShow()
+    end
+end
 
 --- utils.consolidateMenus.addMenu(menu, icon, [position], [autoRemove]) -> table
 --- Function
@@ -254,12 +413,14 @@ module.addMenu = function(menu, icon, position, autoRemove)
 
     CMI.icon = icon
 
-    CMI.drawing:setBehaviorByLabels{"canJoinAllSpaces"}:setClickCallback(nil, function()
-        CMI.menu:popupMenu{
-            x = (screen.mainScreen():frame().x + screen.mainScreen():frame().w) - (#myMenuItems + .5 - math.ceil((screen.mainScreen():frame().w - mouse.get().x) / boxWidth)) * boxWidth,
-            y = screen.mainScreen():frame().y + boxHeight + 2 * hMargin,
-        }
-    end)
+    CMI.drawing:setBehaviorByLabels{"canJoinAllSpaces"}:orderAbove(myMenuBar)
+        :setClickCallback(nil, function()
+            CMI.menu:popupMenu{
+                x = monitorRightX - (#myMenuItems + .5 - math.floor((monitorRightX - mouse.get().x) / boxWidth)) * boxWidth,
+                y = monitorTopY + boxHeight + 2 * hMargin,
+            }
+            dynamicCheck:start() -- if popup takes too long, this can sometimes stop... not sure how to detect yet...
+        end)
     CMI.menu       = menu
     CMI.autoRemove = autoRemove
     table.insert(myMenuItems, position, CMI)

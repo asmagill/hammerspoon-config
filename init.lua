@@ -39,6 +39,9 @@ local ipc         = require("hs.ipc")
 local hints       = require("hs.hints")
 local utf8        = require("hs.utf8")
 local image       = require("hs.image")
+local window      = require("hs.window")
+local timer       = require("hs.timer")
+local appfinder   = require("hs.appfinder")
 
 -- Set to True or False indicating if you want a crash report when lua is invoked on  threads other than main (0) -- this should not happen, as lua is only supposed to execute in the main thread (unsupported and scary things can happen otherwise).  There is a performance hit, though, since the debug hook will be invoked for every call to a lua function, so usually this should be enabled only when testing in-development modules.
 
@@ -54,8 +57,7 @@ inspect = require("hs.inspect")
 inspect1 = function(what) return inspect(what, {depth=1}) end
 inspect2 = function(what) return inspect(what, {depth=2}) end
 
--- What can I say? I like the original Hydra's console documentation style,
--- rather than help("...")
+-- may include locally added json files in docs versus built in help
 doc = require("utils.docs")
 
 tobits = function(num, bits)
@@ -69,10 +71,6 @@ tobits = function(num, bits)
 end
 
 if not minimal then -- normal init continues...
-
-require("hs.window").animationDuration = 0 -- I'm a philistine, sue me
-
-ipc.cliInstall("/opt/amagill")
 
 -- For my convenience while testing and screwing around...
 -- If something grows into usefulness, I'll modularize it.
@@ -89,7 +87,18 @@ _asm = {
     end,
 }
 
+_asm._CMI.addMenu(_asm._menus.applicationMenu.menuUserdata, "icon",      true)
+_asm._CMI.addMenu(_asm._menus.developerMenu.menuUserdata,   "icon",  -1, true)
+_asm._CMI.addMenu(_asm._menus.clipboard,                    "title", -1, true)
+_asm._CMI.addMenu(_asm._menus.battery.menuUserdata,         "title", -1, true)
+_asm._CMI.addMenu(_asm._menus.autoCloseHS.menuUserdata,     "icon" , -1, true)
+_asm._CMI.addMenu(_asm._menus.dateMenu.menuUserdata,        "title", -2, true)
+_asm._CMI.panelShow()
+
+
 hints.style = "vimperator"
+window.animationDuration = 0 -- I'm a philistine, sue me
+ipc.cliInstall("/opt/amagill")
 
 -- terminal shell equivalencies...
 edit = function(where)
@@ -99,28 +108,20 @@ end
 m = function(which)
     os.execute("open x-man-page://"..tostring(which))
 end
--- utf8.codepointToUTF8("U+2702")
-_asm._CMI.addMenu(_asm._menus.applicationMenu.menuUserdata, "icon",      true)
-_asm._CMI.addMenu(_asm._menus.developerMenu.menuUserdata,   "icon",  -1, true)
-_asm._CMI.addMenu(_asm._menus.clipboard,                    "title", -1, true)
-_asm._CMI.addMenu(_asm._menus.battery.menuUserdata,         "title", -1, true)
-_asm._CMI.addMenu(_asm._menus.autoCloseHS.menuUserdata,     "icon" , -1, true)
-_asm._CMI.addMenu(_asm._menus.dateMenu.menuUserdata,        "title", -2, true)
 
--- better to add close icon directly
---_asm._CMI.addMenu(_asm._CMI.menuUserdata,
---    image.imageFromName(image.systemImageNames.StopProgressFreestandingTemplate), -1)
-_asm._CMI.panelShow()
+-- _asm._actions.timestamp.status()
 
-_asm._actions.timestamp.status()
-
-hs.openConsole(false)
-local screen = require("hs.screen")
-local appfinder = require("hs.appfinder")
-appfinder.windowFromWindowTitle("Hammerspoon Console"):setTopLeft({
-    x = screen.mainScreen():frame().x + screen.mainScreen():frame().w - appfinder.windowFromWindowTitle("Hammerspoon Console"):size().w,
-    y = screen.mainScreen():frame().y + screen.mainScreen():frame().h - appfinder.windowFromWindowTitle("Hammerspoon Console"):size().h
-})
+timer.waitUntil(
+    load([[ return hs.appfinder.windowFromWindowTitle("Hammerspoon Console") ]]),
+    function(timerObject)
+        local win = appfinder.windowFromWindowTitle("Hammerspoon Console")
+        local screen = win:screen()
+        win:setTopLeft({
+            x = screen:frame().x + screen:frame().w - win:size().w,
+            y = screen:frame().y + screen:frame().h - win:size().h
+        })
+    end
+)
 
 else
     print("++ Running minimal configuration")
