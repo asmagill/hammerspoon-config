@@ -123,6 +123,28 @@ timer.waitUntil(
     end
 )
 
+-- testing
+full = function(yesnomaybeso)
+    local win = appfinder.windowFromWindowTitle("Hammerspoon Console")
+    if type(yesnomaybeso) == "nil" then yesnomaybeso = not win:isFullScreen() end
+
+    if yesnomaybeso then
+        _asm.extras.consoleBehavior(_asm.extras.consoleBehavior() | 128)
+        if not win:isFullScreen() then win:toggleFullScreen() end
+    else
+        if win:isFullScreen() then win:toggleFullScreen() end
+    end
+end
+
+_fullUndoer = setmetatable({"This is in place to undo a full screen console during a reload, as it throws off some drawing elements otherwise"},{
+    __gc = function(_)
+        local win = appfinder.windowFromWindowTitle("Hammerspoon Console")
+        if win:isFullScreen() then win:toggleFullScreen() end
+    end,
+    __call = function(_, ...) print(_[1]) end,
+    __tostring = function(_) return(_[1]) end,
+})
+
 else
     print("++ Running minimal configuration")
 end
