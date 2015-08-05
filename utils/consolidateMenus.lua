@@ -124,8 +124,8 @@ open = { icon = [[
     { strokeColor = { red = 0.5 }, lineWidth = 2 },
     {
         strokeColor = { green = 0.75 },
-        fillColor   = { green = 0.5 , alpha = 0  },
-        shouldClose = false
+        fillColor   = { green = 0.5 , alpha = 1  },
+--         shouldClose = false
     }, {  -- safest to always make sure the last one is a decent default
         strokeColor = boxStroke,
         fillColor   = boxFill,
@@ -161,8 +161,8 @@ close = {
     { strokeColor = { red = 0.5 }, lineWidth = 2 },
     {
         strokeColor = { green = 0.75 },
-        fillColor   = { green = 0.5 , alpha = 0  },
-        shouldClose = false
+        fillColor   = { green = 0.5 , alpha = 1  },
+--         shouldClose = false
     }, {  -- safest to always make sure the last one is a decent default
         strokeColor = boxStroke,
         fillColor   = boxFill,
