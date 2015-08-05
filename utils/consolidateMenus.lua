@@ -191,7 +191,7 @@ local panelToggle = function() return myMenuVisible and module.panelHide() or mo
 myMenu = menubar.new():setClickCallback(panelToggle):setIcon(myMenuImageOff)
 
 local minimizeFN = function()
-    local mouseY = mouse.get().y
+    local mouseY = mouse.getAbsolutePosition().y
     local iconTop = screen.mainScreen():frame().y
     local iconMid = iconTop + boxHeight / 2
 
@@ -416,7 +416,7 @@ module.addMenu = function(menu, icon, position, autoRemove)
     CMI.drawing:setBehaviorByLabels{"canJoinAllSpaces"}:orderAbove(myMenuBar)
         :setClickCallback(nil, function()
             CMI.menu:popupMenu{
-                x = monitorRightX - (#myMenuItems + .5 - math.floor((monitorRightX - mouse.get().x) / boxWidth)) * boxWidth,
+                x = monitorRightX - (#myMenuItems + .5 - math.floor((monitorRightX - mouse.getAbsolutePosition().x) / boxWidth)) * boxWidth,
                 y = monitorTopY + boxHeight + 2 * hMargin,
             }
             dynamicCheck:start() -- if popup takes too long, this can sometimes stop... not sure how to detect yet...
