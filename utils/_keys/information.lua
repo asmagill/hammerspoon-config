@@ -19,6 +19,7 @@ local hotkey      = require("hs.hotkey")
 local fnutils     = require("hs.fnutils")
 local alert       = require("hs.alert")
 local window      = require("hs.window")
+local application = require("hs.application")
 
 local point_in_rect = function(rect, point)
     return  point.x >= rect.x and
@@ -54,9 +55,11 @@ local dev = hotkey.modal.new(mods.CAsC, "=")
     )
     dev:bind(mods.casc, "A",
         function()
-            local win = window_underneath_mouse()
+--             local win = window_underneath_mouse()
+            local app = application.frontmostApplication()
             print("-- Application -------------------------")
-            print(devinfo.appinfo(win:application(),dev.clipboard))
+--             print(devinfo.appinfo(win:application(),dev.clipboard))
+            print(devinfo.appinfo(app, dev.clipboard))
             print("----------------------------------------")
         end
     )

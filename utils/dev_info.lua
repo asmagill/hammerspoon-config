@@ -101,7 +101,8 @@ end
 module.mouseinfo = function(clip)
     clip = clip or false
     local buf = ""
-    buf = buf.."mouse = "..tostring(inspect(mouse.get())).."\r"
+    buf = buf.."absolute = "..tostring(inspect(mouse.getAbsolutePosition())).."\r"
+    buf = buf.."relative = "..tostring(inspect(mouse.getRelativePosition())).."\r"
     return clipBufferIfRequested(buf, clip)
 end
 
