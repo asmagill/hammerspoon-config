@@ -112,7 +112,7 @@ end
 -- _asm._actions.timestamp.status()
 
 timer.waitUntil(
-    load([[ return hs.appfinder.windowFromWindowTitle("Hammerspoon Console") ]]),
+    load([[ return require("hs.appfinder").windowFromWindowTitle("Hammerspoon Console") ]]),
     function(timerObject)
         local win = appfinder.windowFromWindowTitle("Hammerspoon Console")
         local screen = win:screen()
@@ -123,20 +123,13 @@ timer.waitUntil(
     end
 )
 
--- testing
-full = function(yesnomaybeso)
-    local win = appfinder.windowFromWindowTitle("Hammerspoon Console")
-    if type(yesnomaybeso) == "nil" then yesnomaybeso = not win:isFullScreen() end
+-- hs.drawing.windowBehaviors.moveToActiveSpace
+_asm.extras.consoleBehavior(2)
 
-    if yesnomaybeso then
-        _asm.extras.consoleBehavior(_asm.extras.consoleBehavior() | 128)
-        if not win:isFullScreen() then win:toggleFullScreen() end
-    else
-        if win:isFullScreen() then win:toggleFullScreen() end
-    end
-end
+-- testing for side effects
 
-_fullUndoer = setmetatable({"This is in place to undo a full screen console during a reload, as it throws off some drawing elements otherwise"},{
+-- this is the 2nd side effect noticed
+local _fullUndoer = setmetatable({"This is in place to undo a full screen console during a reload, as it throws off some drawing elements otherwise"},{
     __gc = function(_)
         local win = appfinder.windowFromWindowTitle("Hammerspoon Console")
         if win:isFullScreen() then win:toggleFullScreen() end
@@ -144,6 +137,24 @@ _fullUndoer = setmetatable({"This is in place to undo a full screen console duri
     __call = function(_, ...) print(_[1]) end,
     __tostring = function(_) return(_[1]) end,
 })
+
+full = function(yesnomaybeso)
+    -- touch _fullUndoer to keep it from garbage collection...
+    _fullUndoer[1] = _fullUndoer[1]
+    local win = appfinder.windowFromWindowTitle("Hammerspoon Console")
+    if type(yesnomaybeso) == "nil" then yesnomaybeso = not win:isFullScreen() end
+
+    if yesnomaybeso then
+        _asm.extras.consoleBehavior(_asm.extras.consoleBehavior() | 128)
+        if not win:isFullScreen() then win:toggleFullScreen() end
+-- 1st side effect noticed
+        if not hs.dockIcon() then
+            print("You will have to reuse this function or reload Hammerspoon to leave full screen mode -- there is no window decoration at the top.")
+        end
+    else
+        if win:isFullScreen() then win:toggleFullScreen() end
+    end
+end
 
 else
     print("++ Running minimal configuration")
