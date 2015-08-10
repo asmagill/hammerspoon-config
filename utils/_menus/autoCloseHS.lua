@@ -20,10 +20,14 @@ local menubar   = require("hs.menubar")
 local appwatch  = require("hs.application").watcher
 local appfinder = require("hs.appfinder")
 local image     = require("hs.image")
+local settings  = require("hs.settings")
 
 -- private variables and methods -----------------------------------------
 
-local hsWatcherIsOn   = false
+local hsWatcherIsOn = true
+if settings.getKeys()["_asm.autohide.console"] ~= nil then
+    hsWatcherIsOn = settings.get("_asm.autohide.console")
+end
 
 local hsConsoleWatcherFN = function(name,event,hsapp)
     if name then
@@ -103,7 +107,7 @@ local watcherMenu = menubar.new():setIcon(image.imageFromName("statusicon")) -- 
 
 -- Public interface ------------------------------------------------------
 
-toggleWatcher(true)
+toggleWatcher(hsWatcherIsOn)
 
 module.watcher = hsConsoleWatcher
 module.menuUserdata = watcherMenu
@@ -112,4 +116,8 @@ module.staus = hsWatcherIsOn
 
 -- Return Module Object --------------------------------------------------
 
-return module
+return setmetatable(module, {
+    __gc = function(_)
+        settings.set("_asm.autohide.console", hsWatcherIsOn)
+    end,
+})
