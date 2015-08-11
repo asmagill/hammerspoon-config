@@ -31,7 +31,7 @@ end
 local window_underneath_mouse = function()
     local pos = mouse.get()
     local win = fnutils.find(window.orderedWindows(), function(window)
-        return point_in_rect(window:frame(), pos)
+        return point_in_rect(window:frame(), pos) and window:isStandard()
     end)
     return win or window.windowForID(0) or window.windowForID(nil)
 end

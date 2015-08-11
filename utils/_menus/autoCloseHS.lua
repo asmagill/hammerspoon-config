@@ -24,14 +24,14 @@ local settings  = require("hs.settings")
 
 -- private variables and methods -----------------------------------------
 
-local hsWatcherIsOn = true
+module.status = true
 if settings.getKeys()["_asm.autohide.console"] ~= nil then
-    hsWatcherIsOn = settings.get("_asm.autohide.console")
+    module.status = settings.get("_asm.autohide.console")
 end
 
 local hsConsoleWatcherFN = function(name,event,hsapp)
     if name then
-        if name:match("Hammerspoon") and event == appwatch.deactivated then
+        if name == "Hammerspoon" and event == appwatch.deactivated then
             local test = appfinder.windowFromWindowTitle("Hammerspoon Console")
             if test then test:close() end
         end
@@ -41,15 +41,16 @@ end
 local hsConsoleWatcher = appwatch.new(hsConsoleWatcherFN) -- damn lack of chaining
 
 local toggleWatcher = function(setItTo)
-    if type(setItTo) == "boolean" then hsWatcherIsOn = not setItTo end
+    if type(setItTo) == "boolean" then module.status = not setItTo end
 
-    if hsWatcherIsOn then
-        hsWatcherIsOn = false
+    if module.status then
+        module.status = false
         hsConsoleWatcher:stop()
     else
-        hsWatcherIsOn = true
+        module.status = true
         hsConsoleWatcher:start()
     end
+    return module.status
 end
 
 local watcherMenu = menubar.new():setIcon(image.imageFromName("statusicon")) -- it's in the app bundle, so we can refer to it by name
@@ -74,7 +75,7 @@ local watcherMenu = menubar.new():setIcon(image.imageFromName("statusicon")) -- 
                       },
                       { title = "-" },
                       { title = "Auto-Close Console", fn = toggleWatcher,
-                          checked = hsWatcherIsOn
+                          checked = module.status
                       },
                   },
               },
@@ -107,17 +108,17 @@ local watcherMenu = menubar.new():setIcon(image.imageFromName("statusicon")) -- 
 
 -- Public interface ------------------------------------------------------
 
-toggleWatcher(hsWatcherIsOn)
+toggleWatcher(module.status)
 
 module.watcher = hsConsoleWatcher
 module.menuUserdata = watcherMenu
 module.toggleWatcher = toggleWatcher
-module.staus = hsWatcherIsOn
+if not hs.autoCloseConsole then hs.autoCloseConsole = toggleWatcher end
 
 -- Return Module Object --------------------------------------------------
 
 return setmetatable(module, {
     __gc = function(_)
-        settings.set("_asm.autohide.console", hsWatcherIsOn)
+        settings.set("_asm.autohide.console", _.status)
     end,
 })
