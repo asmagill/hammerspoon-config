@@ -3,6 +3,11 @@ local event    = require("hs.eventtap").event
 local window   = require("hs.window")
 local timer    = require("hs.timer")
 
+--
+-- if you're perusing this and want to see an Objective-C version, check https://github.com/asmagill/hammerspoon_asm/commit/f97def364003b0a7e96b8fa340b7b8bc48859238#diff-feb9be9f18e8db07162fbca403313598R191.
+--
+-- I'm still not sure which I'll be sticking with...
+
 --- spacesKeySequence([key],[win],[mod]) -> None
 --- Function
 --- Preforms Mission Control key sequences (and clicks, when a window or point is provided) for spaces.
