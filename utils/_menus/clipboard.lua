@@ -6,6 +6,7 @@
           [x] check against nspasterboard.org identifiers for transient and confidential
           [ ] add alternate (ctrl/right-click) menu to adjust settings
           [ ] save settings with hs.settings
+          [ ] don't replicate duplicates
 
 ]]--
 

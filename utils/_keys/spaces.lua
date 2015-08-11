@@ -53,7 +53,7 @@ spacesKeySequence = function(key, win, mods)
         doingWindow = true
         win:focus()
         timer.usleep(125000)
-        moveMouseTo = { x=win:frame().x + 24, y = win:frame().y + 11 }
+        moveMouseTo = { x=win:frame().x + 24, y = win:frame().y + 4 }
     elseif type(win) == "table" then
         doingWindow = true
         moveMouseTo = win
