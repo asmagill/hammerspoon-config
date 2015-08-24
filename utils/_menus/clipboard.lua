@@ -40,6 +40,9 @@ local pasteboard = require("hs.pasteboard") -- http://www.hammerspoon.org/docs/h
 local settings = require("hs.settings") -- http://www.hammerspoon.org/docs/hs.settings.html
 local last_change = pasteboard.changeCount() -- displays how many times the pasteboard owner has changed // Indicates a new copy has been made
 
+-- initialise as local so it's no longer global
+local now = pasteboard.changeCount()
+
 -- verify pasteboard doesn't contain transient or confidential info we should skip
 local goodToRecord = function()
     local goAhead = true
@@ -144,11 +147,11 @@ function storeCopy()
   now = pasteboard.changeCount()
   if (now > last_change) then
     if goodToRecord() then
-        current_clipboard = pasteboard.getContents()
+        local current_clipboard = pasteboard.getContents() or ""
 
         if #current_clipboard < maxSize then
             -- asmagill requested this feature. It prevents the history from keeping items removed by password managers
-            if (current_clipboard == nil and honor_clearcontent) then
+            if (current_clipboard == "" and honor_clearcontent) then
               clearLastItem()
             else
               pasteboardToClipboard(current_clipboard)

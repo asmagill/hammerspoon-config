@@ -29,7 +29,7 @@ local point_in_rect = function(rect, point)
 end
 
 local window_underneath_mouse = function()
-    local pos = mouse.get()
+    local pos = mouse.getAbsolutePosition()
     local win = fnutils.find(window.orderedWindows(), function(window)
         return point_in_rect(window:frame(), pos) and window:isStandard()
     end)
