@@ -81,7 +81,7 @@ _asm = {
     _actions    = requirePlus.requirePath("utils._actions", true),
     _menus      = requirePlus.requirePath("utils._menus", true),
     _CMI        = require("utils.consolidateMenus"),
-   _crashwatch = require("utils.crashwatcher"),
+    _crashwatch = require("utils.crashwatcher"),
     relaunch    = function()
         os.execute([[ (while ps -p ]]..hs.processInfo.processID..[[ > /dev/null ; do sleep 1 ; done ; open -a "]]..hs.processInfo.bundlePath..[[" ) & ]])
         hs._exit(true, true)
@@ -157,22 +157,22 @@ full = function(yesnomaybeso)
     end
 end
 
-else
-    print("++ Running minimal configuration")
-end
-
 local nc = require("hs._asm.notificationcenter")
-_asm.workspaceObserver = nc.workspaceObserver(function(n,o,i)
-    local f = io.open("__workspaceobserver.txt","a") ;
-    f:write(os.date().."\t".."name:"..n.."\tobj:"..inspect(o):gsub("%s+"," ").."\tinfo:"..inspect(i):gsub("%s+"," ").."\n")
-    f:close()
-end):start()
+-- _asm.workspaceObserver = nc.workspaceObserver(function(n,o,i)
+--     local f = io.open("__workspaceobserver.txt","a") ;
+--     f:write(os.date().."\t".."name:"..n.."\tobj:"..inspect(o):gsub("%s+"," ").."\tinfo:"..inspect(i):gsub("%s+"," ").."\n")
+--     f:close()
+-- end):start()
 
 _asm.distributedObserver = nc.distributedObserver(function(n,o,i)
     local f = io.open("__distributedobserver.txt","a") ;
     f:write(os.date().."\t".."name:"..n.."\tobj:"..inspect(o):gsub("%s+"," ").."\tinfo:"..inspect(i):gsub("%s+"," ").."\n")
     f:close()
 end):start()
+
+else
+    print("++ Running minimal configuration")
+end
 
 print("++ Running: "..hs.processInfo.bundlePath)
 print("++ Accessibility: "..tostring(hs.accessibilityState()))
