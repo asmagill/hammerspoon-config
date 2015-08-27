@@ -12,7 +12,7 @@ mailWatcher = appwatch.new(function(name,event,hsapp)
         end
         mailWatcher:start() -- we die every so often for some reason...
     end
-)
+):start()
 
-mailWatcher:start() -- damn lack of chaining...
+-- mailWatcher:start() -- damn lack of chaining...
 return mailWatcher

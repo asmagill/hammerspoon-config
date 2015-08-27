@@ -32,9 +32,9 @@ module.sleepWatcher = c.watcher.new(function(_)
         module.crashNotification:schedule(os.time()+45)
         module.timer:start()
     end
-end)
+end):start()
 -- damn lack of chaining...
-module.sleepWatcher:start()
+-- module.sleepWatcher:start()
 
 return setmetatable(module, {
     __gc = function(_)

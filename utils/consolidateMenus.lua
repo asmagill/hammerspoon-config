@@ -75,13 +75,15 @@ local image   = require("hs.image")
 local mouse   = require("hs.mouse")
 local timer   = require("hs.timer")
 
+local _xtras  = require("hs._asm.extras")
+
 local hMargin, wMargin  = 2, 2
 local checkForChanges   = 1.0     -- changes to icons, active monitor, etc.
 
 local boxStroke   = { red = 0.0, green = 0.0, blue = 0.0, alpha = 0.8 }
 local boxStrokeW  = 2
 local boxFill     = { red = 0.9, green = 0.9, blue = 0.7, alpha = 0.6 }
-local boxHeight   = 2 * hMargin + screen.mainScreen():frame().y - screen.mainScreen():fullFrame().y
+local boxHeight   = 2 * hMargin + 27 -- screen.mainScreen():frame().y - screen.mainScreen():fullFrame().y
 local boxWidth    = boxHeight
 local iconHeight  = boxHeight - 2 * hMargin
 local iconWidth   = boxWidth  - 2 * wMargin
@@ -95,6 +97,7 @@ local myMenuItems = {}
 local myMenuBar = drawing.rectangle{}:setRoundedRectRadii(wMargin, hMargin):
                       setStroke(boxStroke ~= nil):setStrokeWidth(boxStrokeW or 0):setStrokeColor(boxStroke):
                       setFill(boxFill ~= nil):setFillColor(boxFill):setBehaviorByLabels{"canJoinAllSpaces"}
+_xtras.drawingLevel(myMenuBar, _xtras.windowLevels.NSMainMenuWindowLevel)
 
 local panelControl = {
 open = { icon = [[
@@ -175,10 +178,13 @@ panelControl.open.drawing =  drawing.image({},
     image.imageFromASCII(panelControl.open.icon, panelControl.open.context))
     :setBehaviorByLabels{"canJoinAllSpaces"}
     :orderAbove(myMenuBar)
+_xtras.drawingLevel(panelControl.open.drawing, _xtras.windowLevels.NSMainMenuWindowLevel)
+
 panelControl.close.drawing = drawing.image({},
     image.imageFromASCII(panelControl.close.icon, panelControl.close.context))
     :setBehaviorByLabels{"canJoinAllSpaces"}
     :orderAbove(myMenuBar)
+_xtras.drawingLevel(panelControl.close.drawing, _xtras.windowLevels.NSMainMenuWindowLevel)
 
 -- private variables and methods -----------------------------------------
 
@@ -249,6 +255,7 @@ module.CMImenuItems = myMenuItems
 ---
 --- Returns:
 ---  * true
+module.myMenuBar = myMenuBar
 module.panelShow = function()
     if myMenuMinimized then
         panelControl.close.drawing:hide()
@@ -421,6 +428,8 @@ module.addMenu = function(menu, icon, position, autoRemove)
             }
             dynamicCheck:start() -- if popup takes too long, this can sometimes stop... not sure how to detect yet...
         end)
+    _xtras.drawingLevel(CMI.drawing, _xtras.windowLevels.NSMainMenuWindowLevel)
+
     CMI.menu       = menu
     CMI.autoRemove = autoRemove
     table.insert(myMenuItems, position, CMI)

@@ -257,4 +257,6 @@ module = setmetatable(module, {
   end,
 })
 
+module.powerWatcher = powerWatcher
+
 return module.start()

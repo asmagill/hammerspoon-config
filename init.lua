@@ -74,9 +74,11 @@ if not minimal then -- normal init continues...
 
 -- For my convenience while testing and screwing around...
 -- If something grows into usefulness, I'll modularize it.
+_xtras = require("hs._asm.extras")
+
 _asm = {
-    _ = package.loaded,
-    extras      = require("hs._asm.extras"),
+--     _ = package.loaded,
+--     extras      = require("hs._asm.extras"),
     _keys       = requirePlus.requirePath("utils._keys", true),
     _actions    = requirePlus.requirePath("utils._actions", true),
     _menus      = requirePlus.requirePath("utils._menus", true),
@@ -125,32 +127,33 @@ timer.waitUntil(
 )
 
 -- hs.drawing.windowBehaviors.moveToActiveSpace
-_asm.extras.consoleBehavior(2)
+_xtras.consoleBehavior(2)
+_xtras.consoleAlpha(0.70)
 
 -- testing for side effects
-
--- this is the 2nd side effect noticed
-local _fullUndoer = setmetatable({"This is in place to undo a full screen console during a reload, as it throws off some drawing elements otherwise"},{
-    __gc = function(_)
-        local win = appfinder.windowFromWindowTitle("Hammerspoon Console")
-        if win:isFullScreen() then win:toggleFullScreen() end
-    end,
-    __call = function(_, ...) print(_[1]) end,
-    __tostring = function(_) return(_[1]) end,
-})
+--
+-- -- this is the 2nd side effect noticed
+-- local _fullUndoer = setmetatable({"This is in place to undo a full screen console during a reload, as it throws off some drawing elements otherwise"},{
+--     __gc = function(_)
+--         local win = appfinder.windowFromWindowTitle("Hammerspoon Console")
+--         if win:isFullScreen() then win:toggleFullScreen() end
+--     end,
+--     __call = function(_, ...) print(_[1]) end,
+--     __tostring = function(_) return(_[1]) end,
+-- })
 
 full = function(yesnomaybeso)
-    -- touch _fullUndoer to keep it from garbage collection...
-    _fullUndoer[1] = _fullUndoer[1]
+-- --     touch _fullUndoer to keep it from garbage collection...
+--     _fullUndoer[1] = _fullUndoer[1]
     local win = appfinder.windowFromWindowTitle("Hammerspoon Console")
     if type(yesnomaybeso) == "nil" then yesnomaybeso = not win:isFullScreen() end
 
     if yesnomaybeso then
-        _asm.extras.consoleBehavior(_asm.extras.consoleBehavior() | 128)
+        _xtras.consoleBehavior(_xtras.consoleBehavior() | 128)
         if not win:isFullScreen() then win:toggleFullScreen() end
 -- 1st side effect noticed
         if not hs.dockIcon() then
-            print("You will have to reuse this function or reload Hammerspoon to leave full screen mode -- there is no window decoration at the top.")
+            print("You will have to reuse this function or quit Hammerspoon to leave full screen mode -- there is no window decoration at the top.")
         end
     else
         if win:isFullScreen() then win:toggleFullScreen() end
@@ -158,11 +161,11 @@ full = function(yesnomaybeso)
 end
 
 local nc = require("hs._asm.notificationcenter")
--- _asm.workspaceObserver = nc.workspaceObserver(function(n,o,i)
---     local f = io.open("__workspaceobserver.txt","a") ;
---     f:write(os.date().."\t".."name:"..n.."\tobj:"..inspect(o):gsub("%s+"," ").."\tinfo:"..inspect(i):gsub("%s+"," ").."\n")
---     f:close()
--- end):start()
+_asm.workspaceObserver = nc.workspaceObserver(function(n,o,i)
+    local f = io.open("__workspaceobserver.txt","a") ;
+    f:write(os.date().."\t".."name:"..n.."\tobj:"..inspect(o):gsub("%s+"," ").."\tinfo:"..inspect(i):gsub("%s+"," ").."\n")
+    f:close()
+end):start()
 
 _asm.distributedObserver = nc.distributedObserver(function(n,o,i)
     local f = io.open("__distributedobserver.txt","a") ;
