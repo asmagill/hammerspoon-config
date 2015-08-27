@@ -83,7 +83,6 @@ _asm = {
     _actions    = requirePlus.requirePath("utils._actions", true),
     _menus      = requirePlus.requirePath("utils._menus", true),
     _CMI        = require("utils.consolidateMenus"),
-    _crashwatch = require("utils.crashwatcher"),
     relaunch    = function()
         os.execute([[ (while ps -p ]]..hs.processInfo.processID..[[ > /dev/null ; do sleep 1 ; done ; open -a "]]..hs.processInfo.bundlePath..[[" ) & ]])
         hs._exit(true, true)
@@ -133,6 +132,8 @@ _xtras.consoleAlpha(0.70)
 -- testing for side effects
 --
 -- -- this is the 2nd side effect noticed
+-- -- not as bad as I once thought... properly take into consideration the menubar (or its absence in
+-- -- 10.11) seems to have mitigated it pretty well.
 -- local _fullUndoer = setmetatable({"This is in place to undo a full screen console during a reload, as it throws off some drawing elements otherwise"},{
 --     __gc = function(_)
 --         local win = appfinder.windowFromWindowTitle("Hammerspoon Console")
@@ -159,19 +160,6 @@ full = function(yesnomaybeso)
         if win:isFullScreen() then win:toggleFullScreen() end
     end
 end
-
-local nc = require("hs._asm.notificationcenter")
-_asm.workspaceObserver = nc.workspaceObserver(function(n,o,i)
-    local f = io.open("__workspaceobserver.txt","a") ;
-    f:write(os.date().."\t".."name:"..n.."\tobj:"..inspect(o):gsub("%s+"," ").."\tinfo:"..inspect(i):gsub("%s+"," ").."\n")
-    f:close()
-end):start()
-
-_asm.distributedObserver = nc.distributedObserver(function(n,o,i)
-    local f = io.open("__distributedobserver.txt","a") ;
-    f:write(os.date().."\t".."name:"..n.."\tobj:"..inspect(o):gsub("%s+"," ").."\tinfo:"..inspect(i):gsub("%s+"," ").."\n")
-    f:close()
-end):start()
 
 else
     print("++ Running minimal configuration")
