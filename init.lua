@@ -128,7 +128,7 @@ timer.waitUntil(
 )
 
 -- hs.drawing.windowBehaviors.moveToActiveSpace
-_xtras.consoleBehavior(2)
+_xtras.consoleAsHSDrawing():setBehavior(2)
 --_xtras.consoleAlpha(0.70)
 
 -- testing for side effects
@@ -152,7 +152,7 @@ full = function(yesnomaybeso)
     if type(yesnomaybeso) == "nil" then yesnomaybeso = not win:isFullScreen() end
 
     if yesnomaybeso then
-        _xtras.consoleBehavior(_xtras.consoleBehavior() | 128)
+        _xtras.consoleAsHSDrawing():setBehavior(_xtras.consoleAsHSDrawing():behavior() | 128)
         if not win:isFullScreen() then win:toggleFullScreen() end
 -- 1st side effect noticed
         if not hs.dockIcon() then
