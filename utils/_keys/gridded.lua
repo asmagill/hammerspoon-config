@@ -75,7 +75,7 @@ local change = function(command, direction, win)
         elseif command == "next" or command == "prev" then action = "grid.pushWindow"..command:gsub("^([np])",string.upper).."Screen(win)"
         elseif command == "max"                       then action = "grid.maximizeWindow(win)"
         elseif command == "snap"                      then action = "grid.snap(win)"
-        elseif command == "visual"                    then action = "grid.show(win)"
+        elseif command == "visual"                    then action = "grid.show()"
 
         elseif command == "tall" or command == "wide" then
             local state = grid.get(win)

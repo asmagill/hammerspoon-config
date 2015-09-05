@@ -38,7 +38,7 @@ local hsConsoleWatcherFN = function(name,event,hsapp)
     end
 end
 
-local hsConsoleWatcher = appwatch.new(hsConsoleWatcherFN) -- damn lack of chaining
+local hsConsoleWatcher = appwatch.new(hsConsoleWatcherFN)
 
 local toggleWatcher = function(setItTo)
     if type(setItTo) == "boolean" then module.status = not setItTo end

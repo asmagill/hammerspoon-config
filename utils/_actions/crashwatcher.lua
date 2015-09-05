@@ -33,8 +33,6 @@ module.sleepWatcher = c.watcher.new(function(_)
         module.timer:start()
     end
 end):start()
--- damn lack of chaining...
--- module.sleepWatcher:start()
 
 return setmetatable(module, {
     __gc = function(_)

@@ -14,5 +14,4 @@ mailWatcher = appwatch.new(function(name,event,hsapp)
     end
 ):start()
 
--- mailWatcher:start() -- damn lack of chaining...
 return mailWatcher

@@ -12,8 +12,9 @@ local clockStyle = {
     alignment = "center",
     lineBreak = "clip",
 }
-local clock = drawing.text({}, ""):setTextStyle(clockStyle):setBehaviorByLabels{"canJoinAllSpaces"}
-_xtras.drawingLevel(clock, _xtras.windowLevels.NSMainMenuWindowLevel)
+local clock = drawing.text({}, ""):setTextStyle(clockStyle)
+                                  :setBehaviorByLabels{"canJoinAllSpaces"}
+                                  :setLevel("mainMenu")
 
 local drawClock = function()
     local screenFrame = screen.mainScreen():fullFrame()

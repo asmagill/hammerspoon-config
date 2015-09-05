@@ -94,10 +94,10 @@ local myMenuImageOff = image.imageFromName(image.systemImageNames.AddTemplate)
 local CMIcount = 0
 
 local myMenuItems = {}
-local myMenuBar = drawing.rectangle{}:setRoundedRectRadii(wMargin, hMargin):
-                      setStroke(boxStroke ~= nil):setStrokeWidth(boxStrokeW or 0):setStrokeColor(boxStroke):
-                      setFill(boxFill ~= nil):setFillColor(boxFill):setBehaviorByLabels{"canJoinAllSpaces"}
-_xtras.drawingLevel(myMenuBar, _xtras.windowLevels.NSMainMenuWindowLevel)
+local myMenuBar = drawing.rectangle{}:setRoundedRectRadii(wMargin, hMargin)
+                      :setStroke(boxStroke ~= nil):setStrokeWidth(boxStrokeW or 0):setStrokeColor(boxStroke)
+                      :setFill(boxFill ~= nil):setFillColor(boxFill):setBehaviorByLabels{"canJoinAllSpaces"}
+                      :setLevel("mainMenu")
 
 local panelControl = {
 open = { icon = [[
@@ -178,13 +178,13 @@ panelControl.open.drawing =  drawing.image({},
     image.imageFromASCII(panelControl.open.icon, panelControl.open.context))
     :setBehaviorByLabels{"canJoinAllSpaces"}
     :orderAbove(myMenuBar)
-_xtras.drawingLevel(panelControl.open.drawing, _xtras.windowLevels.NSMainMenuWindowLevel)
+    :setLevel("mainMenu")
 
 panelControl.close.drawing = drawing.image({},
     image.imageFromASCII(panelControl.close.icon, panelControl.close.context))
     :setBehaviorByLabels{"canJoinAllSpaces"}
     :orderAbove(myMenuBar)
-_xtras.drawingLevel(panelControl.close.drawing, _xtras.windowLevels.NSMainMenuWindowLevel)
+    :setLevel("mainMenu")
 
 -- private variables and methods -----------------------------------------
 
@@ -427,8 +427,7 @@ module.addMenu = function(menu, icon, position, autoRemove)
                 y = monitorTopY + boxHeight + 2 * hMargin,
             }
             dynamicCheck:start() -- if popup takes too long, this can sometimes stop... not sure how to detect yet...
-        end)
-    _xtras.drawingLevel(CMI.drawing, _xtras.windowLevels.NSMainMenuWindowLevel)
+        end):setLevel("mainMenu")
 
     CMI.menu       = menu
     CMI.autoRemove = autoRemove
