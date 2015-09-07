@@ -77,6 +77,7 @@ if not minimal then -- normal init continues...
 -- For my convenience while testing and screwing around...
 -- If something grows into usefulness, I'll modularize it.
 _xtras = require("hs._asm.extras")
+_xtras.console = require("hs._asm.console")
 
 _asm = {
 --     _ = package.loaded,
@@ -128,8 +129,12 @@ timer.waitUntil(
 )
 
 -- hs.drawing.windowBehaviors.moveToActiveSpace
-_xtras.consoleAsHSDrawing():setBehavior(2)
---_xtras.consoleAlpha(0.70)
+_xtras.console.asHSDrawing():setBehavior(2)
+_xtras.console.smartInsertDeleteEnabled(false)
+_xtras.console.windowBackgroundColor({red=.6,blue=.7,green=.7})
+_xtras.console.outputBackgroundColor({red=.8,blue=.8,green=.8})
+
+--_xtras.console.asHSDrawing():setAlpha(0.70)
 
 -- testing for side effects
 --
@@ -152,7 +157,7 @@ full = function(yesnomaybeso)
     if type(yesnomaybeso) == "nil" then yesnomaybeso = not win:isFullScreen() end
 
     if yesnomaybeso then
-        _xtras.consoleAsHSDrawing():setBehavior(_xtras.consoleAsHSDrawing():behavior() | 128)
+        _xtras.console.asHSDrawing():setBehavior(_xtras.console.asHSDrawing():behavior() | 128)
         if not win:isFullScreen() then win:toggleFullScreen() end
 -- 1st side effect noticed
         if not hs.dockIcon() then
