@@ -30,7 +30,8 @@ hotkey.bind(mods.casc, "f12", function() _asm._CMI.panelToggle() end)
 -- launchOrFocus of Dash with menu and dock icons off causes preferences pane to appear...
 -- better for my habits to assign hotkey within Dash itself...
 --hotkey.bind(mods.CAsC, "d", function() application.launchOrFocus("Dash") end, nil)
-hotkey.bind(mods.CAsC, "n", function() application.launchOrFocus("Notational Velocity") end, nil)
+-- hotkey.bind(mods.CAsC, "n", function() application.launchOrFocus("Notational Velocity") end, nil)
+hotkey.bind(mods.CAsC, "n", function() application.launchOrFocus("nvALT") end, nil)
 hotkey.bind(mods.CASC, "b", function()
     alert("Bluetooth is power is now: "..
         (bluetooth.power(not bluetooth.power()) and "On" or "Off"))

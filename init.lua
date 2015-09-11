@@ -133,8 +133,7 @@ _xtras.console.asHSDrawing():setBehavior(2)
 _xtras.console.smartInsertDeleteEnabled(false)
 _xtras.console.windowBackgroundColor({red=.6,blue=.7,green=.7})
 _xtras.console.outputBackgroundColor({red=.8,blue=.8,green=.8})
-
---_xtras.console.asHSDrawing():setAlpha(0.70)
+_xtras.console.asHSDrawing():setAlpha(.9)
 
 -- testing for side effects
 --

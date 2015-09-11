@@ -49,4 +49,7 @@ end
 
 module.showClock()
 
+module.clockTimer = clockTimer
+module.clockDrawing = clock
+
 return module

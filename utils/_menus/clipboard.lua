@@ -11,7 +11,8 @@
 ]]--
 
 local utf8 = require("hs.utf8")
-local menuTitle = utf8.codepointToUTF8("U+1f4ce")
+-- local menuTitle = utf8.codepointToUTF8("U+1f4ce") -- paperclip
+local menuTitle = utf8.codepointToUTF8("U+1f4cb") -- clipboard
 
 -- See http://nspasteboard.org
 local ignoreTheseIdentifiers = {
