@@ -14,6 +14,7 @@ end
 
 hs.require = require
 require = rawrequire
+require = function(x) print("++ requiring file: "..tostring(x)) ; return rawrequire(x) end
 require("hs.crash").crashLogToNSLog = true
 require("hs.crash").crashLog("Disabled require logging to make log file sane")
 
@@ -91,6 +92,8 @@ _asm = {
         hs._exit(true, true)
     end,
 }
+
+table.insert(_asm._actions.closeWhenLoseFocus.closeList, "nvALT")
 
 _asm._CMI.addMenu(_asm._menus.applicationMenu.menuUserdata, "icon",      true)
 _asm._CMI.addMenu(_asm._menus.developerMenu.menuUserdata,   "icon",  -1, true)
@@ -173,3 +176,5 @@ end
 
 print("++ Running: "..hs.processInfo.bundlePath)
 print("++ Accessibility: "..tostring(hs.accessibilityState()))
+require = rawrequire
+

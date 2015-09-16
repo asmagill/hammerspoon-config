@@ -25,7 +25,8 @@ local AppName   = (mjolnir and "mjolnir") or (hs and "hammerspoon") or "hellifin
 hotkey.bind(mods.CAsC, "return", function()
     _asm._menus.applicationMenu.menuUserdata:popupMenu(require("hs.mouse").get())
 end)
-hotkey.bind(mods.casc, "f12", function() _asm._CMI.panelToggle() end)
+hotkey.bind(mods.casc, "f12", function() _asm._CMI.minToggle() end)
+hotkey.bind(mods.caSc, "f12", function() _asm._CMI.panelToggle() end)
 
 -- launchOrFocus of Dash with menu and dock icons off causes preferences pane to appear...
 -- better for my habits to assign hotkey within Dash itself...
@@ -42,7 +43,14 @@ hotkey.bind(mods.CASC, "e", nil, function()
     end)
 hotkey.bind(mods.CASC, "3", function() application.launchOrFocus("Calculator") end, nil)
 
-hotkey.bind(mods.CAsC, "r", function() hs.openConsole() end, nil)
+hotkey.bind(mods.CAsC, "r", function()
+          local conswin = require("hs.appfinder").windowFromWindowTitle("Hammerspoon Console")
+          if conswin then
+              conswin:close()
+          else
+              hs.openConsole()
+          end
+      end, nil)
 hotkey.bind(mods.CASC, "r", function() _asm.relaunch() end, nil)
 
 hotkey.bind(mods.CAsC, "space", function() hints.windowHints() end, nil)
