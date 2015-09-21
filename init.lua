@@ -14,7 +14,6 @@ end
 
 hs.require = require
 require = rawrequire
-require = function(x) print("++ requiring file: "..tostring(x)) ; return rawrequire(x) end
 require("hs.crash").crashLogToNSLog = true
 require("hs.crash").crashLog("Disabled require logging to make log file sane")
 
@@ -176,5 +175,5 @@ end
 
 print("++ Running: "..hs.processInfo.bundlePath)
 print("++ Accessibility: "..tostring(hs.accessibilityState()))
-require = rawrequire
+
 
