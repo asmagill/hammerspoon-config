@@ -41,7 +41,6 @@ local utf8        = require("hs.utf8")
 local image       = require("hs.image")
 local window      = require("hs.window")
 local timer       = require("hs.timer")
-local appfinder   = require("hs.appfinder")
 
 -- Set to True or False indicating if you want a crash report when lua is invoked on  threads other than main (0) -- this should not happen, as lua is only supposed to execute in the main thread (unsupported and scary things can happen otherwise).  There is a performance hit, though, since the debug hook will be invoked for every call to a lua function, so usually this should be enabled only when testing in-development modules.
 
@@ -119,9 +118,9 @@ end
 -- _asm._actions.timestamp.status()
 
 timer.waitUntil(
-    load([[ return require("hs.appfinder").windowFromWindowTitle("Hammerspoon Console") ]]),
+    load([[ return require("hs.window").get("Hammerspoon Console") ]]),
     function(timerObject)
-        local win = appfinder.windowFromWindowTitle("Hammerspoon Console")
+        local win = window.get("Hammerspoon Console")
         local screen = win:screen()
         win:setTopLeft({
             x = screen:frame().x + screen:frame().w - win:size().w,
@@ -144,7 +143,7 @@ _xtras.console.asHSDrawing():setAlpha(.9)
 -- -- 10.11) seems to have mitigated it pretty well.
 -- local _fullUndoer = setmetatable({"This is in place to undo a full screen console during a reload, as it throws off some drawing elements otherwise"},{
 --     __gc = function(_)
---         local win = appfinder.windowFromWindowTitle("Hammerspoon Console")
+--         local win = window.get("Hammerspoon Console")
 --         if win:isFullScreen() then win:toggleFullScreen() end
 --     end,
 --     __call = function(_, ...) print(_[1]) end,
@@ -154,7 +153,7 @@ _xtras.console.asHSDrawing():setAlpha(.9)
 full = function(yesnomaybeso)
 -- --     touch _fullUndoer to keep it from garbage collection...
 --     _fullUndoer[1] = _fullUndoer[1]
-    local win = appfinder.windowFromWindowTitle("Hammerspoon Console")
+    local win = window.get("Hammerspoon Console")
     if type(yesnomaybeso) == "nil" then yesnomaybeso = not win:isFullScreen() end
 
     if yesnomaybeso then

@@ -44,8 +44,8 @@ hotkey.bind(mods.CASC, "e", nil, function()
 hotkey.bind(mods.CASC, "3", function() application.launchOrFocus("Calculator") end, nil)
 
 hotkey.bind(mods.CAsC, "r", function()
-          local conswin = require("hs.appfinder").windowFromWindowTitle("Hammerspoon Console")
-          if conswin then
+          local conswin = window.get("Hammerspoon Console")
+          if conswin and application.get("Hammerspoon"):isFrontmost() then
               conswin:close()
           else
               hs.openConsole()

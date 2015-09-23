@@ -18,7 +18,6 @@ local module = {
 
 local menubar   = require("hs.menubar")
 local appwatch  = require("hs.application").watcher
-local appfinder = require("hs.appfinder")
 local image     = require("hs.image")
 local settings  = require("hs.settings")
 
@@ -32,7 +31,7 @@ end
 local hsConsoleWatcherFN = function(name,event,hsapp)
     if name then
         if name == "Hammerspoon" and event == appwatch.deactivated then
-            local test = appfinder.windowFromWindowTitle("Hammerspoon Console")
+            local test = window.get("Hammerspoon Console")
             if test then test:close() end
         end
     end
@@ -66,11 +65,11 @@ local watcherMenu = menubar.new():setIcon(image.imageFromName("statusicon")) -- 
                       { title = "-" },
                       { title = "Reveal", fn = function() hs.openConsole(false) end },
                       { title = "Close", fn = function()
-                              appfinder.windowFromWindowTitle("Hammerspoon Console"):close()
+                              window.get("Hammerspoon Console"):close()
                           end,
                           disabled = not (
-                              appfinder.windowFromWindowTitle("Hammerspoon Console") and
-                              appfinder.windowFromWindowTitle("Hammerspoon Console"):isVisible()
+                              window.get("Hammerspoon Console") and
+                              window.get("Hammerspoon Console"):isVisible()
                           )
                       },
                       { title = "-" },
