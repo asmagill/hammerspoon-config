@@ -20,6 +20,7 @@ local menubar   = require("hs.menubar")
 local appwatch  = require("hs.application").watcher
 local image     = require("hs.image")
 local settings  = require("hs.settings")
+local window    = require("hs.window")
 
 -- private variables and methods -----------------------------------------
 
