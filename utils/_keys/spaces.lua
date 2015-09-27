@@ -40,7 +40,7 @@ local timer    = require("hs.timer")
 ---    * perform a keyUp event with the same key and modifiers
 ---    * If a targetMouseLocation is set, perform a leftClickUp event.
 
-spacesKeySequence = function(key, win, mods)
+local spacesKeySequence = function(key, win, mods)
 --     print(tostring(win))
     local originalMousePosition = mouse.getAbsolutePosition()
     local doingWindow = false

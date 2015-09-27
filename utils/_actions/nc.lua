@@ -1,4 +1,4 @@
-module = {}
+local module = {}
 
 local nc = require("hs._asm.notificationcenter")
 module.workspaceObserver = nc.workspaceObserver(function(n,o,i)

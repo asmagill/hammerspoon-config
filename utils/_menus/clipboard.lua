@@ -69,7 +69,7 @@ end
 local clipboard_history = settings.get("so.victor.hs.jumpcut") or {} --If no history is saved on the system, create an empty history
 
 -- Append a history counter to the menu
-function setTitle()
+local function setTitle()
   if (#clipboard_history == 0) then
     jumpcut:setTitle(menuTitle) -- Unicode magic
     else
@@ -77,7 +77,7 @@ function setTitle()
   end
 end
 
-function putOnPaste(string,key)
+local function putOnPaste(string,key)
   if (pasteOnSelect) then
     hs.eventtap.keyStrokes(string)
     pasteboard.setContents(string)
@@ -93,7 +93,7 @@ function putOnPaste(string,key)
 end
 
 -- Clears the clipboard and history
-function clearAll()
+local function clearAll()
   pasteboard.clearContents()
   clipboard_history = {}
   settings.set("so.victor.hs.jumpcut",clipboard_history)
@@ -102,14 +102,14 @@ function clearAll()
 end
 
 -- Clears the last added to the history
-function clearLastItem()
+local function clearLastItem()
   table.remove(clipboard_history,#clipboard_history)
   settings.set("so.victor.hs.jumpcut",clipboard_history)
   now = pasteboard.changeCount()
   setTitle()
 end
 
-function pasteboardToClipboard(item)
+local function pasteboardToClipboard(item)
   -- Loop to enforce limit on qty of elements in history. Removes the oldest items
   while (#clipboard_history >= hist_size) do
     table.remove(clipboard_history,1)
@@ -120,7 +120,7 @@ function pasteboardToClipboard(item)
 end
 
 -- Dynamic menu by cmsj https://github.com/Hammerspoon/hammerspoon/issues/61#issuecomment-64826257
-populateMenu = function(key)
+local populateMenu = function(key)
   setTitle() -- Update the counter every time the menu is refreshed
   menuData = {}
   if (#clipboard_history == 0) then
@@ -144,7 +144,7 @@ populateMenu = function(key)
 end
 
 -- If the pasteboard owner has changed, we add the current item to our history and update the counter.
-function storeCopy()
+local function storeCopy()
   now = pasteboard.changeCount()
   if (now > last_change) then
     if goodToRecord() then
@@ -168,7 +168,7 @@ function storeCopy()
 end
 
 --Checks for changes on the pasteboard. Is it possible to replace with eventtap?
-timer = hs.timer.new(frequency, storeCopy)
+local timer = hs.timer.new(frequency, storeCopy)
 timer:start()
 
 setTitle() --Avoid wrong title if the user already has something on his saved history
