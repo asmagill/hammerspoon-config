@@ -17,6 +17,9 @@ require = rawrequire
 require("hs.crash").crashLogToNSLog = true
 require("hs.crash").crashLog("Disabled require logging to make log file sane")
 
+-- turn off hotkey logging... it's too damn much.
+require("hs.hotkey").setLogLevel("nothing")
+
 -- -- Testing eventtap replacement for hotkey
 --
 --local R, M = pcall(require,"hs._asm.hotkey")
@@ -79,8 +82,6 @@ _xtras = require("hs._asm.extras")
 _xtras.console = require("hs._asm.console")
 
 _asm = {
---     _ = package.loaded,
---     extras      = require("hs._asm.extras"),
     _keys       = requirePlus.requirePath("utils._keys", true),
     _actions    = requirePlus.requirePath("utils._actions", true),
     _menus      = requirePlus.requirePath("utils._menus", true),
@@ -100,7 +101,6 @@ _asm._CMI.addMenu(_asm._menus.battery.menuUserdata,         "title", -1, true)
 _asm._CMI.addMenu(_asm._menus.autoCloseHS.menuUserdata,     "icon" , -1, true)
 _asm._CMI.addMenu(_asm._menus.dateMenu.menuUserdata,        "title", -2, true)
 _asm._CMI.panelShow()
-
 
 hints.style = "vimperator"
 window.animationDuration = 0 -- I'm a philistine, sue me

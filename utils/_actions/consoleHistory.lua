@@ -1,15 +1,18 @@
-local checkInteral = 1                    -- how often to check for changes to the console history
-local saveLabel    = "_ASMConsoleHistory" -- label for saved history
-
 local module   = {}
 local console  = require("hs._asm.console")
 local settings = require("hs.settings")
 local timer    = require("hs.timer")
 
+local saveLabel     = "_ASMConsoleHistory" -- label for saved history
+local checkInterval = settings.get(saveLabel.."_interval") or 1 -- how often to check for changes
+local maxLength     = settings.get(saveLabel.."_max") or 100    -- maximum history to save
+
 module.clearHistory = function() return console.setHistory({}) end
 
 module.saveHistory = function()
-    settings.set(saveLabel, console.getHistory())
+    local hist, save = console.getHistory(), {}
+    table.move(hist, #hist - maxLength, #hist, 1, save)
+    settings.set(saveLabel, save)
 end
 
 module.retrieveHistory = function()
@@ -22,7 +25,7 @@ end
 
 module.retrieveHistory()
 local currentHistory = console.getHistory()
-module.autosaveHistory = timer.new(checkInteral, function()
+module.autosaveHistory = timer.new(checkInterval, function()
     local historyNow = console.getHistory()
     if #historyNow ~= #currentHistory then
         currentHistory = historyNow
