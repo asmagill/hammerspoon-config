@@ -11,7 +11,11 @@ module.clearHistory = function() return console.setHistory({}) end
 
 module.saveHistory = function()
     local hist, save = console.getHistory(), {}
-    table.move(hist, #hist - maxLength, #hist, 1, save)
+    if #hist > maxLength then
+        table.move(hist, #hist - maxLength, #hist, 1, save)
+    else
+        save = hist
+    end
     settings.set(saveLabel, save)
 end
 
@@ -37,6 +41,13 @@ module = setmetatable(module, { __gc =  function(_)
                                     _.saveHistory()
                                 end,
 })
+
+module.findInHistory = function(toFind)
+    toFind = toFind or ""
+    for i,v in ipairs(console.getHistory()) do
+        if v:match(toFind) then print(i, v) end
+    end
+end
 
 -- if pasting directly into init.lua, save this somewhere global like:
 -- console = module

@@ -18,7 +18,7 @@ require("hs.crash").crashLogToNSLog = true
 require("hs.crash").crashLog("Disabled require logging to make log file sane")
 
 -- turn off hotkey logging... it's too damn much.
-require("hs.hotkey").setLogLevel("nothing")
+require("hs.hotkey").setLogLevel("warning")
 
 -- -- Testing eventtap replacement for hotkey
 --
@@ -171,6 +171,8 @@ end
 else
     print("++ Running minimal configuration")
 end
+
+history = _asm._actions.consoleHistory.findInHistory
 
 print("++ Running: "..hs.processInfo.bundlePath)
 print("++ Accessibility: "..tostring(hs.accessibilityState()))
