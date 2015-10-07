@@ -12,9 +12,18 @@ local clockStyle = {
     alignment = "center",
     lineBreak = "clip",
 }
+local clockBox = drawing.rectangle{}:setStroke(true)
+                                    :setStrokeColor(clockStyle.color)
+                                    :setFill(true)
+                                    :setFillColor({alpha=.75})
+                                    :setRoundedRectRadii(5,5)
+                                    :setBehaviorByLabels{"canJoinAllSpaces"}
+                                    :setLevel("mainMenu")
+
 local clock = drawing.text({}, ""):setTextStyle(clockStyle)
                                   :setBehaviorByLabels{"canJoinAllSpaces"}
                                   :setLevel("mainMenu")
+                                  :orderAbove(clockBox)
 
 local drawClock = function()
     local screenFrame = screen.mainScreen():fullFrame()
@@ -23,6 +32,13 @@ local drawClock = function()
     clockPos.w = clockPos.w + 4
     clockPos.x = screenFrame.x + screenFrame.w - (clockPos.w + 4)
     clockPos.y = screenFrame.y + screenFrame.h - (clockPos.h + 4)
+    local clockBlockPos = {
+        x = clockPos.x - 3,
+        y = clockPos.y,
+        h = clockPos.h + 3,
+        w = clockPos.w + 6,
+    }
+    clockBox:setFrame(clockBlockPos)
     clock:setText(clockTime):setFrame(clockPos)
 end
 
@@ -30,20 +46,22 @@ local clockTimer = timer.new(1, drawClock)
 
 module.showClock = function()
     drawClock()
+    clockBox:show()
     clock:show()
     clockTimer:start()
 end
 
 module.hideClock = function()
     clock:hide()
+    clockBox:hide()
     clockTimer:stop()
 end
 
 module.toggleClock = function()
-    if clockTimer:isRunning() then
-        hideClock()
+    if clockTimer:running() then
+        module.hideClock()
     else
-        showClock()
+        module.showClock()
     end
 end
 
@@ -51,5 +69,6 @@ module.showClock()
 
 module.clockTimer = clockTimer
 module.clockDrawing = clock
+module.clockBox = clockBox
 
 return module

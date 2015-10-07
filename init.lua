@@ -1,8 +1,8 @@
 local minimal = false
-local oldPrint = print
-print = function(...)
-    oldPrint(os.date("%H:%M:%S: "), ...)
-end
+-- local oldPrint = print
+-- print = function(...)
+--     oldPrint(os.date("%H:%M:%S: "), ...)
+-- end
 
 -- I do too much with developmental versions of HS -- I don't need
 -- extraneous info in the Console application for every require; very
@@ -17,7 +17,7 @@ require = rawrequire
 require("hs.crash").crashLogToNSLog = true
 require("hs.crash").crashLog("Disabled require logging to make log file sane")
 
--- turn off hotkey logging... it's too damn much.
+-- adjust hotkey logging... info as the default is too much.
 require("hs.hotkey").setLogLevel("warning")
 
 -- -- Testing eventtap replacement for hotkey
@@ -50,9 +50,9 @@ local timer       = require("hs.timer")
 settings.set("_asm.crashIfNotMain", false)
 
 requirePlus.updatePaths("In Home", {
-    os.getenv("HOME").."/.hammerspoon/?.lua;"..
-    os.getenv("HOME").."/.hammerspoon/?/init.lua",
-    os.getenv("HOME").."/.hammerspoon/?.so"}, false)
+    hs.configdir.."/?.lua;"..
+    hs.configdir.."/?/init.lua",
+    hs.configdir.."/?.so"}, false)
 requirePlus.updatePaths("Luarocks", "luarocks-5.3 path", true)
 
 inspect = require("hs.inspect")
@@ -81,16 +81,15 @@ if not minimal then -- normal init continues...
 _xtras = require("hs._asm.extras")
 _xtras.console = require("hs._asm.console")
 
-_asm = {
-    _keys       = requirePlus.requirePath("utils._keys", true),
-    _actions    = requirePlus.requirePath("utils._actions", true),
-    _menus      = requirePlus.requirePath("utils._menus", true),
-    _CMI        = require("utils.consolidateMenus"),
-    relaunch    = function()
-        os.execute([[ (while ps -p ]]..hs.processInfo.processID..[[ > /dev/null ; do sleep 1 ; done ; open -a "]]..hs.processInfo.bundlePath..[[" ) & ]])
-        hs._exit(true, true)
-    end,
-}
+_asm = {}
+_asm._keys    = requirePlus.requirePath("utils._keys", true)
+_asm._actions = requirePlus.requirePath("utils._actions", true)
+_asm._menus   = requirePlus.requirePath("utils._menus", true)
+_asm._CMI     = require("utils.consolidateMenus")
+_asm.relaunch = function()
+    os.execute([[ (while ps -p ]]..hs.processInfo.processID..[[ > /dev/null ; do sleep 1 ; done ; open -a "]]..hs.processInfo.bundlePath..[[" ) & ]])
+    hs._exit(true, true)
+end
 
 table.insert(_asm._actions.closeWhenLoseFocus.closeList, "nvALT")
 

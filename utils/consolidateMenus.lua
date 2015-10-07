@@ -95,9 +95,14 @@ local CMIcount = 0
 
 local myMenuItems = {}
 local myMenuBar = drawing.rectangle{}:setRoundedRectRadii(wMargin, hMargin)
-                      :setStroke(boxStroke ~= nil):setStrokeWidth(boxStrokeW or 0):setStrokeColor(boxStroke)
-                      :setFill(boxFill ~= nil):setFillColor(boxFill):setBehaviorByLabels{"canJoinAllSpaces"}
-                      :setLevel("mainMenu")
+                                     :setStroke(boxStroke ~= nil)
+                                     :setStrokeWidth(boxStrokeW or 0)
+                                     :setStrokeColor(boxStroke)
+                                     :setFill(boxFill ~= nil)
+                                     :setFillColor(boxFill)
+                                     :setBehaviorByLabels{"canJoinAllSpaces"}
+                                     :setLevel("mainMenu")
+                                     :clickCallbackActivating(false)
 
 local panelControl = {
 open = { icon = [[
@@ -175,16 +180,18 @@ close = {
 }}}
 
 panelControl.open.drawing =  drawing.image({},
-    image.imageFromASCII(panelControl.open.icon, panelControl.open.context))
-    :setBehaviorByLabels{"canJoinAllSpaces"}
-    :orderAbove(myMenuBar)
-    :setLevel("mainMenu")
+                                    image.imageFromASCII(panelControl.open.icon, panelControl.open.context))
+                                    :setBehaviorByLabels{"canJoinAllSpaces"}
+                                    :orderAbove(myMenuBar)
+                                    :setLevel("mainMenu")
+                                    :clickCallbackActivating(false)
 
 panelControl.close.drawing = drawing.image({},
-    image.imageFromASCII(panelControl.close.icon, panelControl.close.context))
-    :setBehaviorByLabels{"canJoinAllSpaces"}
-    :orderAbove(myMenuBar)
-    :setLevel("mainMenu")
+                                    image.imageFromASCII(panelControl.close.icon, panelControl.close.context))
+                                    :setBehaviorByLabels{"canJoinAllSpaces"}
+                                    :orderAbove(myMenuBar)
+                                    :setLevel("mainMenu")
+                                    :clickCallbackActivating(false)
 
 -- private variables and methods -----------------------------------------
 
@@ -409,13 +416,19 @@ module.addMenu = function(menu, icon, position, autoRemove)
             CMI.recheckTitle = true
             icon = menu:title()
         end
-        CMI.drawing = drawing.text({h = iconHeight, w = iconWidth}, icon):setTextSize(iconHeight * .75):setTextColor(boxStroke):setAlpha(boxStroke.alpha)
+        CMI.drawing = drawing.text({h = iconHeight, w = iconWidth}, icon)
+                             :setTextSize(iconHeight * .75)
+                             :setTextColor(boxStroke)
+                             :setAlpha(boxStroke.alpha)
+                             :clickCallbackActivating(false)
     else
         if type(icon) == "string" then
             CMI.recheckIcon = true
             icon = menu:icon()
         end
-        CMI.drawing = drawing.image({h = iconHeight, w = iconWidth}, icon):setAlpha(boxStroke.alpha)
+        CMI.drawing = drawing.image({h = iconHeight, w = iconWidth}, icon)
+                             :setAlpha(boxStroke.alpha)
+                             :clickCallbackActivating(false)
     end
 
     CMI.icon = icon

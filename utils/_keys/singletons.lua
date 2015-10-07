@@ -26,7 +26,7 @@ hotkey.bind(mods.CAsC, "return", function()
     _asm._menus.applicationMenu.menuUserdata:popupMenu(require("hs.mouse").get())
 end)
 hotkey.bind(mods.casc, "f12", function() _asm._CMI.minToggle() end)
-hotkey.bind(mods.caSc, "f12", function() _asm._CMI.panelToggle() end)
+hotkey.bind(mods.caSc, "f12", function() _asm._CMI.panelToggle() ; _asm._actions.clock.toggleClock() end)
 
 -- launchOrFocus of Dash with menu and dock icons off causes preferences pane to appear...
 -- better for my habits to assign hotkey within Dash itself...
