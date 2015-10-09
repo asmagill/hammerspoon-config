@@ -16,7 +16,9 @@
 -- for i, v in ipairs(images) do v:setAlpha(.5):show() end
 --
 -- Note, in multi-monitor setups, this should only create drawings for the main (or specified, if the parameter is provided)
--- monitor (screen), but this is not yet tested...
+-- monitor.  In some cases, depending upon size of display and graph size, pre 0.9.42 versions of Hammerspoon will display
+-- some edge portions on the wrong monitor... we can't do anything about that without significant changes to this code.
+-- Hammerspoon 0.9.42 and later, however, have a work around included here.  See the end of module.fillScreen for more details.
 
 local module = {}
 local markers = {
@@ -70,15 +72,37 @@ local fillScreen = function(x, y, which)
 
     local d = {}
 
-    local width = math.ceil(whichRect.w / (x * availableLines))
-    local height = math.ceil(whichRect.h / (y * availableLines))
+    local width    = math.ceil(whichRect.w / (x * availableLines))
+    local height   = math.ceil(whichRect.h / (y * availableLines))
+    local wOnRatio = (whichRect.w / (x * availableLines)) - (width - 1)
+    local hOnRatio = (whichRect.h / (y * availableLines)) - (height - 1)
 
     for i = 1, width do
         for j = 1, height do
-            table.insert(d, graphWithSpacing(x, y):setTopLeft{
+            local h, w = y * availableLines, x * availableLines
+
+        -- correct for OS X's naive assumption that the monitor with "most" of the window visible is the one we want.
+        -- only works with 0.9.42 and later.  Previous versions will *mostly* work, but in some cases, if an image
+        -- making up part of the graph is *mostly* on another monitor, the windowserver automatically moves it and we
+        -- can't stop it (at least I haven't found a way to).  So you'll have to upgrade or tweak the graph size.
+
+            local v1,v2,v3 = hs.processInfo.version:match("^(%d+)%.(%d+)%.(%d+)$")
+            local tooEarlyToCorrect = false
+
+            if tonumber(v1) < 1 and tonumber(v2) < 10 and tonumber(v3) < 42 then tooEarlyToCorrect = true end
+            if not tooEarlyToCorrect then
+                if i == width then  w = w * wOnRatio end
+                if j == height then h = h * hOnRatio end
+            end
+
+            table.insert(d, graphWithSpacing(x, y):setFrame{
                                                     x = whichRect.x + (i - 1) * (x * availableLines),
-                                                    y = whichRect.y + (j - 1) * (y * availableLines)
+                                                    y = whichRect.y + (j - 1) * (y * availableLines),
+                                                    h = h,
+                                                    w = w
                                               })
+            if not tooEarlyToCorrect then d[#d]:imageScaling("none") end
+
         end
     end
 
