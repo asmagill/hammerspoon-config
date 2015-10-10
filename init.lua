@@ -176,4 +176,14 @@ history = _asm._actions.consoleHistory.findInHistory
 print("++ Running: "..hs.processInfo.bundlePath)
 print("++ Accessibility: "..tostring(hs.accessibilityState()))
 
+-- -- testing infinite loop detector with debug.sethook
 
+_loopTimeStamp = os.time()
+_loopTimer = timer.new(5, function() _loopTimeStamp = os.time() end):start()
+_loopChecker = function(t,l)
+    if (os.time() - _loopTimeStamp) > 30 then
+        _loopTimeStamp = os.time()
+        error("timeout -- infinite loop somewhere?")
+    end
+end
+debug.sethook(_loopChecker, "", 100)
