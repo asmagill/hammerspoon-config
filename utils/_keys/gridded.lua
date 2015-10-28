@@ -109,7 +109,7 @@ local change = function(command, direction, win)
             end
             win:setFrame(wFrame)
         end
-
+        print(inspectnm(action))
         if doAction then -- otherwise, it was handled in the above checks
             load(action,"gridded change","t",{grid=grid, win=win, alert=alert})()
         end
