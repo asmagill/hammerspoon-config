@@ -78,7 +78,10 @@ local change = function(command, direction, win)
         elseif command == "visual"                    then action = "grid.show()"
 
         elseif command == "tall" or command == "wide" then
-            local state = grid.get(win)
+        -- modifying the result of get and supplying it back to set the way this function does
+        -- resulted in a `Cannot create geometry object, wrong arguments` error
+            local tmp = grid.get(win)
+            local state = { x = tmp.x, y = tmp.y, h = tmp.h, w = tmp.w }
             if command == "tall" then
                 state.y = 0
                 state.h = grid.GRIDHEIGHT
