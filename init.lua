@@ -95,6 +95,7 @@ _asm.relaunch = function()
 end
 
 table.insert(_asm._actions.closeWhenLoseFocus.closeList, "nvALT")
+_asm._actions.closeWhenLoseFocus.disable()
 
 _asm._CMI.addMenu(_asm._menus.applicationMenu.menuUserdata, "icon",      true)
 _asm._CMI.addMenu(_asm._menus.developerMenu.menuUserdata,   "icon",  -1, true)
@@ -119,18 +120,18 @@ end
 
 -- _asm._actions.timestamp.status()
 
-timer.waitUntil(
-    load([[ return require("hs.window").get("Hammerspoon Console") ]]),
-    function(timerObject)
-        local win = window.get("Hammerspoon Console")
-        local screen = win:screen()
-        win:setTopLeft({
-            x = screen:frame().x + screen:frame().w - win:size().w,
-            y = screen:frame().y + screen:frame().h - win:size().h
-        })
-    end
-)
-
+-- timer.waitUntil(
+--     load([[ return require("hs.window").get("Hammerspoon Console") ]]),
+--     function(timerObject)
+--         local win = window.get("Hammerspoon Console")
+--         local screen = win:screen()
+--         win:setTopLeft({
+--             x = screen:frame().x + screen:frame().w - win:size().w,
+--             y = screen:frame().y + screen:frame().h - win:size().h
+--         })
+--     end
+-- )
+--
 -- hs.drawing.windowBehaviors.moveToActiveSpace
 _xtras.console.asHSDrawing():setBehavior(2)
 _xtras.console.smartInsertDeleteEnabled(false)
