@@ -105,6 +105,32 @@ _asm._CMI.addMenu(_asm._menus.autoCloseHS.menuUserdata,     "icon" , -1, true)
 _asm._CMI.addMenu(_asm._menus.dateMenu.menuUserdata,        "title", -2, true)
 _asm._CMI.panelShow()
 
+_asm._actions.geeklets.registerGeeklet("cpu", 15,  "geeklets/system.sh",
+                                          {x = 22, y = 44, h = 60, w = 350},
+                                          { hs.drawing.rectangle{
+                                              x = 12,
+                                              y = 34,
+                                              h = 80,
+                                              w = 370
+                                          }:setFillColor{alpha=.5}
+                                          :setStrokeColor{alpha=.5}
+                                          :setFill(true)
+                                          :setRoundedRectRadii(5,5) }
+                                      ):start()
+_asm._actions.geeklets.registerGeeklet("wifi", 60,  "geeklets/wifi.sh",
+                                          {x = 22, y = 124, h = 60, w = 350},
+                                          { hs.drawing.rectangle{
+                                              x = 12,
+                                              y = 114,
+                                              h = 80,
+                                              w = 370
+                                          }:setFillColor{alpha=.5}
+                                          :setStrokeColor{alpha=.5}
+                                          :setFill(true)
+                                          :setRoundedRectRadii(5,5) }
+                                      ):start()
+_asm._actions.geeklets.startUpdates()
+
 hints.style = "vimperator"
 window.animationDuration = 0 -- I'm a philistine, sue me
 ipc.cliInstall("/opt/amagill")
@@ -138,38 +164,6 @@ _xtras.console.smartInsertDeleteEnabled(false)
 _xtras.console.windowBackgroundColor({red=.6,blue=.7,green=.7})
 _xtras.console.outputBackgroundColor({red=.8,blue=.8,green=.8})
 _xtras.console.asHSDrawing():setAlpha(.9)
-
--- testing for side effects
---
--- -- this is the 2nd side effect noticed
--- -- not as bad as I once thought... properly take into consideration the menubar (or its absence in
--- -- 10.11) seems to have mitigated it pretty well.
--- local _fullUndoer = setmetatable({"This is in place to undo a full screen console during a reload, as it throws off some drawing elements otherwise"},{
---     __gc = function(_)
---         local win = window.get("Hammerspoon Console")
---         if win:isFullScreen() then win:toggleFullScreen() end
---     end,
---     __call = function(_, ...) print(_[1]) end,
---     __tostring = function(_) return(_[1]) end,
--- })
-
-full = function(yesnomaybeso)
--- --     touch _fullUndoer to keep it from garbage collection...
---     _fullUndoer[1] = _fullUndoer[1]
-    local win = window.get("Hammerspoon Console")
-    if type(yesnomaybeso) == "nil" then yesnomaybeso = not win:isFullScreen() end
-
-    if yesnomaybeso then
-        _xtras.console.asHSDrawing():setBehavior(_xtras.console.asHSDrawing():behavior() | 128)
-        if not win:isFullScreen() then win:toggleFullScreen() end
--- 1st side effect noticed
-        if not hs.dockIcon() then
-            print("You will have to reuse this function or quit Hammerspoon to leave full screen mode -- there is no window decoration at the top.")
-        end
-    else
-        if win:isFullScreen() then win:toggleFullScreen() end
-    end
-end
 
 else
     print("++ Running minimal configuration")
