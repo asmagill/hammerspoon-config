@@ -106,26 +106,26 @@ _asm._CMI.addMenu(_asm._menus.dateMenu.menuUserdata,        "title", -2, true)
 _asm._CMI.panelShow()
 
 _asm._actions.geeklets.registerGeeklet("cpu", 15,  "geeklets/system.sh",
-                                          {x = 22, y = 44, h = 60, w = 350},
+                                          { x = 22, y = 44, h = 60, w = 350}, { color = { alpha = 1 } },
                                           { hs.drawing.rectangle{
                                               x = 12,
                                               y = 34,
                                               h = 80,
                                               w = 370
-                                          }:setFillColor{alpha=.5}
-                                          :setStrokeColor{alpha=.5}
+                                          }:setFillColor{ alpha=.7, white = .5 }
+                                          :setStrokeColor{ alpha=.5 }
                                           :setFill(true)
                                           :setRoundedRectRadii(5,5) }
                                       ):start()
 _asm._actions.geeklets.registerGeeklet("wifi", 60,  "geeklets/wifi.sh",
-                                          {x = 22, y = 124, h = 60, w = 350},
+                                          { x = 22, y = 124, h = 60, w = 350}, { color = { alpha = 1 } },
                                           { hs.drawing.rectangle{
                                               x = 12,
                                               y = 114,
                                               h = 80,
                                               w = 370
-                                          }:setFillColor{alpha=.5}
-                                          :setStrokeColor{alpha=.5}
+                                          }:setFillColor{ alpha=.7, white = .5 }
+                                          :setStrokeColor{ alpha=.5 }
                                           :setFill(true)
                                           :setRoundedRectRadii(5,5) }
                                       ):start()

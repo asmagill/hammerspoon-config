@@ -30,7 +30,7 @@ local GeekTimer = timer.new(1, function()
                     if c ~= 0 then
                         log.wf("%s: status: %d error:%s output:%s", v.name, c, e, o)
                     end
-                    v.drawings[1]:setStyledText(stext.ansi(o, { font = { name = v.font, size = v.size } }))
+                    v.drawings[1]:setStyledText(stext.ansi(o, v.textStyle))
                     v.task = nil
                 end)
                 v.lastRun = os.time()
@@ -44,18 +44,19 @@ end)
 
 -- Change the defaults in here if you don't like mine!
 
-module.registerGeeklet = function(name, period, path, frame, font, size, otherDrawings)
+module.registerGeeklet = function(name, period, path, frame, textStyle, otherDrawings)
     assert(type(name)   == "string", "Argument 1, Name, must be specified as a string")
     assert(type(period) == "number", "Argument 2, Period, must be specified as a number")
     assert(type(path)   == "string", "Argument 3, Path, must be specified as a string")
     assert(type(frame)  == "table",  "Argument 4, Frame, must be specified as a table")
-    local theFont, theSize, theDrawings = "Menlo", 12, {}
-    if type(font) == "string" then theFont     = font end
-    if type(font) == "number" then theSize     = font end
-    if type(font) == "table"  then theDrawings = font end
-    if type(size) == "number" then theSize     = size end
-    if type(size) == "table"  then theDrawings = size end
-    if type(otherDrawings) == "table" then theDrawings = otherDrawings end
+    local theStyle, theDrawings = textStyle, otherDrawings
+
+    -- take advantage of the fact that textStyle is a table while otherDrawings is an array
+    if type(textStyle) == "table" and #textStyle ~= 0 then
+        theDrawings = textStyle
+        theStyle    = {}
+    end
+    if not theStyle.font then theStyle.font = { name = "Menlo", size = 12 } end
 
     if not registeredGeeklets[name] then
         registeredGeeklets[name] = setmetatable({
@@ -63,8 +64,7 @@ module.registerGeeklet = function(name, period, path, frame, font, size, otherDr
                 period        = period,
                 path          = path,
                 frame         = frame,
-                font          = theFont,
-                size          = theSize,
+                textStyle     = theStyle,
                 isVisible     = true,
                 enabled       = false,
                 lastRun       = -1,
@@ -237,4 +237,8 @@ module.geeklets = registeredGeeklets
 
 -- Return Module Object --------------------------------------------------
 
-return module
+return setmetatable(module, {
+    __gc = function(obj)
+        if GeekTimer:running() then GeekTimer:stop() end
+    end
+})
