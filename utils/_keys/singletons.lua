@@ -26,8 +26,12 @@ hotkey.bind(mods.CAsC, "return", function()
     _asm._menus.applicationMenu.menuUserdata:popupMenu(require("hs.mouse").get())
 end)
 hotkey.bind(mods.casc, "f12", function() _asm._CMI.minToggle() end)
-hotkey.bind(mods.caSc, "f12", function() _asm._CMI.panelToggle() ; _asm._actions.clock.toggleClock() end)
-
+hotkey.bind(mods.caSc, "f12", function() _asm._CMI.panelToggle() ; _asm._actions.geeklets.geeklets.clock:toggle() end)
+hotkey.bind(mods.Casc, "f12", function()
+    for i, v in pairs(_asm._actions.geeklets.geeklets) do
+        if not v.hoverlock then v:hover(not v.shouldHover) end
+    end
+end)
 -- launchOrFocus of Dash with menu and dock icons off causes preferences pane to appear...
 -- better for my habits to assign hotkey within Dash itself...
 --hotkey.bind(mods.CAsC, "d", function() application.launchOrFocus("Dash") end, nil)

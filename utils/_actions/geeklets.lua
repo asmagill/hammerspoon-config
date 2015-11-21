@@ -1,3 +1,6 @@
+
+-- add easy way for lua code to be the text source for a geeklet
+
 local module = {
 --[=[
     _NAME        = 'GeekTool Replacement',
@@ -20,35 +23,70 @@ module.log    = log
 
 local registeredGeeklets = {}
 
+local orderDrawings = function(name)
+    for i = #registeredGeeklets[name].drawings, 2, -1 do
+        registeredGeeklets[name].drawings[i]:orderBelow(registeredGeeklets[name].drawings[1])
+    end
+end
+
 local GeekTimer = timer.new(1, function()
     for i,v in pairs(registeredGeeklets) do
-        if (v.lastRun + v.period) < os.time() then
-            if v.enabled and v.task then -- and v.task:isRunning() then
-                log.wf("%s: is still running -- either period is too short or it has hung", v.name)
-            elseif v.enabled then
-                v.task = task.new(v.path, function(c, o, e)
-                    if c ~= 0 then
-                        log.wf("%s: status: %d error:%s output:%s", v.name, c, e, o)
+        if (v.lastRun + v.period) <= os.time() then
+            if v.enabled then
+                if v.kind == "task" then
+                    if v.task then -- and v.task:isRunning() then
+                        if (v.lastNotified + 60) < os.time() then
+                            log.wf("%s: is still running -- either period is too short or it has hung", v.name)
+                            v.lastNotified = os.time()
+                        end
+                    else
+                        v.task = task.new(v.path, function(c, o, e)
+                            if c ~= 0 then
+                                log.wf("%s: status: %d error:%s output:%s", v.name, c, e, o)
+                            end
+                            v.drawings[1]:setStyledText(stext.ansi(o, v.textStyle))
+                            v.lastNotified = 0
+                            v.task = nil
+                        end)
+                        v.lastRun = os.time()
+                        v.task:start()
                     end
-                    v.drawings[1]:setStyledText(stext.ansi(o, v.textStyle))
-                    v.task = nil
-                end)
-                v.lastRun = os.time()
-                v.task:start()
+                elseif v.kind == "lua" then
+                    local state, result = nil, ""
+                    if type(v.code) == "function" then
+                        state, result = pcall(v.code)
+                    else
+                        state, result = pcall(dofile, v.code)
+                    end
+                    if state then
+                        v.drawings[1]:setStyledText(stext.ansi(result, v.textStyle))
+                        v.lastRun = os.time()
+                        v.lastnotified = 0
+                    else
+                        if (v.lastNotified + 60) < os.time() then
+                            log.wf("%s: error %s", v.name, tostring(result))
+                            local errorStyle = {}
+                            for i,v in pairs(v.textStyle) do errorStyle[i] = v end
+                            errorStyle.color = {red=1}
+                            errorStyle.font = stext.convertFont(v.textStyle.font, stext.fontTraits.italicFont)
+                            v.drawings[1]:setStyledText(stext.ansi(tostring(result), errorStyle))
+                            v.lastNotified = os.time()
+                        end
+                    end
+                end
+                orderDrawings(v.name)
             end
         end
     end
 end)
 
--- Public interface ------------------------------------------------------
-
 -- Change the defaults in here if you don't like mine!
 
-module.registerGeeklet = function(name, period, path, frame, textStyle, otherDrawings)
-    assert(type(name)   == "string", "Argument 1, Name, must be specified as a string")
-    assert(type(period) == "number", "Argument 2, Period, must be specified as a number")
-    assert(type(path)   == "string", "Argument 3, Path, must be specified as a string")
-    assert(type(frame)  == "table",  "Argument 4, Frame, must be specified as a table")
+local registerGeeklet = function(kind, name, period, path, frame, textStyle, otherDrawings)
+    assert(kind == "lua" or kind == "task", "Unknown geeklet type: "..tostring(kind))
+    local code = nil
+    if kind == "lua" then code, path = path, nil end
+
     local theStyle, theDrawings = textStyle, otherDrawings
 
     -- take advantage of the fact that textStyle is a table while otherDrawings is an array
@@ -60,14 +98,17 @@ module.registerGeeklet = function(name, period, path, frame, textStyle, otherDra
 
     if not registeredGeeklets[name] then
         registeredGeeklets[name] = setmetatable({
+                kind          = kind,
                 name          = name,
                 period        = period,
                 path          = path,
+                code          = code,
                 frame         = frame,
                 textStyle     = theStyle,
                 isVisible     = true,
                 enabled       = false,
                 lastRun       = -1,
+                lastNotified  = -1,
                 shouldHover   = false,
                 isOnAllSpaces = true,
                 layer         = true,
@@ -78,6 +119,7 @@ module.registerGeeklet = function(name, period, path, frame, textStyle, otherDra
                 stop        = module.stop,
                 delete      = module.delete,
                 visible     = module.visible,
+                toggle      = module.toggle,
                 hover       = module.hover,
                 onAllSpaces = module.onAllSpaces,
                 wantsLayer  = module.wantsLayer,
@@ -92,6 +134,24 @@ module.registerGeeklet = function(name, period, path, frame, textStyle, otherDra
                                    :visible(registeredGeeklets[name].isVisible)
                                    :wantsLayer(registeredGeeklets[name].layer)
                                    :onAllSpaces(registeredGeeklets[name].isOnAllSpaces)
+end
+
+-- Public interface ------------------------------------------------------
+
+module.registerLuaGeeklet = function(name, period, code, frame, textStyle, otherDrawings)
+    assert(type(name)   == "string", "Argument 1, Name, must be specified as a string")
+    assert(type(period) == "number", "Argument 2, Period, must be specified as a number")
+    assert(type(code)   == "string" or type(code) == "function", "Argument 3, Path, must be specified as a string or a function")
+    assert(type(frame)  == "table",  "Argument 4, Frame, must be specified as a table")
+    return registerGeeklet("lua", name, period, code, frame, textStyle, otherDrawings)
+end
+
+module.registerShellGeeklet = function(name, period, path, frame, textStyle, otherDrawings)
+    assert(type(name)   == "string", "Argument 1, Name, must be specified as a string")
+    assert(type(period) == "number", "Argument 2, Period, must be specified as a number")
+    assert(type(path)   == "string", "Argument 3, Path, must be specified as a string")
+    assert(type(frame)  == "table",  "Argument 4, Frame, must be specified as a table")
+    return registerGeeklet("task", name, period, path, frame, textStyle, otherDrawings)
 end
 
 module.start = function(name)
@@ -133,18 +193,15 @@ end
 
 module.visible = function(name, state)
     local iReturn = name
-    if state == nil then return registeredGeeklets[name].isVisible end
     if type(name) == "table" then name = name.name end
     if not registeredGeeklets[name] then
         error(name.." is not registered", 2)
     else
-        for j,k in ipairs(registeredGeeklets[name].drawings) do
-            if state then k:show() else k:hide() end
+        if state == nil then return registeredGeeklets[name].isVisible end
+        for i,v in ipairs(registeredGeeklets[name].drawings) do
+            if state then v:show() else v:hide() end
         end
-        for i = 2, #registeredGeeklets[name].drawings, 1 do
-            registeredGeeklets[name].drawings[1]:orderAbove(registeredGeeklets[name].drawings[i])
-        end
-
+        if state then orderDrawings(name) end
         registeredGeeklets[name].isVisible = state
     end
     return iReturn
@@ -152,26 +209,32 @@ end
 
 module.hover = function(name, state)
     local iReturn = name
-    if state == nil then return registeredGeeklets[name].shouldHover end
     if type(name) == "table" then name = name.name end
     if not registeredGeeklets[name] then
         error(name.." is not registered", 2)
     else
-        for j,k in ipairs(registeredGeeklets[name].drawings) do
-            if state then k:bringToFront() else k:sendToBack() end
+        if state == nil then return registeredGeeklets[name].shouldHover end
+        for i,v in ipairs(registeredGeeklets[name].drawings) do
+            if state then v:bringToFront() else v:sendToBack() end
         end
+        orderDrawings(name)
         registeredGeeklets[name].shouldHover = state
     end
     return iReturn
 end
 
+module.toggle = function(name)
+    if type(name) == "table" then name = name.name end
+    return module.visible(name, not registeredGeeklets[name].isVisible)
+end
+
 module.wantsLayer = function(name, state)
     local iReturn = name
-    if state == nil then return registeredGeeklets[name].layer end
     if type(name) == "table" then name = name.name end
     if not registeredGeeklets[name] then
         error(name.." is not registered", 2)
     else
+        if state == nil then return registeredGeeklets[name].layer end
         registeredGeeklets[name].drawings[1]:wantsLayer(state)
         registeredGeeklets[name].layer = state
     end
@@ -180,11 +243,11 @@ end
 
 module.onAllSpaces = function(name, state)
     local iReturn = name
-    if state == nil then return registeredGeeklets[name].isOnAllSpaces end
     if type(name) == "table" then name = name.name end
     if not registeredGeeklets[name] then
         error(name.." is not registered", 2)
     else
+        if state == nil then return registeredGeeklets[name].isOnAllSpaces end
         for j,k in ipairs(registeredGeeklets[name].drawings) do
             if state then k:setBehaviorByLabels{"canJoinAllSpaces"} else k:setBehaviorByLabels{"default"} end
         end

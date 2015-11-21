@@ -44,6 +44,8 @@ local utf8        = require("hs.utf8")
 local image       = require("hs.image")
 local window      = require("hs.window")
 local timer       = require("hs.timer")
+local drawing     = require("hs.drawing")
+local screen      = require("hs.screen")
 
 -- Set to True or False indicating if you want a crash report when lua is invoked on  threads other than main (0) -- this should not happen, as lua is only supposed to execute in the main thread (unsupported and scary things can happen otherwise).  There is a performance hit, though, since the debug hook will be invoked for every call to a lua function, so usually this should be enabled only when testing in-development modules.
 
@@ -105,30 +107,63 @@ _asm._CMI.addMenu(_asm._menus.autoCloseHS.menuUserdata,     "icon" , -1, true)
 _asm._CMI.addMenu(_asm._menus.dateMenu.menuUserdata,        "title", -2, true)
 _asm._CMI.panelShow()
 
-_asm._actions.geeklets.registerGeeklet("cpu", 15,  "geeklets/system.sh",
-                                          { x = 22, y = 44, h = 60, w = 350}, { color = { alpha = 1 } },
-                                          { hs.drawing.rectangle{
-                                              x = 12,
-                                              y = 34,
-                                              h = 80,
-                                              w = 370
-                                          }:setFillColor{ alpha=.7, white = .5 }
-                                          :setStrokeColor{ alpha=.5 }
-                                          :setFill(true)
-                                          :setRoundedRectRadii(5,5) }
-                                      ):start()
-_asm._actions.geeklets.registerGeeklet("wifi", 60,  "geeklets/wifi.sh",
-                                          { x = 22, y = 124, h = 60, w = 350}, { color = { alpha = 1 } },
-                                          { hs.drawing.rectangle{
-                                              x = 12,
-                                              y = 114,
-                                              h = 80,
-                                              w = 370
-                                          }:setFillColor{ alpha=.7, white = .5 }
-                                          :setStrokeColor{ alpha=.5 }
-                                          :setFill(true)
-                                          :setRoundedRectRadii(5,5) }
-                                      ):start()
+_asm._actions.geeklets.registerShellGeeklet("cpu", 15,  "geeklets/system.sh",
+        { x = 22, y = 44, h = 60, w = 350}, { color = { alpha = 1 } },
+        { drawing.rectangle{ x = 12, y = 34, h = 80, w = 370 }
+            :setFillColor{ alpha=.7, white = .5 }
+            :setStrokeColor{ alpha=.5 }
+            :setFill(true)
+            :setRoundedRectRadii(5,5)
+        }):start()
+_asm._actions.geeklets.registerShellGeeklet("wifi", 60,  "geeklets/wifi.sh",
+        { x = 22, y = 124, h = 60, w = 350}, { color = { alpha = 1 } },
+        { drawing.rectangle{ x = 12, y = 114, h = 80, w = 370 }
+            :setFillColor{ alpha=.7, white = .5 }
+            :setStrokeColor{ alpha=.5 }
+            :setFill(true)
+            :setRoundedRectRadii(5,5)
+        }):start()
+_asm._actions.geeklets.registerLuaGeeklet("hwm_check", 150,  "geeklets/hwm_check.lua",
+        { x = 22, y = 204, h = 20, w = 350}, { color = { alpha = 1 } },
+        { drawing.rectangle{ x = 12, y = 194, h = 40, w = 370 }
+              :setFillColor{ alpha=.7, white = .5 }
+              :setStrokeColor{ alpha=.5 }
+              :setFill(true)
+              :setRoundedRectRadii(5,5)
+        }):start()
+
+local geekletClock = function()
+    local self = _asm._actions.geeklets.geeklets.clock
+    local screenFrame = screen.mainScreen():fullFrame()
+    local clockTime = os.date("%I:%M:%S %p")
+    local clockPos = drawing.getTextDrawingSize(clockTime, self.textStyle)
+    clockPos.w = clockPos.w + 4
+    clockPos.x = screenFrame.x + screenFrame.w - (clockPos.w + 4)
+    clockPos.y = screenFrame.y + screenFrame.h - (clockPos.h + 4)
+    local clockBlockPos = {
+        x = clockPos.x - 3,
+        y = clockPos.y,
+        h = clockPos.h + 3,
+        w = clockPos.w + 6,
+    }
+    self.drawings[2]:setFrame(clockBlockPos)
+    self.drawings[1]:setFrame(clockPos)
+    return clockTime
+end
+
+_asm._actions.geeklets.registerLuaGeeklet("clock", 1,  geekletClock, { }, {
+            font = { name = "Menlo-Italic", size = 12, },
+            color = { red=.75, blue=.75, green=.75, alpha=.75},
+            paragraphStyle = { alignment = "center", lineBreak = "clip" }
+        }, {
+            drawing.rectangle{}:setStroke(true)
+                                  :setStrokeColor({ red=.75, blue=.75, green=.75, alpha=.75})
+                                  :setFill(true)
+                                  :setFillColor({alpha=.75})
+                                  :setRoundedRectRadii(5,5)
+        }):hover(true):start()
+_asm._actions.geeklets.geeklets.clock.hoverlock = true
+
 _asm._actions.geeklets.startUpdates()
 
 hints.style = "vimperator"
@@ -146,18 +181,18 @@ end
 
 -- _asm._actions.timestamp.status()
 
--- timer.waitUntil(
---     load([[ return require("hs.window").get("Hammerspoon Console") ]]),
---     function(timerObject)
---         local win = window.get("Hammerspoon Console")
---         local screen = win:screen()
---         win:setTopLeft({
---             x = screen:frame().x + screen:frame().w - win:size().w,
---             y = screen:frame().y + screen:frame().h - win:size().h
---         })
---     end
--- )
---
+timer.waitUntil(
+    load([[ return require("hs.window").get("Hammerspoon Console") ]]),
+    function(timerObject)
+        local win = window.get("Hammerspoon Console")
+        local screen = win:screen()
+        win:setTopLeft({
+            x = screen:frame().x + screen:frame().w - win:size().w,
+            y = screen:frame().y + screen:frame().h - win:size().h
+        })
+    end
+)
+
 -- hs.drawing.windowBehaviors.moveToActiveSpace
 _xtras.console.asHSDrawing():setBehavior(2)
 _xtras.console.smartInsertDeleteEnabled(false)
