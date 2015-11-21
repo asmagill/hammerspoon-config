@@ -116,14 +116,16 @@ _asm._actions.geeklets.registerShellGeeklet("cpu", 15,  "geeklets/system.sh",
             :setRoundedRectRadii(5,5)
         }):start()
 _asm._actions.geeklets.registerShellGeeklet("wifi", 60,  "geeklets/wifi.sh",
-        { x = 22, y = 124, h = 60, w = 350}, { color = { alpha = 1 } },
-        { drawing.rectangle{ x = 12, y = 114, h = 80, w = 370 }
+        { x = 22, y = 124, h = 60, w = 350}, {
+            color = { alpha = 1 },
+            paragraphStyle = { lineBreak = "clip" }
+        }, { drawing.rectangle{ x = 12, y = 114, h = 80, w = 370 }
             :setFillColor{ alpha=.7, white = .5 }
             :setStrokeColor{ alpha=.5 }
             :setFill(true)
             :setRoundedRectRadii(5,5)
         }):start()
-_asm._actions.geeklets.registerLuaGeeklet("hwm_check", 150,  "geeklets/hwm_check.lua",
+_asm._actions.geeklets.registerLuaGeeklet("hwm_check", 300,  "geeklets/hwm_check.lua",
         { x = 22, y = 204, h = 20, w = 350}, { color = { alpha = 1 } },
         { drawing.rectangle{ x = 12, y = 194, h = 40, w = 370 }
               :setFillColor{ alpha=.7, white = .5 }

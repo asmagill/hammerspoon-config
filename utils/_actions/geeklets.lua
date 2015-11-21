@@ -215,7 +215,11 @@ module.hover = function(name, state)
     else
         if state == nil then return registeredGeeklets[name].shouldHover end
         for i,v in ipairs(registeredGeeklets[name].drawings) do
-            if state then v:bringToFront() else v:sendToBack() end
+            if state then
+                v:setLevel(drawing.windowLevels.popUpMenu)
+            else
+                v:setLevel(drawing.windowLevels.desktopIcon)
+            end
         end
         orderDrawings(name)
         registeredGeeklets[name].shouldHover = state
