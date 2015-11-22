@@ -32,8 +32,9 @@ else
         echo "🔴 Ethernet ip: NO CONNECTION"
 fi
 
-external=`curl --silent http://checkip.dyndns.org | awk '{print $6}' | cut -f 1 -d '<'`
-
+#external=`curl --silent http://checkip.dyndns.org | awk '{print $6}' | cut -f 1 -d '<'`
+#external=`curl --silent ifcfg.me`
+external=`dig +short myip.opendns.com @resolver1.opendns.com`
 if [ "$external" != "" ]
 then
         echo "🌎 External ip: $external"
