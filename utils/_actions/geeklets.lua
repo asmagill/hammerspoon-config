@@ -24,8 +24,10 @@ module.log    = log
 local registeredGeeklets = {}
 
 local orderDrawings = function(name)
-    for i = #registeredGeeklets[name].drawings, 2, -1 do
-        registeredGeeklets[name].drawings[i]:orderBelow(registeredGeeklets[name].drawings[1])
+    if registeredGeeklets[name].isVisible then
+        for i = #registeredGeeklets[name].drawings, 2, -1 do
+            registeredGeeklets[name].drawings[i]:orderBelow(registeredGeeklets[name].drawings[1])
+        end
     end
 end
 
@@ -201,8 +203,8 @@ module.visible = function(name, state)
         for i,v in ipairs(registeredGeeklets[name].drawings) do
             if state then v:show() else v:hide() end
         end
-        if state then orderDrawings(name) end
         registeredGeeklets[name].isVisible = state
+        orderDrawings(name)
     end
     return iReturn
 end
@@ -221,8 +223,8 @@ module.hover = function(name, state)
                 v:setLevel(drawing.windowLevels.desktopIcon)
             end
         end
-        orderDrawings(name)
         registeredGeeklets[name].shouldHover = state
+        orderDrawings(name)
     end
     return iReturn
 end
