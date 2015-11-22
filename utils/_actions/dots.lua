@@ -12,10 +12,10 @@ local module = {}
 
 module.size                   = 8
 module.distance               = 16
-module.selectedAlpha          = 0.65
-module.alpha                  = 0.25
+module.selectedAlpha          = 0.95
+module.alpha                  = 0.45
 module.cache                  = cache
-module.color                  = { white = .75}
+module.color                  = { white = .7}
 
 module.draw = function()
   local activeSpace = spaces.activeSpace()
