@@ -44,8 +44,10 @@ module.draw = function()
       end
 
       local x     = screenFrame.w / 2 - (#screenSpaces / 2) * module.distance + i * module.distance - module.size * 3 / 2
-      local y     = screenFrame.h - module.distance
+      local y     = screenFrame.h - (module.distance/2)
 --       local y     = module.distance
+--       local y     = screenFrame.h - module.distance
+
       local alpha = screenSpaces[i] == activeSpace and module.selectedAlpha or module.alpha
 
       module.color.alpha = alpha
