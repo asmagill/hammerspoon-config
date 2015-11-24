@@ -1,5 +1,5 @@
 local module   = {}
-local console  = require("hs._asm.console")
+local console  = require("hs.console")
 local settings = require("hs.settings")
 local timer    = require("hs.timer")
 

@@ -46,6 +46,7 @@ local window      = require("hs.window")
 local timer       = require("hs.timer")
 local drawing     = require("hs.drawing")
 local screen      = require("hs.screen")
+local console     = require("hs.console")
 
 -- Set to True or False indicating if you want a crash report when lua is invoked on  threads other than main (0) -- this should not happen, as lua is only supposed to execute in the main thread (unsupported and scary things can happen otherwise).  There is a performance hit, though, since the debug hook will be invoked for every call to a lua function, so usually this should be enabled only when testing in-development modules.
 
@@ -84,7 +85,7 @@ if not minimal then -- normal init continues...
 -- For my convenience while testing and screwing around...
 -- If something grows into usefulness, I'll modularize it.
 _xtras = require("hs._asm.extras")
-_xtras.console = require("hs._asm.console")
+-- _xtras.console = require("hs.console")
 
 _asm = {}
 _asm._keys    = requirePlus.requirePath("utils._keys", true)
@@ -196,11 +197,17 @@ timer.waitUntil(
 )
 
 -- hs.drawing.windowBehaviors.moveToActiveSpace
-_xtras.console.asHSDrawing():setBehavior(2)
-_xtras.console.smartInsertDeleteEnabled(false)
-_xtras.console.windowBackgroundColor({red=.6,blue=.7,green=.7})
-_xtras.console.outputBackgroundColor({red=.8,blue=.8,green=.8})
-_xtras.console.asHSDrawing():setAlpha(.9)
+console.asHSDrawing():setBehavior(2)
+console.smartInsertDeleteEnabled(false)
+console.windowBackgroundColor({red=.6,blue=.7,green=.7})
+console.outputBackgroundColor({red=.8,blue=.8,green=.8})
+console.asHSDrawing():setAlpha(.9)
+
+_asm.hs_default_print = print
+print = function(...)
+    hs.rawprint(...)
+    console.printStyledtext(...)
+end
 
 else
     print("++ Running minimal configuration")
