@@ -11,13 +11,15 @@ local module = {
 --]=]
 }
 
-local fnutils = require("hs.fnutils")
-local drawing = require("hs.drawing")
-local stext   = require("hs.styledtext")
-local task    = require("hs.task")
-local timer   = require("hs.timer")
-local log     = require("hs.logger").new("objc","warning")
-module.log    = log
+local fnutils    = require("hs.fnutils")
+local drawing    = require("hs.drawing")
+local stext      = require("hs.styledtext")
+local task       = require("hs.task")
+local timer      = require("hs.timer")
+local caffeinate = require("hs.caffeinate")
+
+local log        = require("hs.logger").new("objc","warning")
+module.log       = log
 
 -- private variables and methods -----------------------------------------
 
@@ -36,7 +38,7 @@ local GeekTimer = timer.new(1, function()
         if (v.lastRun + v.period) <= os.time() then
             if v.enabled then
                 if v.kind == "task" then
-                    if v.task then -- and v.task:isRunning() then
+                    if v.task and v.task:isRunning() then
                         if (v.lastNotified + 60) < os.time() then
                             log.wf("%s: is still running -- either period is too short or it has hung", v.name)
                             v.lastNotified = os.time()
@@ -63,7 +65,7 @@ local GeekTimer = timer.new(1, function()
                     if state then
                         v.drawings[1]:setStyledText(stext.ansi(result, v.textStyle))
                         v.lastRun = os.time()
-                        v.lastnotified = 0
+                        v.lastNotified = 0
                     else
                         if (v.lastNotified + 60) < os.time() then
                             log.wf("%s: error %s", v.name, tostring(result))
@@ -81,6 +83,20 @@ local GeekTimer = timer.new(1, function()
         end
     end
 end)
+
+local geekletSleepWatcher = caffeinate.watcher.new(function(event)
+    if event == caffeinate.watcher.systemDidWake then
+        for i,v in pairs(registeredGeeklets) do
+            v.lastNotified = 0
+        end
+    elseif event == caffeinate.watcher.systemWillSleep then
+        for i,v in pairs(registeredGeeklets) do
+            if v.task and v.task:isRunning() then
+                v.task:setCallback(nil):terminate()
+            end
+        end
+    end
+end):start()
 
 -- Change the defaults in here if you don't like mine!
 
@@ -302,6 +318,8 @@ module.showAll = function()
 end
 
 module.timer = GeekTimer
+module.sleepWatcher = geekletSleepWatcher
+
 module.geeklets = registeredGeeklets
 
 -- Return Module Object --------------------------------------------------
