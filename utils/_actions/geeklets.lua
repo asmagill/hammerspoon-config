@@ -63,7 +63,11 @@ local GeekTimer = timer.new(1, function()
                         state, result = pcall(dofile, v.code)
                     end
                     if state then
-                        v.drawings[1]:setStyledText(stext.ansi(result, v.textStyle))
+                        if v.isAlreadyStyled then
+                            v.drawings[1]:setStyledText(result)
+                        else
+                            v.drawings[1]:setStyledText(stext.ansi(result, v.textStyle))
+                        end
                         v.lastRun = os.time()
                         v.lastNotified = 0
                     else
@@ -116,21 +120,22 @@ local registerGeeklet = function(kind, name, period, path, frame, textStyle, oth
 
     if not registeredGeeklets[name] then
         registeredGeeklets[name] = setmetatable({
-                kind          = kind,
-                name          = name,
-                period        = period,
-                path          = path,
-                code          = code,
-                frame         = frame,
-                textStyle     = theStyle,
-                isVisible     = true,
-                enabled       = false,
-                lastRun       = -1,
-                lastNotified  = -1,
-                shouldHover   = false,
-                isOnAllSpaces = true,
-                layer         = true,
-                drawings      = theDrawings,
+                kind            = kind,
+                name            = name,
+                period          = period,
+                path            = path,
+                code            = code,
+                frame           = frame,
+                textStyle       = theStyle,
+                isAlreadyStyled = theStyle.skip,
+                isVisible       = true,
+                enabled         = false,
+                lastRun         = -1,
+                lastNotified    = -1,
+                shouldHover     = false,
+                isOnAllSpaces   = true,
+                layer           = true,
+                drawings        = theDrawings,
             }, {
             __index = {
                 start       = module.start,

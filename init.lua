@@ -47,6 +47,8 @@ local timer       = require("hs.timer")
 local drawing     = require("hs.drawing")
 local screen      = require("hs.screen")
 local console     = require("hs.console")
+local stext       = require("hs.styledtext")
+local fnutils     = require("hs.fnutils")
 
 -- Set to True or False indicating if you want a crash report when lua is invoked on  threads other than main (0) -- this should not happen, as lua is only supposed to execute in the main thread (unsupported and scary things can happen otherwise).  There is a performance hit, though, since the debug hook will be invoked for every call to a lua function, so usually this should be enabled only when testing in-development modules.
 
@@ -133,6 +135,23 @@ _asm._actions.geeklets.registerLuaGeeklet("hwm_check", 300,  "geeklets/hwm_check
               :setStrokeColor{ alpha=.5 }
               :setFill(true)
               :setRoundedRectRadii(5,5)
+        }):start()
+
+local geekletRemoteCheck = function()
+    local result = stext.new("")
+    for i,v in fnutils.sortByKeys(_asm._actions.remoteCheck.output) do
+        result = result..v.."\n"
+    end
+    return result
+end
+
+_asm._actions.geeklets.registerLuaGeeklet("remoteCheck", 300, geekletRemoteCheck,
+        { x = 400, y = 44, h = 56 * 3, w = 400 }, { skip = true },
+        { drawing.rectangle{x = 390, y = 34, h = 200, w = 420 }
+            :setFillColor{ alpha=.7, white = .5 }
+            :setStrokeColor{ alpha=.5 }
+            :setFill(true)
+            :setRoundedRectRadii(5,5)
         }):start()
 
 local geekletClock = function()
