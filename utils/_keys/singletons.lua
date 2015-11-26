@@ -32,6 +32,11 @@ hotkey.bind(mods.Casc, "f12", function()
         if not v.hoverlock then v:hover(not v.shouldHover) end
     end
 end)
+hotkey.bind(mods.CaSc, "f12", function()
+    for i, v in pairs(_asm._actions.geeklets.geeklets) do
+        if not v.hoverlock then v:visible(not v.isVisible) end
+    end
+end)
 -- launchOrFocus of Dash with menu and dock icons off causes preferences pane to appear...
 -- better for my habits to assign hotkey within Dash itself...
 --hotkey.bind(mods.CAsC, "d", function() application.launchOrFocus("Dash") end, nil)

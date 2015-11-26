@@ -12,7 +12,7 @@ local hosts = {
 
 local style = {
     font = { name = "Menlo", size = 10 },
-    color = { white = 1.0 }
+    color = { alpha = 1.0 }
 }
 
 local myTasks  = {}
@@ -23,7 +23,7 @@ module.updateTasks = function()
         if myTasks[v] and myTasks[v]:isRunning() then
             -- print("-- "..v.." still running")
         else
-            myOutput[v] = stext.new(v.." is polling...", style):setStyle{
+            myOutput[v] = stext.new(v.." is polling...\n", style):setStyle{
                 color = { list = "Crayons", name = "Sea Foam" },
                 font  = stext.convertFont(style.font, stext.fontTraits.italicFont),
             }
@@ -40,7 +40,7 @@ module.updateTasks = function()
                                   ((loss < 10.0) and { color = { list = "Apple", name = "Yellow" } } or
                                                      { color = { list = "Apple", name = "Red" } })
                     soutput = soutput:setStyle({
-                        color = { list = "Crayons", name = "Sea Foam" },
+                        color = { list = "x11", name = "mediumvioletred" },
                         font  = stext.convertFont(style.font, stext.fontTraits.italicFont),
                     }, 5, e1 - 5):setStyle(pStyle, s2, e2)
                 end

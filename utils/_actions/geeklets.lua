@@ -63,10 +63,14 @@ local GeekTimer = timer.new(1, function()
                         state, result = pcall(dofile, v.code)
                     end
                     if state then
-                        if v.isAlreadyStyled then
-                            v.drawings[1]:setStyledText(result)
+                        if result then
+                            if v.isAlreadyStyled then
+                                v.drawings[1]:setStyledText(result)
+                            else
+                                v.drawings[1]:setStyledText(stext.ansi(result, v.textStyle))
+                            end
                         else
-                            v.drawings[1]:setStyledText(stext.ansi(result, v.textStyle))
+                            v.drawings[1]:hide()
                         end
                         v.lastRun = os.time()
                         v.lastNotified = 0
@@ -206,8 +210,10 @@ module.delete = function(name)
         error(name.." is not registered", 2)
     else
         registeredGeeklets[name]:stop()
-        for j,k in ipairs(registeredGeeklets[name].drawings) do
-            k:delete()
+--         for j,k in ipairs(registeredGeeklets[name].drawings) do
+--             k:delete()
+        for k = #registeredGeeklets[name].drawings, 1, -1 do
+            registeredGeeklets[name].drawings[k]:delete()
         end
         registeredGeeklets[name].drawings = nil
         registeredGeeklets[name] = nil
@@ -221,8 +227,14 @@ module.visible = function(name, state)
         error(name.." is not registered", 2)
     else
         if state == nil then return registeredGeeklets[name].isVisible end
-        for i,v in ipairs(registeredGeeklets[name].drawings) do
-            if state then v:show() else v:hide() end
+--         for i,v in ipairs(registeredGeeklets[name].drawings) do
+--             if state then v:show() else v:hide() end
+        for v = #registeredGeeklets[name].drawings, 1, -1 do
+            if state then
+                registeredGeeklets[name].drawings[v]:show()
+            else
+                registeredGeeklets[name].drawings[v]:hide()
+            end
         end
         registeredGeeklets[name].isVisible = state
         orderDrawings(name)
@@ -237,11 +249,14 @@ module.hover = function(name, state)
         error(name.." is not registered", 2)
     else
         if state == nil then return registeredGeeklets[name].shouldHover end
-        for i,v in ipairs(registeredGeeklets[name].drawings) do
+--         for i,v in ipairs(registeredGeeklets[name].drawings) do
+        for v = #registeredGeeklets[name].drawings, 1, -1 do
             if state then
-                v:setLevel(drawing.windowLevels.popUpMenu)
+--                 v:setLevel(drawing.windowLevels.popUpMenu)
+                registeredGeeklets[name].drawings[v]:setLevel(drawing.windowLevels.popUpMenu)
             else
-                v:setLevel(drawing.windowLevels.desktopIcon)
+--                 v:setLevel(drawing.windowLevels.desktopIcon)
+                registeredGeeklets[name].drawings[v]:setLevel(drawing.windowLevels.desktopIcon)
             end
         end
         registeredGeeklets[name].shouldHover = state
@@ -275,8 +290,15 @@ module.onAllSpaces = function(name, state)
         error(name.." is not registered", 2)
     else
         if state == nil then return registeredGeeklets[name].isOnAllSpaces end
-        for j,k in ipairs(registeredGeeklets[name].drawings) do
-            if state then k:setBehaviorByLabels{"canJoinAllSpaces"} else k:setBehaviorByLabels{"default"} end
+--         for j,k in ipairs(registeredGeeklets[name].drawings) do
+        for k = #registeredGeeklets[name].drawings, 1, -1 do
+            if state then
+--                 k:setBehaviorByLabels{"canJoinAllSpaces"}
+                registeredGeeklets[name].drawings[k]:setBehaviorByLabels{"canJoinAllSpaces"}
+            else
+--                 k:setBehaviorByLabels{"default"}
+                registeredGeeklets[name].drawings[k]:setBehaviorByLabels{"default"}
+            end
         end
         registeredGeeklets[name].onAllSpaces = state
     end
@@ -309,7 +331,10 @@ end
 module.hideAll = function()
     for i,v in pairs(registeredGeeklets) do
         if v.visible then
-            for j, k in ipairs(v.drawings) do k:hide() end
+--             for j, k in ipairs(v.drawings) do k:hide() end
+            for k = #v.drawings, 1, -1 do
+                v.drawings[k]:hide()
+            end
         end
     end
 end
@@ -317,7 +342,10 @@ end
 module.showAll = function()
     for i,v in pairs(registeredGeeklets) do
         if v.visible then
-            for j, k in ipairs(v.drawings) do k:show() end
+--             for j, k in ipairs(v.drawings) do k:show() end
+            for k = #v.drawings, 1, -1 do
+                v.drawings[k]:show()
+            end
         end
     end
 end

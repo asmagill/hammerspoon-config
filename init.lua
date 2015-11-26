@@ -110,83 +110,7 @@ _asm._CMI.addMenu(_asm._menus.autoCloseHS.menuUserdata,     "icon" , -1, true)
 _asm._CMI.addMenu(_asm._menus.dateMenu.menuUserdata,        "title", -2, true)
 _asm._CMI.panelShow()
 
-_asm._actions.geeklets.registerShellGeeklet("cpu", 15,  "geeklets/system.sh",
-        { x = 22, y = 44, h = 60, w = 350}, { color = { alpha = 1 } },
-        { drawing.rectangle{ x = 12, y = 34, h = 80, w = 370 }
-            :setFillColor{ alpha=.7, white = .5 }
-            :setStrokeColor{ alpha=.5 }
-            :setFill(true)
-            :setRoundedRectRadii(5,5)
-        }):start()
-_asm._actions.geeklets.registerShellGeeklet("wifi", 60,  "geeklets/wifi.sh",
-        { x = 22, y = 124, h = 60, w = 350}, {
-            color = { alpha = 1 },
-            paragraphStyle = { lineBreak = "clip" }
-        }, { drawing.rectangle{ x = 12, y = 114, h = 80, w = 370 }
-            :setFillColor{ alpha=.7, white = .5 }
-            :setStrokeColor{ alpha=.5 }
-            :setFill(true)
-            :setRoundedRectRadii(5,5)
-        }):start()
-_asm._actions.geeklets.registerLuaGeeklet("hwm_check", 300,  "geeklets/hwm_check.lua",
-        { x = 22, y = 204, h = 20, w = 350}, { color = { alpha = 1 } },
-        { drawing.rectangle{ x = 12, y = 194, h = 40, w = 370 }
-              :setFillColor{ alpha=.7, white = .5 }
-              :setStrokeColor{ alpha=.5 }
-              :setFill(true)
-              :setRoundedRectRadii(5,5)
-        }):start()
-
-local geekletRemoteCheck = function()
-    local result = stext.new("")
-    for i,v in fnutils.sortByKeys(_asm._actions.remoteCheck.output) do
-        result = result..v.."\n"
-    end
-    return result
-end
-
-_asm._actions.geeklets.registerLuaGeeklet("remoteCheck", 300, geekletRemoteCheck,
-        { x = 400, y = 44, h = 56 * 3, w = 400 }, { skip = true },
-        { drawing.rectangle{x = 390, y = 34, h = 200, w = 420 }
-            :setFillColor{ alpha=.7, white = .5 }
-            :setStrokeColor{ alpha=.5 }
-            :setFill(true)
-            :setRoundedRectRadii(5,5)
-        }):start()
-
-local geekletClock = function()
-    local self = _asm._actions.geeklets.geeklets.clock
-    local screenFrame = screen.mainScreen():fullFrame()
-    local clockTime = os.date("%I:%M:%S %p")
-    local clockPos = drawing.getTextDrawingSize(clockTime, self.textStyle)
-    clockPos.w = clockPos.w + 4
-    clockPos.x = screenFrame.x + screenFrame.w - (clockPos.w + 4)
-    clockPos.y = screenFrame.y + screenFrame.h - (clockPos.h + 4)
-    local clockBlockPos = {
-        x = clockPos.x - 3,
-        y = clockPos.y,
-        h = clockPos.h + 3,
-        w = clockPos.w + 6,
-    }
-    self.drawings[2]:setFrame(clockBlockPos)
-    self.drawings[1]:setFrame(clockPos)
-    return clockTime
-end
-
-_asm._actions.geeklets.registerLuaGeeklet("clock", 1,  geekletClock, { }, {
-            font = { name = "Menlo-Italic", size = 12, },
-            color = { red=.75, blue=.75, green=.75, alpha=.75},
-            paragraphStyle = { alignment = "center", lineBreak = "clip" }
-        }, {
-            drawing.rectangle{}:setStroke(true)
-                                  :setStrokeColor({ red=.75, blue=.75, green=.75, alpha=.75})
-                                  :setFill(true)
-                                  :setFillColor({alpha=.75})
-                                  :setRoundedRectRadii(5,5)
-        }):hover(true):start()
-_asm._actions.geeklets.geeklets.clock.hoverlock = true
-
-_asm._actions.geeklets.startUpdates()
+dofile("geekery.lua")
 
 hints.style = "vimperator"
 window.animationDuration = 0 -- I'm a philistine, sue me
@@ -226,6 +150,21 @@ _asm.hs_default_print = print
 print = function(...)
     hs.rawprint(...)
     console.printStyledtext(...)
+end
+
+colorsFor = function(name)
+    local a = stext.new("")
+    for i,v in fnutils.sortByKeys(drawing.color.colorsFor(name)) do
+        a = a..stext.new(i.."\n", { color = { white = .5 }, backgroundColor = v })
+    end
+    print(a)
+end
+
+colorDump = function()
+    for i,v in fnutils.sortByKeys(drawing.color.lists()) do
+        print(i)
+        colorsFor(i)
+    end
 end
 
 else
