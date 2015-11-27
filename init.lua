@@ -50,6 +50,7 @@ local console     = require("hs.console")
 local stext       = require("hs.styledtext")
 local fnutils     = require("hs.fnutils")
 
+
 -- Set to True or False indicating if you want a crash report when lua is invoked on  threads other than main (0) -- this should not happen, as lua is only supposed to execute in the main thread (unsupported and scary things can happen otherwise).  There is a performance hit, though, since the debug hook will be invoked for every call to a lua function, so usually this should be enabled only when testing in-development modules.
 
 settings.set("_asm.crashIfNotMain", false)
@@ -165,6 +166,18 @@ colorDump = function()
         print(i)
         colorsFor(i)
     end
+end
+
+mb = function(url)
+    local webview     = require("hs.webview")
+    url = url or "https://www.google.com"
+    if not _asm.mb then
+        _asm.mb = webview.new({x=100,y=100,h=500,w=500},{
+            developerExtrasEnabled=true
+        }):windowStyle(1+2+4+8)
+          :allowTextEntry(true):allowGestures(true)
+    end
+    return _asm.mb:url(url):show()
 end
 
 else

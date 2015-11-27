@@ -85,7 +85,10 @@ geekery.geeklets.clock.hoverlock = true
 
 if _asm._actions.diskSpace then
     geekery.registerLuaGeeklet("diskSpace", 60,
-        function() return nil end,                   -- no text handled by geeklets
+        function()
+            _asm._actions.diskSpace.updateDisplay()
+            return nil                               -- no text handled by geeklets
+        end,
         { },                                         -- no frame for the essentially empty object
         { skip = true },                             -- no style for text handled by geeklets
         { _asm._actions.diskSpace.geekletInterface } -- responds to geeklet requests
