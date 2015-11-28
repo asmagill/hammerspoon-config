@@ -5,6 +5,7 @@ local fnutils = require("hs.fnutils")
 local drawing = require("hs.drawing")
 
 local monitorTopY   = screen.mainScreen():frame().y
+local monitorBotY   = monitorTopY + screen.mainScreen():frame().h
 
 geekery.registerShellGeeklet("cpu", 15,  "geeklets/system.sh",
         { x = 22, y = monitorTopY + 22, h = 60, w = 350}, { color = { alpha = 1 } },
@@ -45,6 +46,15 @@ end
 geekery.registerLuaGeeklet("remoteCheck", 300, geekletRemoteCheck,
         { x = 400, y = monitorTopY + 22, h = 56 * 3, w = 400 }, { skip = true },
         { drawing.rectangle{x = 390, y = monitorTopY + 12, h = 200, w = 420 }
+            :setFillColor{ alpha=.7, white = .5 }
+            :setStrokeColor{ alpha=.5 }
+            :setFill(true)
+            :setRoundedRectRadii(5,5)
+        }):start()
+
+geekery.registerLuaGeeklet("mailCheck", 30, _asm._actions.mailCheck.outputLine,
+        { x = 232, y = monitorBotY - 48, h = 36, w = 300 }, { skip = true },
+        { drawing.rectangle{x = 222, y = monitorBotY - 56, h = 56, w = 320 }
             :setFillColor{ alpha=.7, white = .5 }
             :setStrokeColor{ alpha=.5 }
             :setFill(true)
