@@ -109,7 +109,7 @@ module.outputLine = function()
     end
     if newString then
         module.styledOutput = stext.new("")
-        for k,v in pairs(module.boxes) do
+        for k,v in fnutils.sortByKeys(module.boxes, function(a,b) return a > b end) do
             local boxCount, totalCount = 0, 0
             for a,b in pairs(v) do
                 if a ~= "Deleted Messages" then
