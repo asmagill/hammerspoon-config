@@ -357,8 +357,10 @@ module.geeklets = registeredGeeklets
 
 -- Return Module Object --------------------------------------------------
 
-return setmetatable(module, {
-    __gc = function(obj)
-        if GeekTimer:running() then GeekTimer:stop() end
-    end
-})
+-- return setmetatable(module, {
+--     __gc = function(obj)
+--         if GeekTimer:running() then GeekTimer:stop() end
+--     end
+-- })
+
+return module

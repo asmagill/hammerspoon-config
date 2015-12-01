@@ -507,19 +507,21 @@ module.removeMenu = function(menu)
 end
 -- Return Module Object --------------------------------------------------
 
-return setmetatable(module, {
-    __gc = function(_)
-        if myMenuUserdata then
-            myMenuUserdata:delete()
-            myMenu = nil
-        end
-        if myMenuItems then
-            fnutils.map(myMenuItems, function(obj) obj:delete() end)
-            myMenuItems = nil
-        end
-        if myMenuBar then
-            myMenuBar:delete()
-            myMenuBar = nil
-        end
-    end,
-})
+-- return setmetatable(module, {
+--     __gc = function(_)
+--         if myMenuUserdata then
+--             myMenuUserdata:delete()
+--             myMenu = nil
+--         end
+--         if myMenuItems then
+--             fnutils.map(myMenuItems, function(obj) obj:delete() end)
+--             myMenuItems = nil
+--         end
+--         if myMenuBar then
+--             myMenuBar:delete()
+--             myMenuBar = nil
+--         end
+--     end,
+-- })
+
+return module

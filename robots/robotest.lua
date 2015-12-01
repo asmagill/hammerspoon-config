@@ -249,6 +249,4 @@ module.disengage = function()
     end
 end
 
-return setmetatable(module, { __gc = function(_)
-    module.disengage()
-end})
+return setmetatable(module, { __gc = module.disengage })

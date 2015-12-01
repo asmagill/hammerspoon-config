@@ -168,6 +168,27 @@ colorDump = function()
     end
 end
 
+resetSpaces = function()
+    local s = require("hs._asm.undocumented.spaces")
+    -- bypass check for raw function access
+    local si = require("hs._asm.undocumented.spaces.internal")
+    for k,v in pairs(s.spacesByScreenUUID()) do
+        local first = true
+        for a,b in ipairs(v) do
+            if first and si.spaceType(b) == s.types.user then
+                si.showSpaces(b)
+                si._changeToSpace(b)
+                first = false
+            else
+                si.hideSpaces(b)
+            end
+            si.spaceTransform(b, nil)
+        end
+        si.setScreenUUIDisAnimating(k, false)
+    end
+    hs.execute("killall Dock")
+end
+
 mb = function(url)
     local webview     = require("hs.webview")
     url = url or "https://www.google.com"

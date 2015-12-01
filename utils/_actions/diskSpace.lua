@@ -192,8 +192,10 @@ module.geekletInterface = setmetatable({
 
 module.updateDisplay()
 
-return setmetatable(module, {
-    __gc = function(_)
-        _.geekletInterface:delete()
-    end
-})
+-- return setmetatable(module, {
+--     __gc = function(_)
+--         _.geekletInterface:delete()
+--     end
+-- })
+
+return module

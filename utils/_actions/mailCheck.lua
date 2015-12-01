@@ -134,13 +134,15 @@ module.timer = timer.new(180, function()
     module.checkForNewMail()
 end):start()
 
-return setmetatable(module, {
-    __gc = function(_)
-        for k,v in pairs(module.tasks) do
-            for i,e in ipairs(v) do
-                if e:isRunning() then e:terminate() end
-            end
-            if _.timer:running() then _.timer:stop() end
-        end
-    end
-})
+-- return setmetatable(module, {
+--     __gc = function(_)
+--         for k,v in pairs(module.tasks) do
+--             for i,e in ipairs(v) do
+--                 if e:isRunning() then e:terminate() end
+--             end
+--             if _.timer:running() then _.timer:stop() end
+--         end
+--     end
+-- })
+
+return module
