@@ -1,8 +1,9 @@
-local task    = require("hs.task")
-local fnutils = require("hs.fnutils")
-local inspect = require("hs.inspect")
-local stext   = require("hs.styledtext")
-local timer   = require("hs.timer")
+local task       = require("hs.task")
+local fnutils    = require("hs.fnutils")
+local inspect    = require("hs.inspect")
+local stext      = require("hs.styledtext")
+local timer      = require("hs.timer")
+local caffeinate = require("hs.caffeinate")
 
 local credentialFiles = {
     iCloud = "/Users/amagill/.imaputilsrc-icloud",
@@ -129,6 +130,22 @@ module.outputLine = function()
 end
 
 module.checkForNewMail()
+
+module.sleepWatcher = caffeinate.watcher.new(function(event)
+    if event == caffeinate.watcher.systemDidWake then
+        module.timer:start()
+    elseif event == caffeinate.watcher.systemWillSleep then
+        module.timer:stop()
+        for i,v in pairs(module.tasks) do
+            for a,b in ipairs(v) do
+                if b:isRunning() then
+                    b:setCallback(nil):terminate()
+                end
+            end
+            module.tasks[i] = {}
+        end
+    end
+end):start()
 
 module.timer = timer.new(180, function()
     module.checkForNewMail()
