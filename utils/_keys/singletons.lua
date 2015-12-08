@@ -37,6 +37,20 @@ hotkey.bind(mods.CaSc, "f12", function()
         if not v.hoverlock then v:visible(not v.isVisible) end
     end
 end)
+hotkey.bind(mods.CAsC, "f12", function()
+    local listener = require("utils.speech")
+    if listener.recognizer then
+        if listener:isListening() then
+            listener:stop()
+        else
+            listener:start()
+        end
+    else
+        listener = listener.init():start()
+    end
+end)
+
+
 -- launchOrFocus of Dash with menu and dock icons off causes preferences pane to appear...
 -- better for my habits to assign hotkey within Dash itself...
 --hotkey.bind(mods.CAsC, "d", function() application.launchOrFocus("Dash") end, nil)

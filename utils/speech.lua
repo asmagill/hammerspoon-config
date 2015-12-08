@@ -110,8 +110,9 @@ placeholder.init = function() return module.init():start() end
 
 module.add("Open Hammerspoon Console", hs.openConsole)
 module.add("Open System Console", function() require("hs.application").launchOrFocus("Console") end)
-module.add("Stop listening", module.stop)
-module.add("Stop listenting completely", module.disableCompletely)
+module.add("Open Terminal Application", function() require("hs.application").launchOrFocus("Terminal") end)
+module.add("Hammerspoon Stop listening", module.stop)
+module.add("Hammerspoon Stop listenting completely", module.disableCompletely)
 
 if settings.get("_asm.listener") then placeholder.init() end
 
