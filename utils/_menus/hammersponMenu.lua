@@ -22,6 +22,8 @@ local image     = require("hs.image")
 local settings  = require("hs.settings")
 local window    = require("hs.window")
 
+local listener  = require("utils.speech")
+
 -- private variables and methods -----------------------------------------
 
 module.status = true
@@ -88,6 +90,21 @@ local watcherMenu = menubar.new():setIcon(image.imageFromName("statusicon")) -- 
                       },
                       { title = "Menu Icon", checked = hs.menuIcon(), fn = function()
                               hs.menuIcon(not hs.menuIcon())
+                          end
+                      },
+                      { title = "-" },
+                      { title = "Hammerspoon Listener",
+                          checked = listener.recognizer and listener:isListening(),
+                          fn = function()
+                              if listener.recognizer then
+                                  if listener:isListening() then
+                                      listener:stop()
+                                  else
+                                      listener:start()
+                                  end
+                              else
+                                  listener = listener.init():start()
+                              end
                           end
                       },
                   },
