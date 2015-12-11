@@ -41,7 +41,7 @@ hotkey.bind(mods.CAsC, "f12", function()
     local listener = require("utils.speech")
     if listener.recognizer then
         if listener:isListening() then
-            listener:stop()
+            listener:disableCompletely()
         else
             listener:start()
         end
