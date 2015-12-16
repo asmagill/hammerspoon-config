@@ -91,14 +91,16 @@ _xtras = require("hs._asm.extras")
 -- _xtras.console = require("hs.console")
 
 _asm = {}
-_asm._keys    = requirePlus.requirePath("utils._keys", true)
-_asm._actions = requirePlus.requirePath("utils._actions", true)
-_asm._menus   = requirePlus.requirePath("utils._menus", true)
-_asm._CMI     = require("utils.consolidateMenus")
+
 _asm.relaunch = function()
     os.execute([[ (while ps -p ]]..hs.processInfo.processID..[[ > /dev/null ; do sleep 1 ; done ; open -a "]]..hs.processInfo.bundlePath..[[" ) & ]])
     hs._exit(true, true)
 end
+
+_asm._keys    = requirePlus.requirePath("utils._keys", true)
+_asm._actions = requirePlus.requirePath("utils._actions", true)
+_asm._menus   = requirePlus.requirePath("utils._menus", true)
+_asm._CMI     = require("utils.consolidateMenus")
 
 table.insert(_asm._actions.closeWhenLoseFocus.closeList, "nvALT")
 _asm._actions.closeWhenLoseFocus.disable()

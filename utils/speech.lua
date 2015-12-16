@@ -1,3 +1,9 @@
+--
+-- fn - l -- toggle listener
+--
+-- hold down fn, even when on, or command is ignored (minimizes false positives in noisy
+-- environments.)
+--
 local module, placeholder = {}, {}
 
 local speech   = require("hs.speech")
@@ -5,14 +11,20 @@ local listener = speech.listener
 local fnutils  = require("hs.fnutils")
 local log      = require("hs.logger").new("mySpeech","warning")
 local settings = require("hs.settings")
+local eventtap = require("hs.eventtap")
+local hotkey   = require("hs.hotkey")
 
 local commands = {}
-local title    = "Hammerspoon Listener"
+local title    = "Hammerspoon"
 local listenerCallback = function(listenerObj, text)
-    if commands[text] then
-        commands[text]()
+    if eventtap.checkKeyboardModifiers().fn then
+        if commands[text] then
+            commands[text]()
+        else
+            log.wf("Unrecognized command '%s' received", theCommand)
+        end
     else
-        log.wf("Unrecognized commend '%s' received", theCommand)
+        log.vf("FN not depressed -- ignoring command '%s'", theCommand)
     end
 end
 
@@ -63,8 +75,7 @@ module.start = function()
 end
 
 module.stop = function()
-    module.recognizer:title(title.." - disabled"):stop()
-    settings.set("_asm.listener", false)
+    module.recognizer:title("Disabled: "..title):stop()
     return placeholder
 end
 
@@ -82,6 +93,9 @@ module.disableCompletely = function()
     end
     module.recognizer = nil
     setmetatable(placeholder, nil)
+    module.hotkey:disable()
+
+    settings.set("_asm.listener", false)
 end
 
 module.init = function()
@@ -91,6 +105,21 @@ module.init = function()
     module.recognizer = listener.new(title):setCallback(listenerCallback)
                                     :foregroundOnly(false)
                                     :blocksOtherRecognizers(false)
+
+    module.hotkey = hotkey.bind({}, "l", function()
+        if eventtap.checkKeyboardModifiers().fn then
+            if module.isListening() then
+                module.stop()
+            else
+                module.start()
+            end
+        else
+            module.hotkey:disable()
+            eventtap.keyStroke({}, "l")
+            module.hotkey:enable()
+        end
+    end)
+
     return setmetatable(placeholder,  {
         __index = function(_, k)
             if module[k] then
@@ -106,14 +135,22 @@ module.init = function()
     })
 end
 
-placeholder.init = function() return module.init():start() end
+placeholder.init = function() return module.init() end
 
 module.add("Open Hammerspoon Console", hs.openConsole)
 module.add("Open System Console", function() require("hs.application").launchOrFocus("Console") end)
+module.add("Open Editor", function() require("hs.application").launchOrFocus("BBEdit") end)
+module.add("Open Browser", function() require("hs.application").launchOrFocus("Safari") end)
+module.add("Open SmartGit", function() require("hs.application").launchOrFocus("SmartGit") end)
+module.add("Open Mail", function() require("hs.application").launchOrFocus("Mail") end)
 module.add("Open Terminal Application", function() require("hs.application").launchOrFocus("Terminal") end)
-module.add("Hammerspoon Stop Listening", module.stop)
+module.add("Re-Load Hammerspoon", hs.reload)
+module.add("Re-Launch Hammerspoon", _asm.relaunch)
+-- module.add("Stop Listening", module.stop)
 module.add("Go away for a while", module.disableCompletely)
 
-if settings.get("_asm.listener") then placeholder.init() end
+-- list doesn't appear until its started at least once; since we want to minimize false
+-- positives, start disabled, but fill list in case Dictation Commands window is open.
+if settings.get("_asm.listener") then placeholder.init():start():stop() end
 
 return placeholder

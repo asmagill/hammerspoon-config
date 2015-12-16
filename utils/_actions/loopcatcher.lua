@@ -8,7 +8,7 @@ local caffeinate = require("hs.caffeinate")
 module._loopTimeStamp = os.time()
 module._loopTimer = timer.new(5, function() module._loopTimeStamp = os.time() end):start()
 module._loopChecker = function(t,l)
-    if (os.time() - module._loopTimeStamp) > 30 then
+    if (os.time() - module._loopTimeStamp) > 60 then
         module._loopTimeStamp = os.time()
         error("timeout -- infinite loop somewhere?\n\n"..debug.traceback())
     end
