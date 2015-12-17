@@ -21,10 +21,10 @@ local listenerCallback = function(listenerObj, text)
         if commands[text] then
             commands[text]()
         else
-            log.wf("Unrecognized command '%s' received", theCommand)
+            log.wf("Unrecognized command '%s' received", text)
         end
     else
-        log.vf("FN not depressed -- ignoring command '%s'", theCommand)
+        log.vf("FN not depressed -- ignoring command '%s'", text)
     end
 end
 
@@ -94,7 +94,7 @@ module.disableCompletely = function()
     module.recognizer = nil
     setmetatable(placeholder, nil)
     module.hotkey:disable()
-
+    module.listenLabel = module.listenLabel:delete()
     settings.set("_asm.listener", false)
 end
 
@@ -109,8 +109,20 @@ module.init = function()
     module.hotkey = hotkey.bind({}, "l", function()
         if eventtap.checkKeyboardModifiers().fn then
             if module.isListening() then
+                module.listenLabel = module.listenLabel:delete()
                 module.stop()
             else
+                local screen = require("hs.screen").primaryScreen():fullFrame()
+                module.listenLabel = require("hs.drawing").text({
+                                                x = screen.x + 5, y = screen.y + screen.h - 21,
+                                                h = 14, w = 150
+                                            }, require("hs.styledtext").new("Hammerspoon Listening...", {
+                                                font = { name = "Menlo-Italic", size = 10 },
+                                                color = { list = "Crayons", name = "Sky" },
+                                                paragraphStyle = { lineBreak = "clip" }
+                                            })):setBehaviorByLabels{"canJoinAllSpaces"}
+                                            :setLevel("popUpMenu")
+                                            :show()
                 module.start()
             end
         else
