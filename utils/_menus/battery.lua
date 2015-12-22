@@ -21,13 +21,18 @@ local module = {
 --]=]
 }
 
-local menubar = require("hs.menubar")
-local utf8    = require("hs.utf8")
-local battery = require("hs.battery")
-local fnutils = require("hs.fnutils")
+local menubar  = require("hs.menubar")
+local utf8     = require("hs.utf8")
+local battery  = require("hs.battery")
+local fnutils  = require("hs.fnutils")
+local settings = require("hs.settings")
+local speech   = require("hs.speech")
 
 local onAC      = utf8.codepointToUTF8(0x1F50C) -- plug
 local onBattery = utf8.codepointToUTF8(0x1F50B) -- battery
+
+local suppressAudioKey = "_asm.battery.suppressAudio"
+local suppressAudio = settings.get(suppressAudioKey) or false
 
 local menuUserData = nil
 local currentPowerSource = ""
@@ -36,26 +41,34 @@ local currentPowerSource = ""
 module.batteryNotifications = {
     { onBattery = true, percentage = 10, doEvery = false,
         fn = function()
-            local audio = require("hs.audiodevice").defaultOutputDevice()
-            local volume, muted = audio:volume(), audio:muted()
-            -- apparently some devices don't have a volume or mute...
-            if volume then audio:setVolume(100) end
-            if muted then audio:setMuted(false) end
-            os.execute([[ say -v "Zarvox" "LOW BATTERY" ]])
-            if volume then audio:setVolume(volume) end
-            if muted then audio:setMuted(true) end
+            if not suppressAudio then
+                local audio = require("hs.audiodevice").defaultOutputDevice()
+                local volume, muted = audio:volume(), audio:muted()
+                -- apparently some devices don't have a volume or mute...
+                if volume then audio:setVolume(100) end
+                if muted then audio:setMuted(false) end
+                speech.new("Zarvox"):speak("LOW BATTERY")
+                if volume then audio:setVolume(volume) end
+                if muted then audio:setMuted(true) end
+            else
+                alert.show("LOW BATTERY")
+            end
         end
     },
     { onBattery = true, percentage = 5, doEvery = 60,
         fn = function()
-            local audio = require("hs.audiodevice").defaultOutputDevice()
-            local volume, muted = audio:volume(), audio:muted()
-            -- apparently some devices don't have a volume or mute...
-            if volume then audio:setVolume(100) end
-            if muted then audio:setMuted(false) end
-            os.execute([[ say -v "Zarvox" "PLUG ME IN NOW" ]])
-            if volume then audio:setVolume(volume) end
-            if muted then audio:setMuted(true) end
+            if not suppressAudio then
+                local audio = require("hs.audiodevice").defaultOutputDevice()
+                local volume, muted = audio:volume(), audio:muted()
+                -- apparently some devices don't have a volume or mute...
+                if volume then audio:setVolume(100) end
+                if muted then audio:setMuted(false) end
+                speech.new("Zarvox"):speak("PLUG ME IN NOW")
+                if volume then audio:setVolume(volume) end
+                if muted then audio:setMuted(true) end
+            else
+                alert.show("PLUG ME IN NOW")
+            end
         end
     },
     { onBattery = true, timeRemaining = 30, doEvery = 300,
@@ -67,14 +80,18 @@ module.batteryNotifications = {
     },
     { onBattery = false, percentage = 10, doEvery = false,
         fn = function()
+            if not suppressAudio then
         -- I don't care if I miss this one, so... no volume changes
-            os.execute([[ say -v "Zarvox" "Feeling returning to my circuits" ]])
+                speech.new("Zarvox"):speak("Feeling returning to my circuits")
+            end
         end
     },
     { onBattery = false, percentage = 90, doEvery = false,
         fn = function()
+            if not suppressAudio then
         -- I don't care if I miss this one, so... no volume changes
-            os.execute([==[ say -v "Zarvox" "I'm feeling [[inpt PHON; rate 80]]+mUXC[[inpt TEXT; rset 0]] better [[emph +]]now" ]==])
+                speech.new("Zarvox"):speak("I'm feeling [[inpt PHON; rate 80]]+mUXC[[inpt TEXT; rset 0]] better [[emph +]]now")
+            end
         end
     },
 }
@@ -227,6 +244,13 @@ local displayBatteryData = function(modifier)
         table.insert(rawBatteryData, { title = i.." = "..tostring(v), disabled = true })
     end
     table.insert(menuTable, { title = "Raw Battery Data...", menu = rawBatteryData })
+
+    table.insert(menuTable, { title = "-" })
+
+    table.insert(menuTable, { title = "Suppress Audio", checked = suppressAudio, fn = function()
+        suppressAudio = not suppressAudio
+        settings.set(suppressAudioKey, suppressAudio)
+    end })
 
     return menuTable
 end
