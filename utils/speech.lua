@@ -94,7 +94,9 @@ module.disableCompletely = function()
     module.recognizer = nil
     setmetatable(placeholder, nil)
     module.hotkey:disable()
-    module.listenLabel = module.listenLabel:delete()
+    if (module.listenLabel) then
+        module.listenLabel = module.listenLabel:delete()
+    end
     settings.set("_asm.listener", false)
 end
 
