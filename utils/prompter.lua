@@ -3,6 +3,7 @@ local webview     = require("hs.webview")
 local usercontent = webview.usercontent
 local screen      = require("hs.screen")
 local host        = require("hs.host")
+local drawing     = require("hs.drawing")
 
 module.prompt = function(...) -- (label, default, frame, callback)
     local pos = 1
@@ -84,6 +85,7 @@ Notes:
         }
         </script>
     ]]):show()
+    view:asHSDrawing():setLevel(drawing.windowLevels.screenSaver)
 
     return setmetatable({view}, {
         __index = {

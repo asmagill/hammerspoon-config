@@ -41,6 +41,7 @@ local pb       = require("hs.pasteboard")
 local timer    = require("hs.timer")
 local menubar  = require("hs.menubar")
 local eventtap = require("hs.eventtap")
+local stext    = require("hs.styledtext")
 
 local hashFN   = require("hs.hash").MD5 -- can use other hash fn if this proves insufficient
 local prompt   = require("utils.prompter").prompt
@@ -165,6 +166,17 @@ local renderNewClipperMenu = function(mods)
         if #primaryClipHistory.history == 0 then
             table.insert(results, { title = "empty", disabled = true })
         else
+
+            table.insert(results, { title = stext.new("Hold down "..utf8.registeredKeys.alt.." to "
+                          ..utf8.registeredKeys.leftDoubleQuote.."type"
+                          ..utf8.registeredKeys.rightDoubleQuote..
+                          " selection immediately", {
+                                font = stext.convertFont(stext.defaultFonts.menu, stext.fontTraits.italicFont),
+                                color = { list="x11", name="royalblue"},
+                          }), disabled = true
+                      })
+            table.insert(results, { title = "-" })
+
             for i = #primaryClipHistory.history, 1, -1 do
                 local itemTitle = (#primaryClipHistory.history[i] > labelLength) and
                       primaryClipHistory.history[i]:sub(1, labelLength).." "..utf8.codepointToUTF8("U+2026") or
@@ -176,16 +188,14 @@ local renderNewClipperMenu = function(mods)
             end
         end
 
-        table.insert(results, { title = "-" })
-        table.insert(results, { title = "Hold down "..utf8.registeredKeys.alt.." to "
-                                        ..utf8.registeredKeys.leftDoubleQuote.."type"
-                                        ..utf8.registeredKeys.rightDoubleQuote..
-                                        " selection immediately",
-                                disabled = true })
     else
 
 -- do special menu
-        table.insert(results, { title = "newClipper Options" })
+        table.insert(results, { title = stext.new("newClipper Options", {
+                            font = stext.convertFont(stext.defaultFonts.menu, stext.fontTraits.italicFont),
+                            color = { list="x11", name="royalblue"},
+                      }), disabled = true
+                  })
         table.insert(results, { title = "-" })
 
 -- these currently have to be updated from the console with hs.settings
@@ -268,7 +278,12 @@ local renderNewClipperMenu = function(mods)
     end
 
     table.insert(results, { title = "-" })
-    table.insert(results, { title = "newClipper for Hammerspoon", disabled = true })
+    table.insert(results, { title = stext.new("newClipper for Hammerspoon", {
+                                font = stext.convertFont(stext.defaultFonts.menu, stext.fontTraits.italicFont),
+                                color = { list="x11", name="royalblue"},
+                                paragraphStyle = { alignment = "right" },
+                              }), disabled = true
+                          })
     return results
 end
 
