@@ -36,7 +36,8 @@ module.draw = function()
 
         dot
           :setStroke(false)
-          :setBehaviorByLabels({ 'canJoinAllSpaces', 'stationary' })
+--           :setBehaviorByLabels({ 'canJoinAllSpaces', 'stationary' })
+          :setBehaviorByLabels({ 'canJoinAllSpaces' })
 --           :setLevel(hs.drawing.windowLevels.desktopIcon)
           :setLevel(hs.drawing.windowLevels.popUpMenu)
       else
