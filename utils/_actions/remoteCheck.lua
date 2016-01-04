@@ -12,7 +12,8 @@ local hosts = {
 
 local style = {
     font = { name = "Menlo", size = 10 },
-    color = { alpha = 1.0 }
+    color = { alpha = 1.0 },
+    paragraphStyle = { lineBreak = "clip" },
 }
 
 local myTasks  = {}
@@ -31,7 +32,10 @@ module.updateTasks = function()
                 local output  = o:gsub("^PING.+[\r\n][\r\n]", "")
                 local soutput = stext.new(output, style)
                 if c == 2 then
-                    soutput = soutput:setStyle{ color = { red = 1.0 } }
+                    soutput = soutput:setStyle{
+                        color = { red = 1.0 },
+                        paragraphStyle = { lineBreak = "wordWrap" },
+                    }
                 else
                     local _, e1 = output:find("^[^\r\n]+[\r\n]")
                     local s2, e2, loss = output:find("(%d+%.%d+)%% packet loss")
