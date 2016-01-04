@@ -52,14 +52,14 @@ geekery.registerLuaGeeklet("remoteCheck", 300, geekletRemoteCheck,
             :setRoundedRectRadii(5,5)
         }):start()
 
-geekery.registerLuaGeeklet("mailCheck", 30, _asm._actions.mailCheck.outputLine,
-        { x = 232, y = monitorBotY - 48, h = 36, w = 300 }, { skip = true },
-        { drawing.rectangle{x = 222, y = monitorBotY - 56, h = 56, w = 320 }
-            :setFillColor{ alpha=.7, white = .5 }
-            :setStrokeColor{ alpha=.5 }
-            :setFill(true)
-            :setRoundedRectRadii(5,5)
-        }):start()
+-- geekery.registerLuaGeeklet("mailCheck", 30, _asm._actions.mailCheck.outputLine,
+--         { x = 232, y = monitorBotY - 48, h = 36, w = 300 }, { skip = true },
+--         { drawing.rectangle{x = 222, y = monitorBotY - 56, h = 56, w = 320 }
+--             :setFillColor{ alpha=.7, white = .5 }
+--             :setStrokeColor{ alpha=.5 }
+--             :setFill(true)
+--             :setRoundedRectRadii(5,5)
+--         }):start()
 
 local geekletClock = function()
     local self = geekery.geeklets.clock
