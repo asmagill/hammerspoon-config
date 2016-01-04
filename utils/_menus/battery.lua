@@ -47,7 +47,8 @@ module.batteryNotifications = {
                 -- apparently some devices don't have a volume or mute...
                 if volume then audio:setVolume(100) end
                 if muted then audio:setMuted(false) end
-                speech.new("Zarvox"):speak("LOW BATTERY")
+                local sp = speech.new("Zarvox"):speak("LOW BATTERY")
+                while (sp:isSpeaking()) do end
                 if volume then audio:setVolume(volume) end
                 if muted then audio:setMuted(true) end
             else
@@ -63,7 +64,8 @@ module.batteryNotifications = {
                 -- apparently some devices don't have a volume or mute...
                 if volume then audio:setVolume(100) end
                 if muted then audio:setMuted(false) end
-                speech.new("Zarvox"):speak("PLUG ME IN NOW")
+                local sp = speech.new("Zarvox"):speak("PLUG ME IN NOW")
+                while (sp:isSpeaking()) do end
                 if volume then audio:setVolume(volume) end
                 if muted then audio:setMuted(true) end
             else
@@ -82,7 +84,8 @@ module.batteryNotifications = {
         fn = function()
             if not suppressAudio then
         -- I don't care if I miss this one, so... no volume changes
-                speech.new("Zarvox"):speak("Feeling returning to my circuits")
+                local sp = speech.new("Zarvox"):speak("Feeling returning to my circuits")
+                while (sp:isSpeaking()) do end
             end
         end
     },
@@ -90,7 +93,8 @@ module.batteryNotifications = {
         fn = function()
             if not suppressAudio then
         -- I don't care if I miss this one, so... no volume changes
-                speech.new("Zarvox"):speak("I'm feeling [[inpt PHON; rate 80]]+mUXC[[inpt TEXT; rset 0]] better [[emph +]]now")
+                local sp = speech.new("Zarvox"):speak("I'm feeling [[inpt PHON; rate 80]]+mUXC[[inpt TEXT; rset 0]] better [[emph +]]now")
+                while (sp:isSpeaking()) do end
             end
         end
     },
