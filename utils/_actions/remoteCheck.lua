@@ -3,6 +3,7 @@ local module = {}
 local task  = require("hs.task")
 local stext = require("hs.styledtext")
 local timer = require("hs.timer")
+local reachable = require("hs._asm.reachability")
 
 local hosts = {
     "cousteau.private",
@@ -24,33 +25,41 @@ module.updateTasks = function()
         if myTasks[v] and myTasks[v]:isRunning() then
             -- print("-- "..v.." still running")
         else
-            myOutput[v] = stext.new(v.." is polling...\n", style):setStyle{
-                color = { list = "Crayons", name = "Sea Foam" },
-                font  = stext.convertFont(style.font, stext.fontTraits.italicFont),
-            }
-            myTasks[v] = task.new("/sbin/ping", function(c, o, e)
-                local output  = o:gsub("^PING.+[\r\n][\r\n]", "")
-                local soutput = stext.new(output, style)
-                if c == 2 then
-                    soutput = soutput:setStyle{
-                        color = { red = 1.0 },
-                        paragraphStyle = { lineBreak = "wordWrap" },
-                    }
-                else
-                    local _, e1 = output:find("^[^\r\n]+[\r\n]")
-                    local s2, e2, loss = output:find("(%d+%.%d+)%% packet loss")
-                    loss = tonumber(loss)
-                    local pStyle = (loss < 5.0)  and { color = { list = "Apple", name = "Green" } } or
-                                  ((loss < 10.0) and { color = { list = "Apple", name = "Yellow" } } or
-                                                     { color = { list = "Apple", name = "Red" } })
-                    soutput = soutput:setStyle({
-                        color = { list = "x11", name = "mediumvioletred" },
-                        font  = stext.convertFont(style.font, stext.fontTraits.italicFont),
-                    }, 5, e1 - 5):setStyle(pStyle, s2, e2)
-                end
-                myOutput[v] = soutput
+            if (reachable.forIPv4Address("10.161.81.10"):status() & reachable.flags.isLocalAddress) > 0 then
+                myOutput[v] = stext.new(v.." is polling...\n", style):setStyle{
+                    color = { list = "Crayons", name = "Sea Foam" },
+                    font  = stext.convertFont(style.font, stext.fontTraits.italicFont),
+                }
+                myTasks[v] = task.new("/sbin/ping", function(c, o, e)
+                    local output  = o:gsub("^PING.+[\r\n][\r\n]", "")
+                    local soutput = stext.new(output, style)
+                    if c == 2 then
+                        soutput = soutput:setStyle{
+                            color = { red = 1.0 },
+                            paragraphStyle = { lineBreak = "wordWrap" },
+                        }
+                    else
+                        local _, e1 = output:find("^[^\r\n]+[\r\n]")
+                        local s2, e2, loss = output:find("(%d+%.%d+)%% packet loss")
+                        loss = tonumber(loss)
+                        local pStyle = (loss < 5.0)  and { color = { list = "Apple", name = "Green" } } or
+                                      ((loss < 10.0) and { color = { list = "Apple", name = "Yellow" } } or
+                                                         { color = { list = "Apple", name = "Red" } })
+                        soutput = soutput:setStyle({
+                            color = { list = "x11", name = "mediumvioletred" },
+                            font  = stext.convertFont(style.font, stext.fontTraits.italicFont),
+                        }, 5, e1 - 5):setStyle(pStyle, s2, e2)
+                    end
+                    myOutput[v] = soutput
+                    _asm._actions.geeklets.geeklets.remoteCheck.lastRun = os.time() - _asm._actions.geeklets.geeklets.remoteCheck.period
+                end, { "-c10", "-q", v }):start()
+            else
+                myOutput[v] = stext.new(v..": VPN is Down\n", style):setStyle{
+                    color = { list = "Crayons", name = "Sea Foam" },
+                    font  = stext.convertFont(style.font, stext.fontTraits.italicFont),
+                }
                 _asm._actions.geeklets.geeklets.remoteCheck.lastRun = os.time() - _asm._actions.geeklets.geeklets.remoteCheck.period
-            end, { "-c10", "-q", v }):start()
+            end
         end
     end
 end

@@ -52,6 +52,7 @@ local toggleWatcher = function(setItTo)
         module.status = true
         hsConsoleWatcher:start()
     end
+    settings.set("_asm.autohide.console", module.status)
     return module.status
 end
 
@@ -134,8 +135,4 @@ if not hs.autoCloseConsole then hs.autoCloseConsole = toggleWatcher end
 
 -- Return Module Object --------------------------------------------------
 
-return setmetatable(module, {
-    __gc = function(_)
-        settings.set("_asm.autohide.console", _.status)
-    end,
-})
+return module
