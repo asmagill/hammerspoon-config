@@ -1,9 +1,9 @@
 local module = {}
 
-local task  = require("hs.task")
-local stext = require("hs.styledtext")
-local timer = require("hs.timer")
-local reachable = require("hs._asm.reachability")
+local task         = require("hs.task")
+local stext        = require("hs.styledtext")
+local timer        = require("hs.timer")
+local reachability = require("hs.networks.reachability")
 
 local hosts = {
     "cousteau.private",
@@ -25,7 +25,7 @@ module.updateTasks = function()
         if myTasks[v] and myTasks[v]:isRunning() then
             -- print("-- "..v.." still running")
         else
-            if (reachable.forIPv4Address("10.161.81.10"):status() & reachable.flags.isLocalAddress) > 0 then
+            if (module.vpnStatus:status() & reachability.flags.isLocalAddress) > 0 then
                 myOutput[v] = stext.new(v.." is polling...\n", style):setStyle{
                     color = { list = "Crayons", name = "Sea Foam" },
                     font  = stext.convertFont(style.font, stext.fontTraits.italicFont),
@@ -52,6 +52,13 @@ module.updateTasks = function()
                     end
                     myOutput[v] = soutput
                     _asm._actions.geeklets.geeklets.remoteCheck.lastRun = os.time() - _asm._actions.geeklets.geeklets.remoteCheck.period
+                    myOutput[v] = myOutput[v]..stext.new("Last Check: "..os.date(), style):setStyle{
+                        color = { list = "x11", name = "royalblue" },
+                        font  = stext.convertFont(style.font, stext.fontTraits.italicFont),
+                        paragraphStyle = {
+                            alignment = "right"
+                        },
+                    }
                 end, { "-c10", "-q", v }):start()
             else
                 myOutput[v] = stext.new(v..": VPN is Down\n", style):setStyle{
@@ -64,10 +71,13 @@ module.updateTasks = function()
     end
 end
 
+-- force a recheck when the status changes
+module.vpnStatus = reachability.forAddress("10.161.81.10"):setCallback(module.updateTasks):start()
+
 module.output = myOutput
 module.tasks  = myTasks
 module.timer  = timer.new(300, module.updateTasks):start()
 
-module.updateTasks()
+timer.doAfter(1, module.updateTasks) -- ensure this is triggered after we load, so _asm._actions exists
 
 return module
