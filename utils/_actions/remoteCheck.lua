@@ -3,7 +3,7 @@ local module = {}
 local task         = require("hs.task")
 local stext        = require("hs.styledtext")
 local timer        = require("hs.timer")
-local reachability = require("hs.networks.reachability")
+local reachability = require("hs.network.reachability")
 
 local hosts = {
     "cousteau.private",
