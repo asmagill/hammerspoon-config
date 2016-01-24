@@ -10,12 +10,12 @@ local cache = {
 
 local module = {}
 
-module.size                   = 8
-module.distance               = 16
-module.selectedAlpha          = 0.95
-module.alpha                  = 0.45
-module.cache                  = cache
-module.color                  = { white = .7}
+module.size          = 8
+module.distance      = 16
+module.cache         = cache
+module.color         = { white = 0.7, alpha = 0.45 }
+module.selectedColor = { white = 0.7, alpha = 0.95 }
+module.activeColor   = { green = 0.5, alpha = 0.75 }
 
 module.draw = function()
   local activeSpace = spaces.activeSpace()
@@ -44,17 +44,26 @@ module.draw = function()
         dot = cache.dots[screenUUID][i]
       end
 
-      local x     = screenFrame.w / 2 - (#screenSpaces / 2) * module.distance + i * module.distance - module.size * 3 / 2
+      local x     = screenFrame.x + screenFrame.w / 2 - (#screenSpaces / 2) * module.distance + i * module.distance - module.size * 3 / 2
       local y     = screenFrame.h - (module.distance/2)
 --       local y     = module.distance
 --       local y     = screenFrame.h - module.distance
 
-      local alpha = screenSpaces[i] == activeSpace and module.selectedAlpha or module.alpha
+      local dotColor = module.color
+      if screenSpaces[i] == activeSpace then
+          dotColor = module.activeColor
+      else
+          for i2, v2 in ipairs(spaces.query(spaces.masks.currentSpaces)) do
+              if screenSpaces[i] == v2 then
+                  dotColor = module.selectedColor
+                  break
+              end
+          end
+      end
 
-      module.color.alpha = alpha
       dot
         :setTopLeft({ x = x, y = y })
-        :setFillColor(module.color)
+        :setFillColor(dotColor)
 
       if i <= #screenSpaces then
         dot:show()
@@ -71,7 +80,7 @@ module.start = function()
   -- we need to redraw dots on screen and space events
   cache.watchers.spaces = hs.spaces.watcher.new(module.draw):start()
   cache.watchers.screen = hs.screen.watcher.new(module.draw):start()
-
+  cache.watchers.active = require("hs._asm.notificationcenter").workspaceObserver(module.draw, "NSWorkspaceActiveDisplayDidChangeNotification"):start()
   module.draw()
 end
 

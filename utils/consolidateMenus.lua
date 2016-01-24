@@ -218,7 +218,6 @@ end
 panelControl.open.drawing:setClickCallback(minimizeFN)
 panelControl.close.drawing:setClickCallback(minimizeFN)
 
-
 local monitorRightX = screen.mainScreen():frame().x + screen.mainScreen():frame().w
 local monitorTopY   = screen.mainScreen():frame().y
 local monitorID     = screen.mainScreen():id()
