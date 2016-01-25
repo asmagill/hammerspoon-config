@@ -20,6 +20,9 @@ module.activeColor   = { green = 0.5, alpha = 0.75 }
 module.draw = function()
   local activeSpace = spaces.activeSpace()
 
+  for k, v in pairs(cache.dots) do
+      cache.dots[k].stillHere = false
+  end
   -- FIXME: what if I remove screen, the dots are still being drawn?
   hs.fnutils.each(hs.screen.allScreens(), function(screen)
     local screenFrame  = screen:fullFrame()
@@ -27,55 +30,64 @@ module.draw = function()
     local screenSpaces = spaces.layout()[screenUUID]
 
     if screenSpaces then -- when screens don't have separate spaces, it won't appear in the layout
-        if not cache.dots[screenUUID] then cache.dots[screenUUID] = {} end
+      if not cache.dots[screenUUID] then cache.dots[screenUUID] = {} end
+      cache.dots[screenUUID].stillHere = true
 
-        for i = 1, math.max(#screenSpaces, #cache.dots[screenUUID]) do
-          local dot
+      for i = 1, math.max(#screenSpaces, #cache.dots[screenUUID]) do
+        local dot
 
-          if not cache.dots[screenUUID][i] then
-            dot = hs.drawing.circle({ x = 0, y = 0, w = module.size, h = module.size })
-
-            dot
-              :setStroke(false)
-    --           :setBehaviorByLabels({ 'canJoinAllSpaces', 'stationary' })
-              :setBehaviorByLabels({ 'canJoinAllSpaces' })
-    --           :setLevel(hs.drawing.windowLevels.desktopIcon)
-              :setLevel(hs.drawing.windowLevels.popUpMenu)
-          else
-            dot = cache.dots[screenUUID][i]
-          end
-
-          local x     = screenFrame.x + screenFrame.w / 2 - (#screenSpaces / 2) * module.distance + i * module.distance - module.size * 3 / 2
-          local y     = screenFrame.h - (module.distance/2)
-    --       local y     = module.distance
-    --       local y     = screenFrame.h - module.distance
-
-          local dotColor = module.color
-          if screenSpaces[i] == activeSpace then
-              dotColor = module.activeColor
-          else
-              for i2, v2 in ipairs(spaces.query(spaces.masks.currentSpaces)) do
-                  if screenSpaces[i] == v2 then
-                      dotColor = module.selectedColor
-                      break
-                  end
-              end
-          end
+        if not cache.dots[screenUUID][i] then
+          dot = hs.drawing.circle({ x = 0, y = 0, w = module.size, h = module.size })
 
           dot
-            :setTopLeft({ x = x, y = y })
-            :setFillColor(dotColor)
-
-          if i <= #screenSpaces then
-            dot:show()
-          else
-            dot:hide()
-          end
-
-          cache.dots[screenUUID][i] = dot
+            :setStroke(false)
+  --           :setBehaviorByLabels({ 'canJoinAllSpaces', 'stationary' })
+            :setBehaviorByLabels({ 'canJoinAllSpaces' })
+  --           :setLevel(hs.drawing.windowLevels.desktopIcon)
+            :setLevel(hs.drawing.windowLevels.popUpMenu)
+        else
+          dot = cache.dots[screenUUID][i]
         end
+
+        local x     = screenFrame.x + screenFrame.w / 2 - (#screenSpaces / 2) * module.distance + i * module.distance - module.size * 3 / 2
+        local y     = screenFrame.h - (module.distance/2)
+  --       local y     = module.distance
+  --       local y     = screenFrame.h - module.distance
+
+        local dotColor = module.color
+        if screenSpaces[i] == activeSpace then
+            dotColor = module.activeColor
+        else
+            for i2, v2 in ipairs(spaces.query(spaces.masks.currentSpaces)) do
+                if screenSpaces[i] == v2 then
+                    dotColor = module.selectedColor
+                    break
+                end
+            end
+        end
+
+        dot
+          :setTopLeft({ x = x, y = y })
+          :setFillColor(dotColor)
+
+        if i <= #screenSpaces then
+          dot:show()
+        else
+          dot:hide()
+        end
+
+        cache.dots[screenUUID][i] = dot
+      end
     end
   end)
+  for k, v in pairs(cache.dots) do
+      if not cache.dots[k].stillHere then
+          for i, v2 in ipairs(cache.dots[k]) do
+              v2:delete()
+          end
+          cache.dots[k] = nil
+      end
+  end
 end
 
 module.start = function()
