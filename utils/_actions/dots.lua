@@ -26,52 +26,54 @@ module.draw = function()
     local screenUUID   = screen:spacesUUID()
     local screenSpaces = spaces.layout()[screenUUID]
 
-    if not cache.dots[screenUUID] then cache.dots[screenUUID] = {} end
+    if screenSpaces then -- when screens don't have separate spaces, it won't appear in the layout
+        if not cache.dots[screenUUID] then cache.dots[screenUUID] = {} end
 
-    for i = 1, math.max(#screenSpaces, #cache.dots[screenUUID]) do
-      local dot
+        for i = 1, math.max(#screenSpaces, #cache.dots[screenUUID]) do
+          local dot
 
-      if not cache.dots[screenUUID][i] then
-        dot = hs.drawing.circle({ x = 0, y = 0, w = module.size, h = module.size })
+          if not cache.dots[screenUUID][i] then
+            dot = hs.drawing.circle({ x = 0, y = 0, w = module.size, h = module.size })
 
-        dot
-          :setStroke(false)
---           :setBehaviorByLabels({ 'canJoinAllSpaces', 'stationary' })
-          :setBehaviorByLabels({ 'canJoinAllSpaces' })
---           :setLevel(hs.drawing.windowLevels.desktopIcon)
-          :setLevel(hs.drawing.windowLevels.popUpMenu)
-      else
-        dot = cache.dots[screenUUID][i]
-      end
+            dot
+              :setStroke(false)
+    --           :setBehaviorByLabels({ 'canJoinAllSpaces', 'stationary' })
+              :setBehaviorByLabels({ 'canJoinAllSpaces' })
+    --           :setLevel(hs.drawing.windowLevels.desktopIcon)
+              :setLevel(hs.drawing.windowLevels.popUpMenu)
+          else
+            dot = cache.dots[screenUUID][i]
+          end
 
-      local x     = screenFrame.x + screenFrame.w / 2 - (#screenSpaces / 2) * module.distance + i * module.distance - module.size * 3 / 2
-      local y     = screenFrame.h - (module.distance/2)
---       local y     = module.distance
---       local y     = screenFrame.h - module.distance
+          local x     = screenFrame.x + screenFrame.w / 2 - (#screenSpaces / 2) * module.distance + i * module.distance - module.size * 3 / 2
+          local y     = screenFrame.h - (module.distance/2)
+    --       local y     = module.distance
+    --       local y     = screenFrame.h - module.distance
 
-      local dotColor = module.color
-      if screenSpaces[i] == activeSpace then
-          dotColor = module.activeColor
-      else
-          for i2, v2 in ipairs(spaces.query(spaces.masks.currentSpaces)) do
-              if screenSpaces[i] == v2 then
-                  dotColor = module.selectedColor
-                  break
+          local dotColor = module.color
+          if screenSpaces[i] == activeSpace then
+              dotColor = module.activeColor
+          else
+              for i2, v2 in ipairs(spaces.query(spaces.masks.currentSpaces)) do
+                  if screenSpaces[i] == v2 then
+                      dotColor = module.selectedColor
+                      break
+                  end
               end
           end
-      end
 
-      dot
-        :setTopLeft({ x = x, y = y })
-        :setFillColor(dotColor)
+          dot
+            :setTopLeft({ x = x, y = y })
+            :setFillColor(dotColor)
 
-      if i <= #screenSpaces then
-        dot:show()
-      else
-        dot:hide()
-      end
+          if i <= #screenSpaces then
+            dot:show()
+          else
+            dot:hide()
+          end
 
-      cache.dots[screenUUID][i] = dot
+          cache.dots[screenUUID][i] = dot
+        end
     end
   end)
 end
