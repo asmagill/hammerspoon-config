@@ -213,3 +213,4 @@ history = _asm._actions.consoleHistory.findInHistory
 print("++ Running: "..hs.processInfo.bundlePath)
 print("++ Accessibility: "..tostring(hs.accessibilityState()))
 
+hs.network = require("hs.network")
