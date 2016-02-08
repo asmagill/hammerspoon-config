@@ -22,14 +22,13 @@ local module = {
           [X]     adjust polling rate?
           [X]     toggle paste on select
           [X]     clear
-          [ ] make sure label truncation doesn't break UTF8 character
+          [X] make sure label truncation doesn't break UTF8 character
+
           [ ] multiple clip histories?  swap in and out?
           [ ]   add to alternate for clipping sets?
           [ ]   clipping sets should allow labels other than content
+
           [ ] image support
-          [ ] other types?  will require additions to hs.pasteboard and hs.menubar, but other
-              image types than PNG, NSAttrbutedString, NSColor, NSSound, RTF, etc. look fairly
-              doable with LuaSkin conversion functions.
 
     ]]
 --]=]
@@ -197,8 +196,6 @@ local renderNewClipperMenu = function(mods)
                       }), disabled = true
                   })
         table.insert(results, { title = "-" })
-
--- these currently have to be updated from the console with hs.settings
 
         table.insert(results, { title = "Maximum item size: "..tostring(maxSize).." byte(s)",
                                 fn = function()
