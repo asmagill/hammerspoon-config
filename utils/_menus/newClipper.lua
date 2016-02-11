@@ -75,8 +75,11 @@ local ignoredIdentifiers = {      -- See http://nspasteboard.org
 local prepareInitialHistory = function(rawHistory)
     local results = { hashed = {}, history = {} }
     for i,v in ipairs(rawHistory) do
-        table.insert(results.history, v)
-        results.hashed[hashFN(v)] = #results.history
+        local key = hashFN(v)
+        if not results.hashed[key] then
+            table.insert(results.history, v)
+            results.hashed[key] = #results.history
+        end
     end
     return results
 end

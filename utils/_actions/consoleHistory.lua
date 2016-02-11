@@ -3,9 +3,23 @@ local console  = require("hs.console")
 local settings = require("hs.settings")
 local timer    = require("hs.timer")
 
+local hashFN   = require("hs.hash").MD5 -- can use other hash fn if this proves insufficient
+
 local saveLabel     = "_ASMConsoleHistory" -- label for saved history
 local checkInterval = settings.get(saveLabel.."_interval") or 1 -- how often to check for changes
 local maxLength     = settings.get(saveLabel.."_max") or 100    -- maximum history to save
+
+local hashHistoryItems = function(rawHistory)
+    local results = { hashed = {}, history = {} }
+    for i,v in ipairs(rawHistory) do
+        local key = hashFN(v)
+        if not results.hashed[key] then
+            table.insert(results.history, v)
+            results.hashed[key] = #results.history
+        end
+    end
+    return results
+end
 
 module.clearHistory = function() return console.setHistory({}) end
 
@@ -16,7 +30,8 @@ module.saveHistory = function()
     else
         save = hist
     end
-    settings.set(saveLabel, save)
+    -- save only the unique lines
+    settings.set(saveLabel, hashHistoryItems(save).history)
 end
 
 module.retrieveHistory = function()
@@ -26,16 +41,22 @@ module.retrieveHistory = function()
     end
 end
 
-
 module.retrieveHistory()
-local currentHistory = console.getHistory()
+local currentHistoryCount = #console.getHistory()
+
 module.autosaveHistory = timer.new(checkInterval, function()
     local historyNow = console.getHistory()
-    if #historyNow ~= #currentHistory then
-        currentHistory = historyNow
+    if #historyNow ~= currentHistoryCount then
+        currentHistoryCount = #historyNow
         module.saveHistory()
     end
 end):start()
+
+module.pruneHistory = function()
+    console.setHistory(hashHistoryItems(console.getHistory()).history)
+    currentHistoryCount = #console.getHistory()
+    return currentHistoryCount
+end
 
 module = setmetatable(module, { __gc =  function(_)
                                     _.saveHistory()
