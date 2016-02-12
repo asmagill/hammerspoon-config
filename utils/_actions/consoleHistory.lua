@@ -9,16 +9,22 @@ local saveLabel     = "_ASMConsoleHistory" -- label for saved history
 local checkInterval = settings.get(saveLabel.."_interval") or 1 -- how often to check for changes
 local maxLength     = settings.get(saveLabel.."_max") or 100    -- maximum history to save
 
-local hashHistoryItems = function(rawHistory)
-    local results = { hashed = {}, history = {} }
-    for i,v in ipairs(rawHistory) do
-        local key = hashFN(v)
-        if not results.hashed[key] then
-            table.insert(results.history, v)
-            results.hashed[key] = #results.history
+local uniqueHistory = function(raw)
+    local hashed, history = {}, {}
+    for i = #raw, 1, -1 do
+        local key = hashFN(#raw[i])
+        if not hashed[key] then
+            table.insert(history, 1, raw[i])
+            hashed[key] = true
         end
     end
-    return results
+    return history
+end
+
+local reverseTable = function(t)
+    local r = {}
+    for i, v in ipairs(t) do table.insert(r, 1, v) end
+    return r
 end
 
 module.clearHistory = function() return console.setHistory({}) end
@@ -31,7 +37,7 @@ module.saveHistory = function()
         save = hist
     end
     -- save only the unique lines
-    settings.set(saveLabel, hashHistoryItems(save).history)
+    settings.set(saveLabel, uniqueHistory(save))
 end
 
 module.retrieveHistory = function()
@@ -53,7 +59,7 @@ module.autosaveHistory = timer.new(checkInterval, function()
 end):start()
 
 module.pruneHistory = function()
-    console.setHistory(hashHistoryItems(console.getHistory()).history)
+    console.setHistory(uniqueHistory(console.getHistory()))
     currentHistoryCount = #console.getHistory()
     return currentHistoryCount
 end
