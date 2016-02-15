@@ -29,18 +29,22 @@ local sectionsMDOrder = {
 
 module = {
 
-getComments = function(path)
+getComments = function(where)
     local text = {}
-    for _, file in ipairs(fnutils.split(hs.execute("find "..path.." -name \\*.lua -print -o -name \\*.m -print"), "[\r\n]")) do
-        if file ~= "" then
-            local comment, incomment = {}, false
-            for line in io.lines(file) do
-                if (line:match("^%-%-%-") or line:match("^///")) and not line:match("^...[%-/]") then
-                    incomment = true
-                    table.insert(comment, line:match("^... ?(.*)$"))
-                elseif incomment then
-                    table.insert(text, comment)
-                    comment, incomment = {}, false
+    if type(where) == "string" then where = { where } end
+    for _, path in ipairs(where) do
+        for _, file in ipairs(fnutils.split(hs.execute("find "..path.." -name \\*.lua -print -o -name \\*.m -print"), "[\r\n]")) do
+            if file ~= "" then
+                local comment, incomment = {}, false
+                for line in io.lines(file) do
+                    local aline = line:match("^%s*(.-)$")
+                    if (aline:match("^%-%-%-") or aline:match("^///")) and not aline:match("^...[%-/]") then
+                        incomment = true
+                        table.insert(comment, aline:match("^... ?(.-)$"))
+                    elseif incomment then
+                        table.insert(text, comment)
+                        comment, incomment = {}, false
+                    end
                 end
             end
         end
@@ -167,6 +171,10 @@ genMarkdown = function(mods)
         end
     end
     return results
+end,
+
+coreDocs = function(src)
+    return module.parseComments(module.getComments{ src.."/extensions", src.."/Hammerspoon" })
 end,
 
 }
