@@ -12,19 +12,13 @@ local maxLength     = settings.get(saveLabel.."_max") or 100    -- maximum histo
 local uniqueHistory = function(raw)
     local hashed, history = {}, {}
     for i = #raw, 1, -1 do
-        local key = hashFN(#raw[i])
+        local key = hashFN(raw[i])
         if not hashed[key] then
             table.insert(history, 1, raw[i])
             hashed[key] = true
         end
     end
     return history
-end
-
-local reverseTable = function(t)
-    local r = {}
-    for i, v in ipairs(t) do table.insert(r, 1, v) end
-    return r
 end
 
 module.clearHistory = function() return console.setHistory({}) end
@@ -76,10 +70,4 @@ module.findInHistory = function(toFind)
     end
 end
 
--- if pasting directly into init.lua, save this somewhere global like:
--- console = module
-
--- if using as a separate file:
 return module
--- and make sure to save the returned value somewhere global in your init.lua file like:
--- console = require("thisfile.lua")
