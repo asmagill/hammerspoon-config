@@ -1,6 +1,6 @@
 print("-- "..os.date())
 
-inspect = hs.inspect
+inspect = require("hs.inspect")
 inspect1 = function(what) return inspect(what, {depth=1}) end
 inspect2 = function(what) return inspect(what, {depth=2}) end
 inspectnm = function(what) return inspect(what ,{process=function(item,path) if path[#path] == inspect.METATABLE then return nil else return item end end}) end
@@ -18,4 +18,3 @@ tobits = function(num, bits)
     end
     return value
 end
-

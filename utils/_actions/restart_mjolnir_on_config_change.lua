@@ -1,5 +1,5 @@
 return require("hs.pathwatcher").new(
-    os.getenv("HOME") .. '/.hammerspoon/',
+    hs.configdir,
     function (changedfiles)
         local function is_lua_file(filename)
             if string.match(filename, '%.lua$') then print(filename) end
