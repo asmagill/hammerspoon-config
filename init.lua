@@ -16,6 +16,7 @@ hs.require = require
 require = rawrequire
 require("hs.crash").crashLogToNSLog = true
 require("hs.crash").crashLog("Disabled require logging to make log file sane")
+require("hs.logger").historySize(200)
 
 -- adjust hotkey logging... info as the default is too much.
 require("hs.hotkey").setLogLevel("warning")

@@ -20,6 +20,7 @@ local ignoreInWorkspaceObserver = {
     NSWorkspaceWillPowerOffNotification = true,
     NSWorkspaceWillSleepNotification = true,
     NSWorkspaceWillUnmountNotification = true,
+    NSWorkspaceActiveDisplayDidChangeNotification = true,
 }
 
 local nc = require("hs._asm.notificationcenter")

@@ -1,5 +1,8 @@
 print("-- "..os.date())
 
+require("hs.crash").crashLogToNSLog = true
+require("hs.logger").historySize(200)
+
 inspect = require("hs.inspect")
 inspect1 = function(what) return inspect(what, {depth=1}) end
 inspect2 = function(what) return inspect(what, {depth=2}) end
