@@ -1,0 +1,55 @@
+#! /bin/bash
+
+# This is the script I use to build interim release builds of Hammerspoon
+#
+# You'll probably want to adjust the paths somewhat as these are for my layout.
+#
+# invoke this script with no arguments to just build Hammerspoon
+# invoke this script with a single argument that starts with "doc" (e.g. documentation, docs, doc, etc.) to just build the latest versions of the documentation.
+# invoke it with any other single argument to build both Hammerspoon and the documentation.
+#
+# This script uses a self-signed certificate so that debug builds do not require you to have to set Accessibility each time you rebuild the app. You can find more information about this at:
+#  https://github.com/Hammerspoon/hammerspoon/blob/a62c879bdbfc6646aebba1f943fe32fee817fbfd/CONTRIBUTING.md and http://bd808.com/blog/2013/10/21/creating-a-self-signed-code-certificate-for-xcode/
+
+cd /opt/amagill/src/hammerspoon/hammerspoon
+
+if [[ $1 != doc* ]]; then
+	make clean
+	make || exit
+
+	# signing with self-signed cert so I no longer have to reset accessibility all the time
+	codesign --verbose --sign "Internal Code Signing" "build/Hammerspoon.app/Contents/Frameworks/LuaSkin.framework/Versions/A"
+	codesign --verbose --sign "Internal Code Signing" "build/Hammerspoon.app"
+
+	rm -fr `xcodebuild -workspace Hammerspoon.xcworkspace -scheme Hammerspoon -configuration DEBUG -showBuildSettings | sort | uniq | grep " BUILT_PRODUCTS_DIR =" | awk '{ print $3 }'`/Hammerspoon.app
+fi
+
+if [ $1 ]; then
+	make docs
+# 	make build/html/LuaSkin
+# hack because headerdoc2html doesn't seem to recognise @code/@endcode and @remark anymore
+	classDir=build/html/LuaSkin
+	sed -e 's/@code/<pre>@textblock/' \
+	    -e 's/@endcode/@\/textblock<\/pre>/' \
+	    -e 's/@remark/@attributeblock Notes/' LuaSkin/LuaSkin/Skin.h > Skin.h
+	headerdoc2html -u -o ${classDir} Skin.h
+	resolveLinks ${classDir}
+	mv ${classDir}/Skin_h/* ${classDir}
+	rmdir ${classDir}/Skin_h
+	rm Skin.h
+
+	rm -fr ~/Documents/Hammerspoon
+	mkdir ~/Documents/Hammerspoon
+	mv build/Hammerspoon.docset ~/Documents/Hammerspoon/
+	mv build/html/LuaSkin ~/Documents/Hammerspoon/
+fi
+
+if [[ $1 != doc* ]]; then
+	osascript -e 'tell Application "Hammerspoon" to quit'
+	sleep 1
+	rm -fr /Applications/Development/Hammerspoon.app
+	mv build/Hammerspoon.app /Applications/Development/
+
+	open -a /Applications/Development/Hammerspoon.app
+fi
+

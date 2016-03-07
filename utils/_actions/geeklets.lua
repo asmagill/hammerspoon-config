@@ -18,7 +18,7 @@ local task       = require("hs.task")
 local timer      = require("hs.timer")
 local caffeinate = require("hs.caffeinate")
 
-local log        = require("hs.logger").new("objc","warning")
+local log        = require("hs.logger").new("geeklets","warning")
 module.log       = log
 
 -- private variables and methods -----------------------------------------

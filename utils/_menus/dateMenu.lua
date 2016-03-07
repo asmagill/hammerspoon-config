@@ -118,7 +118,7 @@ module.start = function()
 
             local newY = frame.y
             if clickAt.y > frame.y then
-                newY =  screen:mainScreen():fullFrame().y + (frame.y - screen:mainScreen():fullFrame().y) * 2 + 6
+                newY =  screen.mainScreen():fullFrame().y + (frame.y - screen.mainScreen():fullFrame().y) * 2 + 6
             end
 
             rect:setTopLeft{
