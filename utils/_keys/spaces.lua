@@ -4,6 +4,7 @@ local event    = eventtap.event
 local window   = require("hs.window")
 local timer    = require("hs.timer")
 local spaces   = require("hs.spaces")
+local spacesX  = require("hs._asm.undocumented.spaces")
 
 -- --
 -- -- if you're perusing this and want to see an Objective-C version, check https://github.com/asmagill/hammerspoon_asm/commit/f97def364003b0a7e96b8fa340b7b8bc48859238#diff-feb9be9f18e8db07162fbca403313598R191.
@@ -102,7 +103,7 @@ local function spacesKeySequence(space, win)
   hs.timer.usleep(sleepTime)
   hs.eventtap.keyStroke({ "ctrl" }, space)
 --   hs.timer.usleep(sleepTime)
-  while (hs.spaces.managedDisplayIsAnimating(hs.spaces.mainDisplayIdentifier())) do end
+  while (spacesX.isAnimating()) do end
   hs.eventtap.event.newMouseEvent(hs.eventtap.event.types.leftMouseUp, clickPoint):post()
   hs.mouse.setAbsolutePosition(mousePosition)
 end
