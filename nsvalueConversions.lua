@@ -21,7 +21,7 @@ local module = {}
 -- f     f: a float (native size)
 -- d     d: a double (native size)
 -- d     n: a lua_Number
--- [nc]  cn: a fixed-sized string with n bytes
+-- [#c]  cn: a fixed-sized string with n bytes
 
 -- -- one or both may be useful for filling out to match actualSize from NSGetSizeAndAlignment
 -- -- also to skip over types we can't handle in data field?
@@ -35,7 +35,71 @@ local module = {}
 
 -- probably going to need to do this in Objective-C to get a propert treatment of char*
 
+-- local objCTypeToPackType = {
+--     ["c"] = "b",
+--     ["i"] = "i",
+--     ["s"] = "h",
+--     ["l"] = "l",
+--     ["q"] = "j",
+--     ["C"] = "B",
+--     ["I"] = "I",
+--     ["S"] = "H",
+--     ["L"] = "L"
+--     ["Q"] = "J",
+--     ["f"] = "f",
+--     ["d"] = "d",
+--     ["B"] =
+--     ["v"] = " ",
+--     ["*"] = "T",  -- will require C-Side support for anything else
+--     ["@"] = "T",  -- will require C-Side support for anything else
+--     ["#"] = "T",  -- will require C-Side support for anything else
+--     [":"] = "T",  -- will require C-Side support for anything else
+--     ["[array type]"] =
+-- --    ["{name=type...}"] = ... -- stripped out via string.gsub
+--     ["(name=type...)"] =
+--     ["bnum"] =
+--     ["^type"] =
+--     ["?"] =
+-- }
+
 module.toLuaTypeString = function(objCType)
+    local workingString = objCType ;
+    local s, e = workingString:find("%^")
+
+-- convert union into [#c] with same size as largest type specified
+-- use _xtras.sizeAndAlignment on union substring
+
+-- convert pointers into "T"
+    while s do
+        e = e + 1
+        local openChar = workingString:sub(e, e)
+        if openChar == "[" or openChar == "{" or openChar == "(" then
+            local count = 1
+            local closeChar = ({ ["["] = "]", ["("] = ")", ["{"] = "}" })[openChar]
+            while (count ~= 0 and e < #workingString) do
+                e = e + 1
+                local nextChar = workingString:sub(e, e)
+                if nextChar == openChar then count = count + 1 end
+                if nextChar == closeChar then count = count - 1 end
+            end
+            if count ~= 0 then
+                return error("mismatched pointer grouping with "..openChar)
+            end
+        end
+        workingString = workingString:sub(1, s - 1).."T"..workingString:sub(e + 1, -1)
+        s, e = workingString:find("%^")
+    end
+
+-- convert array into # copies of what follows?
+-- [#c] gets turned into string of that length (c#); others... repeat?
+
+-- strip structures
+
+
+-- prefix string with '=!'..(third argument from table from _xtras.sizeAndAlignment on objCType)
+
+
+    return workingString
 end
 
 module.toObjCTypeString = function(luaType)
