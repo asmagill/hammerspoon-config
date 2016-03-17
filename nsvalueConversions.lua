@@ -35,41 +35,63 @@ local module = {}
 
 -- probably going to need to do this in Objective-C to get a propert treatment of char*
 
--- local objCTypeToPackType = {
---     ["c"] = "b",
---     ["i"] = "i",
---     ["s"] = "h",
---     ["l"] = "l",
---     ["q"] = "j",
---     ["C"] = "B",
---     ["I"] = "I",
---     ["S"] = "H",
---     ["L"] = "L"
---     ["Q"] = "J",
---     ["f"] = "f",
---     ["d"] = "d",
---     ["B"] =
---     ["v"] = " ",
---     ["*"] = "T",  -- will require C-Side support for anything else
---     ["@"] = "T",  -- will require C-Side support for anything else
---     ["#"] = "T",  -- will require C-Side support for anything else
---     [":"] = "T",  -- will require C-Side support for anything else
---     ["[array type]"] =
--- --    ["{name=type...}"] = ... -- stripped out via string.gsub
---     ["(name=type...)"] =
---     ["bnum"] =
---     ["^type"] =
---     ["?"] =
--- }
+local objCTypeToPackType = {
+    ["c"] = "b",
+    ["i"] = "i",
+    ["s"] = "h",
+    ["l"] = "l",
+    ["q"] = "j",
+    ["C"] = "B",
+    ["I"] = "I",
+    ["S"] = "H",
+    ["L"] = "L"
+    ["Q"] = "J",
+    ["f"] = "f",
+    ["d"] = "d",
+    ["B"] = "B",
+    ["v"] = " ",
+    ["*"] = "T",  -- will require C-Side support for anything else
+    ["@"] = "T",  -- will require C-Side support for anything else
+    ["#"] = "T",  -- will require C-Side support for anything else
+    [":"] = "T",  -- will require C-Side support for anything else
+--     ["[array type]"] = ...   -- converted to repetition or c#
+--     ["{name=type...}"] = ... -- stripped out via string.gsub
+--     ["(name=type...)"] = ... -- converted to c#
+--     ["bnum"] =           ... ?
+--     ["^type"] =          ... converted to T
+    ["?"] = "T",
+}
 
 module.toLuaTypeString = function(objCType)
     local workingString = objCType ;
-    local s, e = workingString:find("%^")
 
 -- convert union into [#c] with same size as largest type specified
--- use _xtras.sizeAndAlignment on union substring
+-- TODO:    do we have to worry about alignment?  need some rw examples
+-- Alignment works as follows: For each option, the format gets extra padding until the data starts at an offset that is a multiple of the minimum between the option size and the maximum alignment; this minimum must be a power of 2. Options "c" and "z" are not aligned; option "s" follows the alignment of its starting integer.
+--
+    local s, e = workingString:find("%(")
+    while s do
+        local openChar = workingString:sub(e, e)
+        local count = 1
+        local closeChar = ")"
+        while (count ~= 0 and e < #workingString) do
+            e = e + 1
+            local nextChar = workingString:sub(e, e)
+            if nextChar == openChar then count = count + 1 end
+            if nextChar == closeChar then count = count - 1 end
+        end
+        if count ~= 0 then
+            return error("mismatched union grouping with "..openChar)
+        end
+        local bytes = _xtras.sizeAndAlignment(workingString:sub(s, e))[2]
+        workingString = workingString:sub(1, s - 1).."[?="..tostring(bytes)..
+                                          "c]"..workingString:sub(e + 1, -1)
+        s, e = workingString:find("%^")
+    end
+print("Without Unions  : ", workingString) ;
 
 -- convert pointers into "T"
+    s, e = workingString:find("%^")
     while s do
         e = e + 1
         local openChar = workingString:sub(e, e)
@@ -89,16 +111,34 @@ module.toLuaTypeString = function(objCType)
         workingString = workingString:sub(1, s - 1).."T"..workingString:sub(e + 1, -1)
         s, e = workingString:find("%^")
     end
+print("Without Pointers: ", workingString) ;
 
 -- convert array into # copies of what follows?
--- [#c] gets turned into string of that length (c#); others... repeat?
+--      [#c] gets turned into string of that length (c#); others... repeat?
+-- TODO:    do we have to worry about alignment?  need some rw examples
+-- Alignment works as follows: For each option, the format gets extra padding until the data starts at an offset that is a multiple of the minimum between the option size and the maximum alignment; this minimum must be a power of 2. Options "c" and "z" are not aligned; option "s" follows the alignment of its starting integer.
+--
+
+print("Without Arrays  : ", workingString) ;
 
 -- strip structures
+    workingString = workingString:gsub("{[\w\d_%?]+=", ""):gsub("}", "")
+print("Without Structs  : ", workingString) ;
 
+-- convert other types (simple substitution)
+    for k, v in pairs(objCTypeToPackType) do
+        workingString = workingString:gsub(i, v)
+    end
+print("Converted Types  : ", workingString) ;
 
 -- prefix string with '=!'..(third argument from table from _xtras.sizeAndAlignment on objCType)
+    workingString = "=!".._xtras.sizeAndAlignment(objCType)[3]
 
+-- TODO:  string.packsize and pad if not long enough
+print("Size Comparison   : ", _xtras.sizeAndAlignment(objCType)[2],
+                              string.packsize(workingString))
 
+-- pray.
     return workingString
 end
 
