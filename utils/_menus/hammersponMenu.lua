@@ -56,7 +56,11 @@ local toggleWatcher = function(setItTo)
     return module.status
 end
 -- local watcherMenu = menubar.new():setIcon(image.imageFromName("statusicon")) -- it's in the app bundle, so we can refer to it by name
-local watcherMenu = menubar.newWithPosition(2147483647, "before"):setIcon(image.imageFromName("statusicon"))
+
+local watcherMenu = menubar.newWithPriority and menubar.newWithPriority(menubar.priorities.notificationCenter - 1) or menubar.new()
+
+watcherMenu:setIcon(image.imageFromName("statusicon"))
+
 -- hs.image.imageFromAppBundle("org.hammerspoon.Hammerspoon"))  -- not pretty as a "template" icon
 -- image.imageFromName(image.systemImageNames.ApplicationIcon)) -- the same...
       :setMenu(function(_) return
