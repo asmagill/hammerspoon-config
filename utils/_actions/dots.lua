@@ -50,7 +50,7 @@ module.draw = function()
         end
 
         local x     = screenFrame.x + screenFrame.w / 2 - (#screenSpaces / 2) * module.distance + i * module.distance - module.size * 3 / 2
-        local y     = screenFrame.h - (module.distance/2)
+        local y     = screenFrame.y + screenFrame.h - (module.distance/2)
   --       local y     = module.distance
   --       local y     = screenFrame.h - module.distance
 
