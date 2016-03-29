@@ -1,22 +1,10 @@
 -- modified from code found at https://github.com/dharmapoudel/hammerspoon-config
 --
--- Modified to more closely match my usage style and test some possible additions proposed for hs.application
+-- Modified to more closely match my usage style
 
 ------------------------------------------------------------------------
 --/ Cheatsheet Copycat /--
 ------------------------------------------------------------------------
-
--- local commandEnum = {
---       [0] = '⌘',
---       [1] = '⇧ ⌘',
---       [2] = '⌥ ⌘',
---       [3] = '^ ⌥ ⌘',
---       [4] = '⌃ ⌘',
---       [5] = '⇧ ⌃ ⌘',
---       [7] = '',
---       [12] ='⌃',
---       [13] ='⌃',
---     }
 
 -- gleaned from http://superuser.com/questions/415213/mac-app-to-compile-and-reference-keyboard-shortcuts
 
@@ -223,35 +211,21 @@ local generateHtml = function()
     return html
 end
 
-
-
--- local myView = nil
---
--- hs.hotkey.bind({"cmd", "alt", "ctrl"}, "C", function()
---   if not myView then
---     myView = hs.webview.new({x = 100, y = 100, w = 1080, h = 600}, { developerExtrasEnabled = true })
---       :windowStyle("utility")
---       :closeOnEscape(true)
---       :html(generateHtml())
---       :allowGestures(true)
---       :windowTitle("CheatSheets")
---       :show()
---     --myView:asHSWindow():focus()
---     --myView:asHSDrawing():setAlpha(.98):bringToFront()
---   else
---     myView:delete()
---     myView=nil
---   end
--- end)
-
 -- I prefer a different type of key invocation/remove setup
-local alert  = require("hs.alert")
-local hotkey = require("hs.hotkey")
-local timer  = require("hs.timer")
-local module = {}
+local alert    = require("hs.alert")
+local hotkey   = require("hs.hotkey")
+local timer    = require("hs.timer")
+local eventtap = require("hs.eventtap")
 
-local cs = hotkey.modal.new({"cmd", "alt"}, "return")
-    function cs:entered()
+local events   = eventtap.event.types
+
+local module   = {}
+
+-- We use a modal hotkey setup as a convenient wrapper which gives us an enter and an exit method for
+-- generating the display, but we don't actually assign any keys
+
+module.cs = hotkey.modal.new()
+    function module.cs:entered()
         alert("Building Cheatsheet Display...")
         -- Wrap in timer so alert has a chance to show when building the display is slow (I'm talking
         -- to you, Safari!).  Using a value of 0 seems to halt the alert animation in mid-sequence,
@@ -276,11 +250,38 @@ local cs = hotkey.modal.new({"cmd", "alt"}, "return")
               alert.closeAll() -- hide alert, if we finish fast enough
         end)
     end
-    function cs:exited()
+    function module.cs:exited()
         module.myView:delete()
         module.myView=nil
     end
-cs:bind({}, "ESCAPE", function() cs:exit() end)
-cs:bind({"cmd", "alt"}, "return", function() cs:exit() end) -- match the invoker, in case you're used to that
+
+-- mimic CheatSheet's trigger for holding Command Key
+module.cmdPressed = false
+module.eventwatcher = eventtap.new({events.flagsChanged, events.keyDown}, function(ev)
+    module.cmdPressed = false
+    if ev:getType() == events.flagsChanged then
+        local count = 0
+        for k, v in pairs(ev:getFlags()) do count = count + 1 end
+        if module.myView == nil and count == 1 and ev:getFlags().cmd then
+            module.cmdPressed = true
+        end
+    end
+
+    if module.myView ~= nil then module.cs:exit() end
+
+    if module.cmdPressed then
+        module.countDown = timer.doAfter(3, function()
+            module.cs:enter()
+            module.cmdPressed = false
+        end)
+    else
+        if module.countDown then
+            module.countDown:stop()
+            module.countDown = nil
+        end
+    end
+    return false ;
+end):start()
+
 
 return module
