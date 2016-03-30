@@ -2,6 +2,23 @@
 --
 -- Modified to more closely match my usage style
 
+-- I prefer a different type of key invocation/remove setup
+local alert    = require("hs.alert")
+local hotkey   = require("hs.hotkey")
+local timer    = require("hs.timer")
+local eventtap = require("hs.eventtap")
+
+local events   = eventtap.event.types
+
+local module   = {}
+
+module.autoDismiss    = true
+module.showEmptyMenus = false
+
+module.bgColor  = "#bbd" -- "#eee"
+module.font     = "arial"
+module.fontSize = 13
+
 ------------------------------------------------------------------------
 --/ Cheatsheet Copycat /--
 ------------------------------------------------------------------------
@@ -29,49 +46,19 @@ local commandEnum = {
 
 local glyphs = require("hs.application").menuGlyphs
 
--- make the functions all local so we don't pollute the global namespace
-
-local getAllMenuItems -- forward reference
-
-local getAllMenuItemsTable = function(t)
-      local menu = {}
-          for pos,val in pairs(t) do
-              if(type(val)=="table") then
-                  if(val['AXRole'] =="AXMenuBarItem" and type(val['AXChildren']) == "table") then
-                      menu[pos] = {}
-                      menu[pos]['AXTitle'] = val['AXTitle']
-                      menu[pos][1] = getAllMenuItems(val['AXChildren'][1])
-                  elseif(val['AXRole'] =="AXMenuItem" and not val['AXChildren']) then
-                    if( val['AXMenuItemCmdModifiers'] ~='0' and (val['AXMenuItemCmdChar'] ~='' or type(val['AXMenuItemCmdGlyph']) == "number")) then
-                        menu[pos] = {}
-                        menu[pos]['AXTitle'] = val['AXTitle']
-                        if val['AXMenuItemCmdChar'] == "" then
-                            menu[pos]['AXMenuItemCmdChar'] = glyphs[val['AXMenuItemCmdGlyph']] or "?"..tostring(val['AXMenuItemCmdGlyph']).."?"
-                        else
-                            menu[pos]['AXMenuItemCmdChar'] = val['AXMenuItemCmdChar']
-                        end
-                        menu[pos]['AXMenuItemCmdModifiers'] = val['AXMenuItemCmdModifiers']
-                      end
-                  elseif(val['AXRole'] =="AXMenuItem" and type(val['AXChildren']) == "table") then
-                      menu[pos] = {}
-                      menu[pos][1] = getAllMenuItems(val['AXChildren'][1])
-                  end
-              end
-          end
-      return menu
-end
-
-
+local getAllMenuItems -- forward reference, since we're called recursively
 getAllMenuItems = function(t)
     local menu = ""
         for pos,val in pairs(t) do
             if(type(val)=="table") then
-                -- do not include help menu for now until I find best way to remove menubar items with no shortcuts in them
-                if(val['AXRole'] =="AXMenuBarItem" and type(val['AXChildren']) == "table") and val['AXTitle'] ~="Help" then
-                    menu = menu.."<ul class='col col"..pos.."'>"
-                    menu = menu.."<li class='title'><strong>"..val['AXTitle'].."</strong></li>"
-                    menu = menu.. getAllMenuItems(val['AXChildren'][1])
-                    menu = menu.."</ul>"
+                if(val['AXRole'] =="AXMenuBarItem" and type(val['AXChildren']) == "table") then
+                    local menuDetails = getAllMenuItems(val['AXChildren'][1])
+                    if module.showEmptyMenus or menuDetails ~= "" then
+                        menu = menu.."<ul class='col col"..pos.."'>"
+                        menu = menu.."<li class='title'><strong>"..val['AXTitle'].."</strong></li>"
+                        menu = menu.. menuDetails
+                        menu = menu.."</ul>"
+                    end
                 elseif(val['AXRole'] =="AXMenuItem" and not val['AXChildren']) then
                     if( val['AXMenuItemCmdModifiers'] ~='0' and (val['AXMenuItemCmdChar'] ~='' or type(val['AXMenuItemCmdGlyph']) == "number")) then
                         if val['AXMenuItemCmdChar'] == "" then
@@ -103,9 +90,9 @@ local generateHtml = function()
         <style type="text/css">
             *{margin:0; padding:0;}
             html, body{
-              background-color:#eee;
-              font-family: arial;
-              font-size: 13px;
+              background-color:]]..module.bgColor..[[;
+              font-family: ]]..module.font..[[;
+              font-size: ]]..module.fontSize..[[px;
             }
             a{
               text-decoration:none;
@@ -119,7 +106,7 @@ local generateHtml = function()
               left: 0;
               right: 0;
               height: 48px;
-              background-color:#eee;
+              background-color:]]..module.bgColor..[[;
             }
             header{
               position: fixed;
@@ -127,7 +114,7 @@ local generateHtml = function()
               left: 0;
               right: 0;
               height:48px;
-              background-color:#eee;
+              background-color:]]..module.bgColor..[[;
               z-index:99;
             }
             footer{ bottom: 0; }
@@ -166,7 +153,7 @@ local generateHtml = function()
               height: 0;
             }
             .cmdModifiers{
-              width: 60px;
+              width: 65px;
               padding-right: 15px;
               text-align: right;
               float: left;
@@ -195,31 +182,20 @@ local generateHtml = function()
               </div>
           </footer>
           <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.isotope/2.2.2/isotope.pkgd.min.js"></script>
-        	<script type="text/javascript">
-              var elem = document.querySelector('.content');
-              var iso = new Isotope( elem, {
-                // options
-                itemSelector: '.col',
-                layoutMode: 'masonry'
-              });
-              console.log("test");
-            </script>
+          <script type="text/javascript">
+            var elem = document.querySelector('.content');
+            var iso = new Isotope( elem, {
+              // options
+              itemSelector: '.col',
+              layoutMode: 'masonry'
+            });
+          </script>
           </body>
         </html>
         ]]
 
     return html
 end
-
--- I prefer a different type of key invocation/remove setup
-local alert    = require("hs.alert")
-local hotkey   = require("hs.hotkey")
-local timer    = require("hs.timer")
-local eventtap = require("hs.eventtap")
-
-local events   = eventtap.event.types
-
-local module   = {}
 
 -- We use a modal hotkey setup as a convenient wrapper which gives us an enter and an exit method for
 -- generating the display, but we don't actually assign any keys
@@ -254,6 +230,7 @@ module.cs = hotkey.modal.new()
         module.myView:delete()
         module.myView=nil
     end
+module.cs:bind({}, "escape", function() module.cs:exit() end)
 
 -- mimic CheatSheet's trigger for holding Command Key
 module.cmdPressed = false
@@ -267,7 +244,7 @@ module.eventwatcher = eventtap.new({events.flagsChanged, events.keyDown}, functi
         end
     end
 
-    if module.myView ~= nil then module.cs:exit() end
+    if module.myView ~= nil and module.autoDismiss then module.cs:exit() end
 
     if module.cmdPressed then
         module.countDown = timer.doAfter(3, function()
