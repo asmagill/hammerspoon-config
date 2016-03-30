@@ -1,6 +1,4 @@
 --
--- fn - l -- toggle listener
---
 -- hold down fn, even when on, or command is ignored (minimizes false positives in noisy
 -- environments.)
 --
@@ -12,7 +10,6 @@ local fnutils  = require("hs.fnutils")
 local log      = require("hs.logger").new("mySpeech","warning")
 local settings = require("hs.settings")
 local eventtap = require("hs.eventtap")
-local hotkey   = require("hs.hotkey")
 
 local commands = {}
 local title    = "Hammerspoon"
@@ -71,11 +68,19 @@ module.start = function()
     updateCommands() -- should be current, but just in case
     module.recognizer:title(title):start()
     settings.set("_asm.listener", true)
+    if (module.listenLabel) then
+        local screen = require("hs.screen").primaryScreen():fullFrame()
+        module.listenLabel:show():setFrame{
+            x = screen.x + 5, y = screen.y + screen.h - 21,
+            h = 14, w = 150
+        }
+    end
     return placeholder
 end
 
 module.stop = function()
     module.recognizer:title("Disabled: "..title):stop()
+    if (module.listenLabel) then module.listenLabel:hide() end
     return placeholder
 end
 
@@ -93,7 +98,6 @@ module.disableCompletely = function()
     end
     module.recognizer = nil
     setmetatable(placeholder, nil)
-    module.hotkey:disable()
     if (module.listenLabel) then
         module.listenLabel = module.listenLabel:delete()
     end
@@ -107,32 +111,17 @@ module.init = function()
     module.recognizer = listener.new(title):setCallback(listenerCallback)
                                     :foregroundOnly(false)
                                     :blocksOtherRecognizers(false)
-
-    module.hotkey = hotkey.bind({}, "l", function()
-        if eventtap.checkKeyboardModifiers().fn then
-            if module.isListening() then
-                module.listenLabel = module.listenLabel:delete()
-                module.stop()
-            else
-                local screen = require("hs.screen").primaryScreen():fullFrame()
-                module.listenLabel = require("hs.drawing").text({
-                                                x = screen.x + 5, y = screen.y + screen.h - 21,
-                                                h = 14, w = 150
-                                            }, require("hs.styledtext").new("Hammerspoon Listening...", {
-                                                font = { name = "Menlo-Italic", size = 10 },
-                                                color = { list = "Crayons", name = "Sky" },
-                                                paragraphStyle = { lineBreak = "clip" }
-                                            })):setBehaviorByLabels{"canJoinAllSpaces"}
-                                            :setLevel("popUpMenu")
-                                            :show()
-                module.start()
-            end
-        else
-            module.hotkey:disable()
-            eventtap.keyStroke({}, "l")
-            module.hotkey:enable()
-        end
-    end)
+    local screen = require("hs.screen").primaryScreen():fullFrame()
+    module.listenLabel = require("hs.drawing").text({
+                                    x = screen.x + 5, y = screen.y + screen.h - 21,
+                                    h = 14, w = 150
+                                }, require("hs.styledtext").new("Hold FN while speaking...", {
+                                    font = { name = "Menlo-Italic", size = 10 },
+                                    color = { list = "Crayons", name = "Sky" },
+                                    paragraphStyle = { lineBreak = "clip" }
+                                })):setBehaviorByLabels{"canJoinAllSpaces"}
+                                :setLevel("popUpMenu")
+                                :show()
 
     return setmetatable(placeholder,  {
         __index = function(_, k)
@@ -145,7 +134,6 @@ module.init = function()
         end,
         __tostring = function(_) return module.recognizer:title() end,
         __pairs = function(_) return pairs(module) end,
---         __gc = module.disableCompletely
     })
 end
 
