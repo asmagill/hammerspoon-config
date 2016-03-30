@@ -68,8 +68,10 @@ inspect2 = function(what) return inspect(what, {depth=2}) end
 inspectnm = function(what) return inspect(what ,{process=function(item,path) if path[#path] == inspect.METATABLE then return nil else return item end end}) end
 inspectnm1 = function(what) return inspect(what ,{process=function(item,path) if path[#path] == inspect.METATABLE then return nil else return item end end, depth=1}) end
 
--- may include locally added json files in docs versus built in help
-doc = require("utils.docs")
+-- need to make third-party docs possible; this is totally out of date
+-- -- may include locally added json files in docs versus built in help
+-- doc = require("utils.docs")
+doc = help
 
 tobits = function(num, bits)
     bits = bits or (math.floor(math.log(num,2) / 8) + 1) * 8
