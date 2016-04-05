@@ -6,22 +6,18 @@ local module = {}
 
 local hsminweb = require("hs._asm.hsminweb")
 local serverPort = 7734
+local documentRoot = hs.configdir.."/_localAssets"
 
-module.documentRoot = hs.configdir.."/_localAssets"
-
-module.server = hsminweb.new():port(serverPort)
-                              :documentRoot(module.documentRoot)
-                              :allowDirectory(true)
-                              :name("localAssets")
-                              :bonjour(false)
-                              :start()
-
--- -- Still need to implement accessList
---                               :accessList{
---                               --  Header          Matches     isPattern Accept/Reject
---                                   {"X-Client-IP",  "::1",       false,   true},
---                                   {"X-Client-IP",  "127.0.0.1", false,   true},
---                                   {"*",            "*",         false,   false},
---                               }
+module.server = hsminweb.new(documentRoot):port(serverPort)
+                                          :allowDirectory(true)
+                                          :name("localAssets")
+                                          :bonjour(false)
+                                          :accessList{
+                                              {"X-Client-IP",  "::1",       false,   true},
+                                              {"X-Client-IP",  "127.0.0.1", false,   true},
+                                            -- technically optional, but I like being explicit
+                                              {"*",            "*",         false,   false},
+                                          }
+                                          :start()
 
 return module
