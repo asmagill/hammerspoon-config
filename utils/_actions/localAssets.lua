@@ -13,10 +13,10 @@ module.server = hsminweb.new(documentRoot):port(serverPort)
                                           :name("localAssets")
                                           :bonjour(false)
                                           :accessList{
-                                              {"X-Client-IP",  "::1",       false,   true},
-                                              {"X-Client-IP",  "127.0.0.1", false,   true},
+                                              {"X-Remote-Addr",  "::1",       false,   true},
+                                              {"X-Remote-Addr",  "127.0.0.1", false,   true},
                                             -- technically optional, but I like being explicit
-                                              {"*",            "*",         false,   false},
+                                              {"*",              "*",         false,   false},
                                           }
                                           :start()
 
