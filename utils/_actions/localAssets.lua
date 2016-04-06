@@ -12,6 +12,7 @@ module.server = hsminweb.new(documentRoot):port(serverPort)
                                           :allowDirectory(true)
                                           :name("localAssets")
                                           :bonjour(false)
+                                          :cgiEnabled(true)
                                           :accessList{
                                               {"X-Remote-Addr",  "::1",       false,   true},
                                               {"X-Remote-Addr",  "127.0.0.1", false,   true},
