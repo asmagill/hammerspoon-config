@@ -15,6 +15,7 @@ module.server = hsminweb.new(documentRoot):port(serverPort)
                                           :name("Sites")
                                           :bonjour(true)
                                           :cgiEnabled(true)
+                                          :luaTemplateExtension("lp")
                                           :accessList{
                                               {"X-Remote-Addr", "::1",           false, true},
                                               {"X-Remote-Addr", "127.0.0.1",     false, true},
