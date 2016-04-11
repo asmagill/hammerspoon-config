@@ -17,11 +17,11 @@ module.server = hsminweb.new(documentRoot):port(serverPort)
                                           :cgiEnabled(true)
                                           :luaTemplateExtension("lp")
                                           :accessList{
-                                              {"X-Remote-Addr", "::1",           false, true},
-                                              {"X-Remote-Addr", "127.0.0.1",     false, true},
-                                              {"X-Remote-Addr", "10%.0%.1%.",    true,  true},
-                                              {"X-Remote-Addr", "10%.161%.81%.", true,  true},
-                                              {"*",             "*",             false, false},
+                                              {"X-Remote-Addr", "::1",            false, true},
+                                              {"X-Remote-Addr", "127.0.0.1",      false, true},
+                                              {"X-Remote-Addr", "^10%.0%.1%.",    true,  true},
+                                              {"X-Remote-Addr", "^10%.161%.81%.", true,  true},
+                                              {"*",             "*",              false, false},
                                           }
 
 -- modify GET so we can query the headers during testing
@@ -90,4 +90,5 @@ module.hotkey = hotkey.bind({"cmd", "alt"}, "f10", function()
     end
 end)
 
+module.server:start() -- using it quite a bit right now; may change default or remove key sequence toggle in the future depending upon my usage
 return module
