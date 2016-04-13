@@ -63,10 +63,11 @@ requirePlus.updatePaths("In Home", {
 requirePlus.updatePaths("Luarocks", "luarocks-5.3 path", true)
 
 inspect = require("hs.inspect")
+inspectm = function (what, how)
+    if how then return inspect(what, how) else return inspect(what, { metatables = 1 }) end
+end
 inspect1 = function(what) return inspect(what, {depth=1}) end
 inspect2 = function(what) return inspect(what, {depth=2}) end
-inspectnm = function(what) return inspect(what ,{process=function(item,path) if path[#path] == inspect.METATABLE then return nil else return item end end}) end
-inspectnm1 = function(what) return inspect(what ,{process=function(item,path) if path[#path] == inspect.METATABLE then return nil else return item end end, depth=1}) end
 
 -- need to make third-party docs possible; this is totally out of date
 -- -- may include locally added json files in docs versus built in help

@@ -12,12 +12,20 @@ module.server = hsminweb.new(documentRoot):port(serverPort)
                                           :allowDirectory(true)
                                           :name("localAssets")
                                           :bonjour(false)
-                                          :accessList{
+                                          :cgiEnabled(true)
+                                          :luaTemplateExtension("lp")
+                                          :directoryIndex{
+                                              "index.html", "index.lp", "index.cgi",
+                                          }:accessList{
                                               {"X-Remote-Addr",  "::1",       false,   true},
                                               {"X-Remote-Addr",  "127.0.0.1", false,   true},
                                             -- technically optional, but I like being explicit
                                               {"*",              "*",         false,   false},
                                           }
                                           :start()
+
+module.server._logBadTranslations       = true
+module.server._logPageErrorTranslations = true
+module.server._allowRenderTranslations  = true
 
 return module
