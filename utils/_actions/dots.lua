@@ -1,7 +1,11 @@
 -- Based on Szymon Kaliski's code found at https://github.com/szymonkaliski/Dotfiles/blob/ae42c100a56c26bc65f6e3ca2ad36e30b558ba10/Dotfiles/hammerspoon/utils/spaces/dots.lua
 
 
-local spaces = require('hs._asm.undocumented.spaces')
+local spaces  = require("hs.spaces")
+local screen  = require("hs.screen")
+local _spaces = require("hs._asm.undocumented.spaces")
+local fnutils = require("hs.fnutils")
+local drawing = require("hs.drawing")
 
 local cache = {
   watchers = {},
@@ -18,16 +22,16 @@ module.selectedColor = { white = 0.7, alpha = 0.95 }
 module.activeColor   = { green = 0.5, alpha = 0.75 }
 
 module.draw = function()
-  local activeSpace = spaces.activeSpace()
+  local activeSpace = _spaces.activeSpace()
 
   for k, v in pairs(cache.dots) do
       cache.dots[k].stillHere = false
   end
   -- FIXME: what if I remove screen, the dots are still being drawn?
-  hs.fnutils.each(hs.screen.allScreens(), function(screen)
+  fnutils.each(screen.allScreens(), function(screen)
     local screenFrame  = screen:fullFrame()
     local screenUUID   = screen:spacesUUID()
-    local screenSpaces = spaces.layout()[screenUUID]
+    local screenSpaces = _spaces.layout()[screenUUID]
 
     if screenSpaces then -- when screens don't have separate spaces, it won't appear in the layout
       if not cache.dots[screenUUID] then cache.dots[screenUUID] = {} end
@@ -37,14 +41,14 @@ module.draw = function()
         local dot
 
         if not cache.dots[screenUUID][i] then
-          dot = hs.drawing.circle({ x = 0, y = 0, w = module.size, h = module.size })
+          dot = drawing.circle({ x = 0, y = 0, w = module.size, h = module.size })
 
           dot
             :setStroke(false)
   --           :setBehaviorByLabels({ 'canJoinAllSpaces', 'stationary' })
             :setBehaviorByLabels({ 'canJoinAllSpaces' })
-  --           :setLevel(hs.drawing.windowLevels.desktopIcon)
-            :setLevel(hs.drawing.windowLevels.popUpMenu)
+  --           :setLevel(drawing.windowLevels.desktopIcon)
+            :setLevel(drawing.windowLevels.popUpMenu)
         else
           dot = cache.dots[screenUUID][i]
         end
@@ -58,7 +62,7 @@ module.draw = function()
         if screenSpaces[i] == activeSpace then
             dotColor = module.activeColor
         else
-            for i2, v2 in ipairs(spaces.query(spaces.masks.currentSpaces)) do
+            for i2, v2 in ipairs(_spaces.query(_spaces.masks.currentSpaces)) do
                 if screenSpaces[i] == v2 then
                     dotColor = module.selectedColor
                     break
@@ -92,14 +96,13 @@ end
 
 module.start = function()
   -- we need to redraw dots on screen and space events
-  cache.watchers.spaces = hs.spaces.watcher.new(module.draw):start()
-  cache.watchers.screen = hs.screen.watcher.new(module.draw):start()
-  cache.watchers.active = require("hs._asm.notificationcenter").workspaceObserver(module.draw, "NSWorkspaceActiveDisplayDidChangeNotification"):start()
+  cache.watchers.spaces = spaces.watcher.new(module.draw):start()
+  cache.watchers.screen = screen.watcher.newWithActiveScreen(module.draw):start()
   module.draw()
 end
 
 module.stop = function()
-  hs.fnutils.each(cache.watchers, function(watcher) watcher:stop() end)
+  fnutils.each(cache.watchers, function(watcher) watcher:stop() end)
 
   cache.dots = {}
 end
