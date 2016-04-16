@@ -6,60 +6,67 @@ local screen  = require("hs.screen")
 local hotkey  = require("hs.hotkey")
 local mods    = require("hs._asm.extras").mods
 
-local noiseColor  = { green = 1, alpha = .5 }
-local signalColor = { blue = 1, alpha = .5 }
-local sampleSize  = 100
-local sampleRate  = 2
+local noiseColor    = { green = 1, alpha = .5 }
+local signalColor   = { blue = 1,  alpha = .5 }
 
- -- actual range is 0 - -120db, but anything below about -85 or so is unusable, so
- -- adjust if you want a more symmetrical or smaller display
-local maxDB = 100 -- absolute value of min db to display
+-- not counting background box, height = scaleToHeight, width = sampleSize * sampleRate
+local sampleSize    = 50
+local scaleToHeight = 100
+local sampleRate    = 2
 
-local lastBaseY = nil
+local padding       = 5
+local offsetFromLLx = 1
+local offsetFromLLy = 23  -- put it above my clock in the LL corner
 
+local lastBaseY  = nil
+
+-- some pre-calculations that don't change over time or with screen changes
+local scaleRatio = scaleToHeight / 120
+local screenOffsetFromLLx = sampleSize * sampleRate + padding + offsetFromLLx
+local screenOffsetFromLLy = scaleToHeight + padding + offsetFromLLy
+local boxWidth = sampleSize * sampleRate + padding * 2
+local boxHeight = scaleToHeight + padding * 2
 local module = {}
 
 local drawings = {}
 
 module.sampleTimer = timer.new(sampleRate, function()
     local screenFrame = screen.primaryScreen():fullFrame()
-    local baseX = screenFrame.x + screenFrame.w - (sampleSize + 5)
-    local baseY = screenFrame.y + screenFrame.h - (maxDB + 5 + 22) -- put it above my clock
+    local baseX = screenFrame.x + screenFrame.w - screenOffsetFromLLx
+    local baseY = screenFrame.y + screenFrame.h - screenOffsetFromLLy
 
     if not lastBaseY then lastBaseY = baseY end
 
     drawing.disableScreenUpdates()
 
-    drawings[#drawings]:setFrame{
-        x = baseX - 5, y = baseY - 5, h = maxDB + 10, w = sampleSize + 10
-    }
+    drawings[#drawings]:setTopLeft{ x = baseX - padding, y = baseY - padding }
     if #drawings == (sampleSize * 2 + 1) then
         drawings[1]:delete() ; table.remove(drawings, 1)
         drawings[1]:delete() ; table.remove(drawings, 1)
     end
     local numSamples = (#drawings - 1) / 2
     for i = 1, #drawings - 1, 2 do
-        local newX = baseX + sampleSize + math.ceil(i/2) - numSamples
+        local newX = baseX + ((sampleSize - 1) + (math.ceil(i/2) - 1) - numSamples) * sampleRate
         local signalFrame = drawings[i]:frame()
-        signalFrame.x = newX
         local noiseFrame = drawings[i+1]:frame()
+        signalFrame.x = newX
         noiseFrame.x = newX
         if lastBaseY ~= baseY then
             signalFrame.y = signalFrame.y - lastBaseY + baseY
             noiseFrame.y = noiseFrame.y - lastBaseY + baseY
         end
-        drawings[i]:setFrame(signalFrame):orderAbove(drawings[#drawings])
+        drawings[i]:setTopLeft(signalFrame):orderAbove(drawings[#drawings])
         drawings[i+1]:setTopLeft(noiseFrame):orderAbove(drawings[i])
     end
     local wifiDetails = wifi.interfaceDetails()
-    local signal = maxDB + wifiDetails.rssi
-    if signal < 0 then signal = 0 end
-    local noise = maxDB + wifiDetails.noise
-    if noise < 0 then noise = 0 end
+    -- Signal and Noise are measured between 0 and -120. Signal closer to 0 is good.
+    -- Noise closer to -120 is good.
+    local signal = (120 + wifiDetails.rssi) * scaleRatio
+    local noise = (120 + wifiDetails.noise) * scaleRatio
     table.insert(drawings, #drawings, drawing.rectangle{
-            x = baseX + sampleSize,
-            y = baseY + maxDB - signal,
-            w = 1,
+            x = baseX + (sampleSize - 1) * sampleRate,
+            y = baseY + scaleToHeight - signal,
+            w = sampleRate,
             h = signal,
         }:setStroke(false)
          :setFill(true)
@@ -69,9 +76,9 @@ module.sampleTimer = timer.new(sampleRate, function()
          :show()
     )
     table.insert(drawings, #drawings, drawing.rectangle{
-            x = baseX + sampleSize,
-            y = baseY + maxDB - noise,
-            w = 1,
+            x = baseX + (sampleSize - 1) * sampleRate,
+            y = baseY + scaleToHeight - noise,
+            w = sampleRate,
             h = noise
         }:setStroke(false)
          :setFill(true)
@@ -89,13 +96,14 @@ end)
 module.start = function()
     if #drawings == 0 then
         drawings = {
-            drawing.rectangle{}:setFill(true)
-                               :setStroke(true)
-                               :setFillColor{white = .75, alpha = .5}
-                               :setStrokeColor{alpha = .75}
-                               :setBehaviorByLabels{"canJoinAllSpaces"}
-                               :setRoundedRectRadii(5,5)
-                               :show()
+            drawing.rectangle{ x = 0, y = 0, h = boxHeight, w = boxWidth }
+                              :setFill(true)
+                              :setStroke(true)
+                              :setFillColor{white = .75, alpha = .5}
+                              :setStrokeColor{alpha = .75}
+                              :setBehaviorByLabels{"canJoinAllSpaces"}
+                              :setRoundedRectRadii(padding,padding)
+                              :show()
         }
     else
         for i = #drawings, 1, -1 do
