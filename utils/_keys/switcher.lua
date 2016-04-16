@@ -5,12 +5,14 @@ local filter   = require"hs.window.filter"
 local hotkey   = require"hs.hotkey"
 local mods     = require"hs._asm.extras".mods
 
--- include minimized/hidden windows, current Space only
-module.switcher = switcher.new(filter.new():setCurrentSpace(true):setDefaultFilter(), {
-    selectedThumbnailSize = 384,
+-- and either I'm reading window.filter wrong or its broken... well, @lowne does say it's still experimental
+-- show hidden windows as well for the current space... I think...
+module.switcher = switcher.new(filter.new():setCurrentSpace(true), {
+    selectedThumbnailSize = 288,
     thumbnailSize         = 96,
     showTitles            = false,
-    textSize              = 12,
+--    showSelectedThumbnail = false, -- wish it would just show the selected title, but this gets rid of both
+    textSize              = 8,
 
     textColor             = { 1.0, 1.0, 1.0, 0.75 },
     backgroundColor       = { 0.3, 0.3, 0.3, 0.75 },
