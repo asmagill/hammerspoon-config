@@ -195,12 +195,14 @@ module.drawings = {}
 
 local wifiFrequencyXPosition = {}
 local seenNetworks = {}
+local drawingsVisible = false
 
 module.removeDrawings = function()
     for i, v in ipairs(module.drawings) do v:delete() end
     module.drawings = {}
     wifiFrequencyXPosition = {}
     seenNetworks = {}
+    drawingsVisible = false
     return module
 end
 
@@ -211,11 +213,13 @@ module.show = function()
             module.drawings[i]:show():orderAbove(module.drawings[i - 1])
         end
     end
+    drawingsVisible = true
     return module
 end
 
 module.hide = function()
     for i, v in ipairs(module.drawings) do v:hide() end
+    drawingsVisible = false
     return module
 end
 
@@ -235,6 +239,8 @@ module.updateDrawings = function()
             h = prevDrawingFrame.h * hRatio,
             w = prevDrawingFrame.w * wRatio,
         }):setAlpha( (i == 1) and module.frameAlpha or 1.0 )
+          :clippingRectangle(module.backgroundFrame or nil )
+        if drawingsVisible then v:show() end
     end
 
     previousBackgroundFrame = {
@@ -387,6 +393,7 @@ module.overlayAvailableNetworks = function(self, base, interface)
             wifiDrawing:setFrame(wifiDrawingFrame)
             wifiDrawingLabel:setFrame(labelFrame)
         end
+        module.updateDrawings()
     end
     return module
 end
