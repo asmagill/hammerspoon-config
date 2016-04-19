@@ -6,6 +6,8 @@ local screen  = require("hs.screen")
 local hotkey  = require("hs.hotkey")
 local mods    = require("hs._asm.extras").mods
 
+local wifimeter = require("utils.wifimeter")
+
 local noiseColor    = { green = 1, alpha = .5 }
 local signalColor   = { blue = 1,  alpha = .5 }
 
@@ -126,11 +128,28 @@ module.delete = function()
     drawings = {}
 end
 
+module.wifimeter = wifimeter
+wifimeter.delayTimer = 1
+
 hotkey.bind(mods.CASC, "w", function()
     if module.sampleTimer:running() then
         module.stop()
+        wifimeter.stopObserving()
+        module["2GHz"] = module["2GHz"]:hide()
+        module["5GHz"] = module["5GHz"]:hide()
     else
         module.start()
+        wifimeter.startObserving()
+        if not module["2GHz"] then
+            module["2GHz"] = wifimeter.new("2GHz"):start():setFrame({x = 10, y = 40, w = 1420, h = 300}):setNetworkPersistence(0):show()
+        else
+            module["2GHz"]:show()
+        end
+        if not module["5GHz"] then
+            module["5GHz"] = wifimeter.new("5GHz"):start():setFrame({x = 10, y = 345, w = 1420, h = 300}):setNetworkPersistence(0):show()
+        else
+            module["5GHz"]:show()
+        end
     end
 end)
 
