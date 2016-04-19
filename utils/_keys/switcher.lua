@@ -5,7 +5,7 @@ local filter   = require"hs.window.filter"
 local hotkey   = require"hs.hotkey"
 local mods     = require"hs._asm.extras".mods
 
-module.switcher = switcher.new(filter.new():setCurrentSpace(true):setDefaultFilter{}, {
+module.switcher = switcher.new(filter.new():setDefaultFilter{}, {
     selectedThumbnailSize = 288,
     thumbnailSize         = 96,
     showTitles            = false,
