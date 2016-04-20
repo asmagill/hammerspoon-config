@@ -177,7 +177,6 @@ end
 
 local variablesThatCauseUpdates = {
     frame              = { x = 100, y = 100, h = 700, w = 1240 },
-    frameAlpha         = 0.75,
     padding            = 20,
     colorList          = {
         { red = 1.0, green = 1.0, blue = 1.0 },
@@ -212,6 +211,7 @@ local variablesThatCauseUpdates = {
     highlightJoined    = true,
     showNoiseLevels    = false,
     networkPersistence = 2,
+    drawingLevel       = drawing.windowLevels.popUpMenu,
 }
 
 local tableCopy -- assumes no looping, good enough for our purposes
@@ -285,11 +285,12 @@ objectMT.__methodIndex.updateWifiData = function(self, latestScan)
     end
     for i, v in ipairs(latestScan) do
         if v.wlanChannel.band == self.band then
-            local label = v.bssid .. "_" .. v.ssid .. "-" .. tostring(v.wlanChannel.number)
+            local label = v.bssid .. "_" .. tostring(v.ssid) .. "-" .. tostring(v.wlanChannel.number)
             if objectMT.__internalData[self].seenNetworks[label] then
                 objectMT.__internalData[self].seenNetworks[label].signal   = v.rssi
                 objectMT.__internalData[self].seenNetworks[label].noise    = v.noise
                 objectMT.__internalData[self].seenNetworks[label].lastSeen = 0
+                objectMT.__internalData[self].seenNetworks[label].joined   = nil
             else
                 local colorNumber = objectMT.__internalData[self].colorNumberForLabels[label]
                 if not colorNumber then
@@ -328,40 +329,54 @@ objectMT.__methodIndex.updateWifiData = function(self, latestScan)
 end
 
 objectMT.__methodIndex.updateDrawings = function(self)
-    local oldDrawings = self.drawings
+    for i, v in ipairs(self.drawings) do v:delete() end
     self.drawings = {}
-    table.insert(self.drawings, table.remove(oldDrawings, 1))
-    for i = 1, #self.channelList, 1 do
-        table.insert(self.drawings, table.remove(oldDrawings, 1))
-    end
-    for i, v in ipairs(oldDrawings) do v:delete() end
+    table.insert(self.drawings,
+          drawing.rectangle(self.frame):setRoundedRectRadii(10, 10)
+                                       :setFill(true)
+                                       :setStroke(true)
+                                       :setStrokeWidth(5)
+                                       :setFillColor{ alpha=.7, white = .5 }
+                                       :setStrokeColor{ alpha=.5 }
+    )
 
-    for i, v in ipairs(self.drawings) do
-        if i == 1 then
-            v:setFrame(self.frame)
-        else
-            local oldFrame = v:frame()
-            local xOffset = objectMT.__internalData[self].channelXoffsets[tonumber(v:getStyledText():getString())]
---             print("xOffset: ", xOffset, " for: ", v:getStyledText():getString())
-            v:setTopLeft{
-                x = self.frame.x + self.padding + xOffset - oldFrame.w / 2,
-                y = self.frame.y + self.frame.h - self.padding - oldFrame.h / 2,
-            }
+--     objectMT.__internalData[self].channelXoffsets = calculateXOffsets(self)
+
+    for k, v in fnutils.sortByKeyValues(objectMT.__internalData[self].channelXoffsets) do
+        if type(k) ~= "string" then
+            local channelLabel = styledtext.new(tostring(k), {
+                font = {
+                    name = "Menlo",
+                    size = 10
+                },
+                color = { white = 0.0 },
+            })
+            local size = drawing.getTextDrawingSize(channelLabel)
+            size.w = size.w + 4
+            table.insert(self.drawings, drawing.text({
+                x = self.frame.x + self.padding + v - size.w / 2,
+                y = self.frame.y + self.frame.h - self.padding - size.h / 2,
+                h = size.h,
+                w = size.w,
+            }, channelLabel))
         end
     end
-    local textLabel = styledtext.new("Last Updated: " .. os.date("%T %x", math.floor(self.lastScanTime or 0)), {
+
+    local luaTime = math.floor(self.lastScanTime or 0.0)
+    local fract   = (self.lastScanTime or 0.0) - luaTime
+    local textLabel = styledtext.new("Last Updated: " .. os.date("%x %T", luaTime) .. tostring(fract):sub(2, 5), {
         font = {
                 name = "Menlo-Italic",
                 size = 10
             },
-            color = { white = 1.0 },
+            color = { white = 0.0 },
         })
 
     local textLabelBox = drawing.getTextDrawingSize(textLabel)
     textLabelBox.w = textLabelBox.w + 4
     table.insert(self.drawings, drawing.text({
-        x = self.frame.x + self.frame.w - textLabelBox.w,
-        y = self.frame.y + self.frame.h - textLabelBox.h,
+        x = self.frame.x + self.frame.w - (textLabelBox.w + 2),
+        y = self.frame.y + self.frame.h - (textLabelBox.h + 2),
         h = textLabelBox.h,
         w = textLabelBox.w,
     }, textLabel))
@@ -373,6 +388,10 @@ objectMT.__methodIndex.updateDrawings = function(self)
         local width = v.width * objectMT.__internalData[self].channelXoffsets["multiplier"]
         local color = self.colorList[1 + (v.colorNumber - 1) % #self.colorList]
         local signal = (120 + v.signal) * (self.frame.h - self.padding * 2) / 120
+        local clippingRect = {
+            x = self.frame.x + 2, y = self.frame.y + 2,
+            h = self.frame.h - 4, w = self.frame.w - 4,
+        }
         table.insert(self.drawings, drawing.ellipticalArc({
                 x = self.frame.x + self.padding + objectMT.__internalData[self].channelXoffsets[v.channel] - width / 2,
                 y = self.frame.y + self.frame.h - (signal + self.padding * 2),
@@ -382,7 +401,7 @@ objectMT.__methodIndex.updateDrawings = function(self)
                        :setStrokeColor(color)
                        :setFill(v.joined)
                        :setStroke(true)
-                       :clippingRectangle(self.frame)
+                       :clippingRectangle(clippingRect)
                        :setFillColor{ white = 1.0, alpha = .2 }
         )
         if self.showNames then
@@ -400,15 +419,15 @@ objectMT.__methodIndex.updateDrawings = function(self)
                 y = self.frame.y + self.frame.h - (self.padding * 2 + (signal + labelBox.h) / 2),
                 h = labelBox.h,
                 w = labelBox.w,
-            }, labelString):clippingRectangle(self.frame))
+            }, labelString):clippingRectangle(clippingRect))
         end
 
     end
 
     if objectMT.__internalData[self].isVisible then
-        self.drawings[1]:show()
+        self.drawings[1]:setLevel(self.drawingLevel):show()
         for i = 2, #self.drawings, 1 do
-            self.drawings[i]:show():orderAbove(self.drawings[i - 1])
+            self.drawings[i]:show():setLevel(self.drawingLevel):orderAbove(self.drawings[i - 1])
         end
     end
 
@@ -421,39 +440,6 @@ objectMT.__methodIndex.stop = function(self)
 end
 
 objectMT.__methodIndex.start = function(self)
-    if not next(self.drawings) then
-        table.insert(self.drawings,
-              drawing.rectangle(self.frame):setRoundedRectRadii(10, 10)
-                                           :setAlpha(self.frameAlpha)
-                                           :setFill(true)
-                                           :setStroke(true)
-                                           :setStrokeWidth(5)
-                                           :setFillColor{   white = 0.25 }
-                                           :setStrokeColor{ white = 0.10 }
-        )
-
-        objectMT.__internalData[self].channelXoffsets = calculateXOffsets(self)
-
-        for k, v in fnutils.sortByKeyValues(objectMT.__internalData[self].channelXoffsets) do
-            if type(k) ~= "string" then
-                local channelLabel = styledtext.new(tostring(k), {
-                    font = {
-                        name = "Menlo",
-                        size = 10
-                    },
-                    color = { white = 1.0 },
-                })
-                local size = drawing.getTextDrawingSize(channelLabel)
-                size.w = size.w + 4
-                table.insert(self.drawings, drawing.text({
-                    x = self.frame.x + self.padding + v - size.w / 2,
-                    y = self.frame.y + self.frame.h - self.padding - size.h / 2,
-                    h = size.h,
-                    w = size.w,
-                }, channelLabel))
-            end
-        end
-    end
     self.isWatching = true
     return self
 end
@@ -530,6 +516,8 @@ module.new = function(band, channelList)
     objectMT.__publicData[object] = tableCopy(variablesThatCauseUpdates)
 
     table.insert(observers, object)
+
+    objectMT.__internalData[object].channelXoffsets = calculateXOffsets(object)
 
     return object
 end

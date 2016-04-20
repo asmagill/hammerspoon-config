@@ -128,8 +128,14 @@ module.delete = function()
     drawings = {}
 end
 
+-- ok, technically it's doing more... overriding geeklet hover, wifi ssid map... I really need a reorg...
+
 module.wifimeter = wifimeter
-wifimeter.delayTimer = 1
+-- wifimeter.delayTimer = 1
+module["2GHz"] = wifimeter.new("2GHz"):setFrame{ x = 10, y = 240, w = 705, h = 300 }
+                                      :setNetworkPersistence(0):start()
+module["5GHz"] = wifimeter.new("5GHz"):setFrame{ x = 725, y = 240, w = 705, h = 300 }
+                                      :setNetworkPersistence(0):start()
 
 hotkey.bind(mods.CASC, "w", function()
     if module.sampleTimer:running() then
@@ -137,18 +143,16 @@ hotkey.bind(mods.CASC, "w", function()
         wifimeter.stopObserving()
         module["2GHz"] = module["2GHz"]:hide()
         module["5GHz"] = module["5GHz"]:hide()
+        for i, v in pairs(_asm._actions.geeklets.geeklets) do
+            if not v.hoverlock then v:hover(false) end
+        end
     else
         module.start()
         wifimeter.startObserving()
-        if not module["2GHz"] then
-            module["2GHz"] = wifimeter.new("2GHz"):start():setFrame({x = 10, y = 40, w = 1420, h = 300}):setNetworkPersistence(0):show()
-        else
-            module["2GHz"]:show()
-        end
-        if not module["5GHz"] then
-            module["5GHz"] = wifimeter.new("5GHz"):start():setFrame({x = 10, y = 345, w = 1420, h = 300}):setNetworkPersistence(0):show()
-        else
-            module["5GHz"]:show()
+        module["2GHz"]:show()
+        module["5GHz"]:show()
+        for i, v in pairs(_asm._actions.geeklets.geeklets) do
+            if not v.hoverlock then v:hover(true) end
         end
     end
 end)
