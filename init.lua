@@ -114,9 +114,12 @@ _asm._actions.closeWhenLoseFocus.disable()
 _asm._CMI.addMenu(_asm._menus.applicationMenu.menuUserdata, "icon",      true)
 _asm._CMI.addMenu(_asm._menus.developerMenu.menuUserdata,   "icon",  -1, true)
 _asm._CMI.addMenu(_asm._menus.newClipper.menu,              "title", -1, true)
+_asm._CMI.addMenu(_asm._menus.volumes.menu,                 "icon",  -1, true)
 _asm._CMI.addMenu(_asm._menus.battery.menuUserdata,         "title", -1, true)
--- _asm._CMI.addMenu(_asm._menus.hammersponMenu.menuUserdata,  "icon" , -1, true)
--- _asm._CMI.addMenu(_asm._menus.dateMenu.menuUserdata,        "title", -2, true)
+-- going to have to revisit CMI... it doesn't do arbitrary sized icons well, plus I think I want a dark mode
+-- time to consider image filters for hs.image?
+_asm._CMI.addMenu(_asm._menus.dateMenu.menuUserdata,        "title", -2, true)
+_asm._CMI.addMenu(_asm._menus.amphetamine.menu,             "icon",  -2, true)
 _asm._CMI.panelShow()
 
 dofile("geekery.lua")

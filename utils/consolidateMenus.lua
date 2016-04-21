@@ -201,7 +201,9 @@ local myMenuMinimized = false
 local myMenu
 
 local panelToggle = function() return myMenuVisible and module.panelHide() or module.panelShow() end
-myMenu = menubar.new():setClickCallback(panelToggle):setIcon(myMenuImageOff)
+myMenu = menubar.newWithPriority(menubar.priorities.default - 1)
+                :setClickCallback(panelToggle)
+                :setIcon(myMenuImageOff)
 
 local minimizeFN = function()
     local mouseY = mouse.getAbsolutePosition().y
