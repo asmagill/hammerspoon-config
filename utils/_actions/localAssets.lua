@@ -4,7 +4,7 @@
 
 local module = {}
 
-local hsminweb = require("hs._asm.hsminweb")
+local hsminweb = require("hs.httpserver.hsminweb")
 local serverPort = 7734
 local documentRoot = hs.configdir.."/_localAssets"
 

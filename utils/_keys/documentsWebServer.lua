@@ -3,7 +3,7 @@
 
 local module = {}
 
-local hsminweb = require("hs._asm.hsminweb")
+local hsminweb = require("hs.httpserver.hsminweb")
 local hotkey   = require("hs.hotkey")
 local alert    = require("hs.alert").show
 
