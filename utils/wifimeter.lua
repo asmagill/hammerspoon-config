@@ -285,7 +285,7 @@ objectMT.__methodIndex.updateWifiData = function(self, latestScan)
     end
     for i, v in ipairs(latestScan) do
         if v.wlanChannel.band == self.band then
-            local label = v.bssid .. "_" .. tostring(v.ssid) .. "-" .. tostring(v.wlanChannel.number)
+            local label = tostring(v.bssid) .. "_" .. tostring(v.ssid) .. "-" .. tostring(v.wlanChannel.number)
             if objectMT.__internalData[self].seenNetworks[label] then
                 objectMT.__internalData[self].seenNetworks[label].signal   = v.rssi
                 objectMT.__internalData[self].seenNetworks[label].noise    = v.noise
