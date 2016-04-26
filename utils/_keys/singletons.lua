@@ -66,11 +66,17 @@ hotkey.bind(mods.CASC, "e", nil, function()
     end)
 hotkey.bind(mods.CASC, "3", function() application.launchOrFocus("Calculator") end, nil)
 
+local windowHolder
 hotkey.bind(mods.CAsC, "r", function()
           local conswin = window.get("Hammerspoon Console")
           if conswin and application.get("Hammerspoon"):isFrontmost() then
               conswin:close()
+              if #windowHolder:role() ~= 0 then
+                  windowHolder:becomeMain():focus()
+                  windowHolder = nil
+              end
           else
+              windowHolder = window.frontmostWindow()
               hs.openConsole()
           end
       end, nil)
