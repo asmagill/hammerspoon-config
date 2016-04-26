@@ -28,4 +28,6 @@ module.server._logBadTranslations       = true
 module.server._logPageErrorTranslations = true
 module.server._allowRenderTranslations  = true
 
+module.hsdocs = require"hs.doc.hsdocs".start()
+
 return module
