@@ -108,7 +108,7 @@ watcherMenu:setIcon(image.imageFromName("statusicon"))
                                       listener:start()
                                   end
                               else
-                                  listener = listener.init():start()
+                                  listener.init():start()
                               end
                           end
                       },

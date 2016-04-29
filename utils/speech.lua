@@ -151,8 +151,6 @@ module.add("Re-Launch Hammerspoon", _asm.relaunch)
 -- module.add("Stop Listening", module.stop)
 module.add("Go away for a while", module.disableCompletely)
 
--- list doesn't appear until its started at least once; since we want to minimize false
--- positives, start disabled, but fill list in case Dictation Commands window is open.
-if settings.get("_asm.listener") then placeholder.init():start():stop() end
+if settings.get("_asm.listener") then placeholder.init():start() end
 
 return placeholder
