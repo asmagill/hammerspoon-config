@@ -63,10 +63,27 @@ module = setmetatable(module, { __gc =  function(_)
                                 end,
 })
 
-module.findInHistory = function(toFind)
-    toFind = toFind or ""
-    for i,v in ipairs(console.getHistory()) do
-        if v:match(toFind) then print(i, v) end
+module.history = function(toFind)
+    if type(toFind) == "number" then
+        local history = console.getHistory()
+        if toFind < 0 then toFind = #history - (toFind + 1) end
+        local command = history[toFind]
+        if command then
+            print(">> " .. command)
+            timer.doAfter(.1, function()
+                local newHistory = console.getHistory()
+                newHistory[#newHistory] = command
+                console.setHistory(newHistory)
+            end)
+            return load(command)()
+        else
+            error("nil item at specified history position", 2)
+        end
+    else
+        toFind = toFind or ""
+        for i,v in ipairs(console.getHistory()) do
+            if v:match(toFind) then print(i, v) end
+        end
     end
 end
 

@@ -16,7 +16,7 @@ hs.require = require
 require = rawrequire
 require("hs.crash").crashLogToNSLog = true
 require("hs.crash").crashLog("Disabled require logging to make log file sane")
-require("hs.logger").historySize(200)
+require("hs.logger").historySize(1000)
 
 -- adjust hotkey logging... info as the default is too much.
 require("hs.hotkey").setLogLevel("warning")
@@ -216,7 +216,9 @@ else
     print("++ Running minimal configuration")
 end
 
-history = _asm._actions.consoleHistory.findInHistory
+history = _asm._actions.consoleHistory.history
 
 print("++ Running: "..hs.processInfo.bundlePath)
 print("++ Accessibility: "..tostring(hs.accessibilityState()))
+
+idunno = "¯\\_(ツ)_/¯" -- I like it and may want to use it sometime
