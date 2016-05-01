@@ -146,10 +146,21 @@ local addToHistory = function(theClipping, theHistory)
     end
 end
 
+local removeFromHistory = function(index, theHistory)
+    table.remove(theHistory.history, index)
+    local historyHolder = prepareInitialHistory(theHistory.history)
+    theHistory.history = historyHolder.history
+    theHistory.hashed  = historyHolder.hashed
+    if autoSave then saveHistoryAndSettings(theHistory) end
+end
+
 local itemSelected = function(index, theHistory)
     local done = false
     local mods = eventtap.checkKeyboardModifiers()
-    if typeOnSelect or mods.alt then
+    if mods.ctrl then
+        removeFromHistory(index, theHistory)
+        done = true
+    elseif typeOnSelect or mods.alt then
         eventtap.keyStrokes(theHistory.history[index])
         done = not typeAlsoUpdates
     end
@@ -173,6 +184,11 @@ local renderNewClipperMenu = function(mods)
                           ..utf8.registeredKeys.leftDoubleQuote.."type"
                           ..utf8.registeredKeys.rightDoubleQuote..
                           " selection immediately", {
+                                font = stext.convertFont(stext.defaultFonts.menu, stext.fontTraits.italicFont),
+                                color = { list="x11", name="royalblue"},
+                          }), disabled = true
+                      })
+            table.insert(results, { title = stext.new("Hold down "..utf8.registeredKeys.ctrl.." to remove selection from history", {
                                 font = stext.convertFont(stext.defaultFonts.menu, stext.fontTraits.italicFont),
                                 color = { list="x11", name="royalblue"},
                           }), disabled = true
