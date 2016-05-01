@@ -25,9 +25,10 @@ hotkey.bind(mods.CAsc, "F11", function()
 end)
 
 module._loopSleepWatcher = caffeinate.watcher.new(function(event)
-    if event == caffeinate.watcher.systemDidWake then
+    local cw = caffeinate.watcher
+    if ({ [cw.systemDidWake] = 1, [cw.screensaverDidStop] = 1, })[event] then
         redshift.start(2800,'21:00','7:00','4h')
-    elseif event == caffeinate.watcher.systemWillSleep then
+    elseif ({ [cw.systemWillSleep] = 1, [cw.screensaverDidStart] = 1, })[event] then
         redshift.stop()
     end
 end):start()
