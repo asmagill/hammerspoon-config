@@ -235,7 +235,8 @@ module.cs:bind({}, "escape", function() module.cs:exit() end)
 
 -- mimic CheatSheet's trigger for holding Command Key
 module.cmdPressed = false
-module.eventwatcher = eventtap.new({events.flagsChanged, events.keyDown}, function(ev)
+-- we only care about events other than flagsChanged that should *stop* a current count down
+module.eventwatcher = eventtap.new({events.flagsChanged, events.keyDown, events.leftMouseDown}, function(ev)
     module.cmdPressed = false
     if ev:getType() == events.flagsChanged then
         local count = 0

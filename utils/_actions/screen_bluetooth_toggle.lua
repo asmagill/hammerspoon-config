@@ -27,4 +27,4 @@ return screen.watcher.new(function()
         end
         prevScreens = numScreens
     end
-end):start()
+end) -- :start()

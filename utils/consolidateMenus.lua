@@ -437,7 +437,7 @@ module.addMenu = function(menu, icon, position, autoRemove)
     CMI.drawing:setBehaviorByLabels{"canJoinAllSpaces"}:orderAbove(myMenuBar)
         :setClickCallback(nil, function()
             CMI.menu:popupMenu{
-                x = monitorRightX - (#myMenuItems + .5 - math.floor((monitorRightX - mouse.getAbsolutePosition().x) / boxWidth)) * boxWidth,
+                x = mouse.getAbsolutePosition().x - 5, --monitorRightX - (#myMenuItems + .5 - math.floor((monitorRightX - mouse.getAbsolutePosition().x) / boxWidth)) * boxWidth,
                 y = monitorTopY + boxHeight + 2 * hMargin,
             }
             dynamicCheck:start() -- if popup takes too long, this can sometimes stop... not sure how to detect yet...
