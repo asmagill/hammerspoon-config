@@ -106,6 +106,9 @@ end
 _asm._keys    = requirePlus.requirePath("utils._keys", true)
 _asm._actions = requirePlus.requirePath("utils._actions", true)
 _asm._menus   = requirePlus.requirePath("utils._menus", true)
+-- need to rethink requirePlus so that it can handle folders with name/init.lua
+_asm._menus.XProtectStatus = require"utils._menus.XprotectStatus"
+
 _asm._CMI     = require("utils.consolidateMenus")
 
 table.insert(_asm._actions.closeWhenLoseFocus.closeList, "nvALT")
@@ -120,6 +123,9 @@ _asm._CMI.addMenu(_asm._menus.battery.menuUserdata,         "title", -1, true)
 -- time to consider image filters for hs.image?
 _asm._CMI.addMenu(_asm._menus.dateMenu.menuUserdata,        "title", -2, true)
 _asm._CMI.addMenu(_asm._menus.amphetamine.menu,             "icon",  -2, true)
+_asm._CMI.addMenu(_asm._menus.XProtectStatus.fullMenu,      "icon",  -2, true)
+-- _asm._CMI.addMenu(_asm._menus.XProtectStatus.pluginMenu,    "icon",  -2, true)
+-- _asm._CMI.addMenu(_asm._menus.XProtectStatus.statusMenu,    "icon",  -2, true)
 _asm._CMI.panelShow()
 
 dofile("geekery.lua")
