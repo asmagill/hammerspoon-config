@@ -10,6 +10,7 @@ local fnutils  = require("hs.fnutils")
 local log      = require("hs.logger").new("mySpeech","warning")
 local settings = require("hs.settings")
 local eventtap = require("hs.eventtap")
+local watchable = require"hs._asm.watchable"
 
 local commands = {}
 local title    = "Hammerspoon"
@@ -37,6 +38,9 @@ end
 
 module.log = log
 module.commands = commands
+
+module.watchables = watchable.new("utils.speech")
+module.watchables.isListening = false
 
 module.add = function(text, func)
     assert(type(text) == "string", "command must be a string")
@@ -75,12 +79,14 @@ module.start = function()
             h = 14, w = 150
         }
     end
+    module.watchables.isListening = true
     return placeholder
 end
 
 module.stop = function()
     module.recognizer:title("Disabled: "..title):stop()
     if (module.listenLabel) then module.listenLabel:hide() end
+    module.watchables.isListening = false
     return placeholder
 end
 
@@ -102,6 +108,7 @@ module.disableCompletely = function()
         module.listenLabel = module.listenLabel:delete()
     end
     settings.set("_asm.listener", false)
+    module.watchables.isListening = false
 end
 
 module.init = function()

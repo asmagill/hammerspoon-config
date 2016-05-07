@@ -164,6 +164,8 @@ console.windowBackgroundColor({red=.6,blue=.7,green=.7})
 console.outputBackgroundColor({red=.8,blue=.8,green=.8})
 console.asHSDrawing():setAlpha(.9)
 
+_asm.consoleToolbar = require"utils.consoleToolbar"
+
 _asm.hs_default_print = print
 print = function(...)
     hs.rawprint(...)
@@ -218,13 +220,18 @@ mb = function(url)
     return _asm.mb:url(url):show()
 end
 
-else
-    print("++ Running minimal configuration")
+bundleIDForApp = function(app)
+    return hs.execute([[mdls -name kMDItemCFBundleIdentifier -r "$(mdfind 'kMDItemKind==Application' | grep /]] .. app .. [[.app | head -1)"]])
 end
 
 history = _asm._actions.consoleHistory.history
 
+idunno = "¯\\_(ツ)_/¯" -- I like it and may want to use it sometime
+
+else
+    print("++ Running minimal configuration")
+end
+
 print("++ Running: "..hs.processInfo.bundlePath)
 print("++ Accessibility: "..tostring(hs.accessibilityState()))
 
-idunno = "¯\\_(ツ)_/¯" -- I like it and may want to use it sometime

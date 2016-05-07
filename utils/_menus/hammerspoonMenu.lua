@@ -21,14 +21,18 @@ local appwatch  = require("hs.application").watcher
 local image     = require("hs.image")
 local settings  = require("hs.settings")
 local window    = require("hs.window")
+local watchable = require"hs._asm.watchable"
 
 local listener  = require("utils.speech")
 
 -- private variables and methods -----------------------------------------
 
-module.status = true
+module.watchables = watchable.new("hammerspoonMenu")
+module.watchables.status = true
+
+-- module.status = true
 if settings.getKeys()["_asm.autohide.console"] ~= nil then
-    module.status = settings.get("_asm.autohide.console")
+    module.watchables.status = settings.get("_asm.autohide.console")
 end
 
 local hsConsoleWatcherFN = function(name,event,hsapp)
@@ -43,17 +47,17 @@ end
 local hsConsoleWatcher = appwatch.new(hsConsoleWatcherFN)
 
 local toggleWatcher = function(setItTo)
-    if type(setItTo) == "boolean" then module.status = not setItTo end
+    if type(setItTo) == "boolean" then module.watchables.status = not setItTo end
 
-    if module.status then
-        module.status = false
+    if module.watchables.status then
+        module.watchables.status = false
         hsConsoleWatcher:stop()
     else
-        module.status = true
+        module.watchables.status = true
         hsConsoleWatcher:start()
     end
-    settings.set("_asm.autohide.console", module.status)
-    return module.status
+    settings.set("_asm.autohide.console", module.watchables.status)
+    return module.watchables.status
 end
 -- local watcherMenu = menubar.new():setIcon(image.imageFromName("statusicon")) -- it's in the app bundle, so we can refer to it by name
 
@@ -82,7 +86,7 @@ watcherMenu:setIcon(image.imageFromName("statusicon"))
                       },
                       { title = "-" },
                       { title = "Auto-Close Console", fn = toggleWatcher,
-                          checked = module.status
+                          checked = module.watchables.status
                       },
                   },
               },
@@ -130,7 +134,7 @@ watcherMenu:setIcon(image.imageFromName("statusicon"))
 
 -- Public interface ------------------------------------------------------
 
-toggleWatcher(module.status)
+toggleWatcher(module.watchables.status)
 
 module.watcher = hsConsoleWatcher
 module.menuUserdata = watcherMenu
