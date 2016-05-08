@@ -40,14 +40,14 @@ local setHook = function(ourFn, ourMask, ourCount)
     end
 end
 
-module._loopTimeStamp = os.time()
-module._loopTimer = timer.new(5, function() module._loopTimeStamp = os.time() end):start()
+-- module._loopTimeStamp = os.time()
+-- module._loopTimer = timer.new(5, function() module._loopTimeStamp = os.time() end):start()
 module._loopChecker = function(t,l)
     if lastFn then lastFn(t, l) end
-    if (os.time() - module._loopTimeStamp) > 60 then
-        module._loopTimeStamp = os.time()
-        error("*** timeout -- infinite loop somewhere?\n\n"..debug.traceback(), 0)
-    end
+--     if (os.time() - module._loopTimeStamp) > 60 then
+--         module._loopTimeStamp = os.time()
+--         error("*** timeout -- infinite loop somewhere?\n\n"..debug.traceback(), 0)
+--     end
     local mods = eventtap.checkKeyboardModifiers()
 -- remove "and mods.fn" if your keyboard does not have this key (non laptops most likely)
     if mods.capslock and mods.fn and mods.cmd and mods.ctrl and mods.alt and mods.shift then
@@ -55,14 +55,14 @@ module._loopChecker = function(t,l)
     end
 end
 
-module._loopSleepWatcher = caffeinate.watcher.new(function(event)
-    if event == caffeinate.watcher.systemDidWake then
-        module._loopTimeStamp = os.time()
-        setHook(module._loopChecker, "", 1000)
-    elseif event == caffeinate.watcher.systemWillSleep then
-        setHook(nil)
-    end
-end):start()
+-- module._loopSleepWatcher = caffeinate.watcher.new(function(event)
+--     if event == caffeinate.watcher.systemDidWake then
+--         module._loopTimeStamp = os.time()
+--         setHook(module._loopChecker, "", 1000)
+--     elseif event == caffeinate.watcher.systemWillSleep then
+--         setHook(nil)
+--     end
+-- end):start()
 
 setHook(module._loopChecker, "", 1000)
 
