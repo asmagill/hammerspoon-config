@@ -67,12 +67,13 @@ local consoleToolbar = {
 }
 
 fnutils.each({
-    { "SmartGit", "com.syntevo.smartgit", },
-    { "XCode",    "com.apple.dt.Xcode" },
-    { "Console",  "com.apple.Console", },
-    { "Terminal", "com.apple.Terminal" },
-    { "BBEdit",   "com.barebones.bbedit" },
-    { "Safari",   "com.apple.Safari" },
+    { "SmartGit",         "com.syntevo.smartgit", },
+    { "XCode",            "com.apple.dt.Xcode" },
+    { "Console",          "com.apple.Console", },
+    { "Terminal",         "com.apple.Terminal" },
+    { "BBEdit",           "com.barebones.bbedit" },
+    { "Safari",           "com.apple.Safari" },
+    { "Activity Monitor", "com.apple.ActivityMonitor"},
 }, function(entry)
     local app, bundleID = table.unpack(entry)
     table.insert(consoleToolbar, {
