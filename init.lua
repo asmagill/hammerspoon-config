@@ -103,6 +103,8 @@ _asm.relaunch = function()
     hs._exit(true, true)
 end
 
+_asm.watchables = require("utils.watchables")
+
 _asm._keys    = requirePlus.requirePath("utils._keys", true)
 _asm._actions = requirePlus.requirePath("utils._actions", true)
 _asm._menus   = requirePlus.requirePath("utils._menus", true)

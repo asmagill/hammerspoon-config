@@ -26,6 +26,10 @@ module.watchListenerStatus = watchable.watch("utils.speech.isListening", functio
     module.toolbar:modifyItem{ id = "listener", image = image.imageFromPath(listenerImage()) }
 end)
 
+module.watchInternetStatus = watchable.watch("generalStatus.internet", function(w, p, i, oldValue, value)
+    module.toolbar:modifyItem{ id = "internet", image = image.imageFromName(image.systemImageNames[value and "StatusAvailable" or "StatusUnavailable"]) }
+end)
+
 local consoleToolbar = {
     {
         id = "autoHide",
@@ -86,6 +90,15 @@ fnutils.each({
         default = false,
     })
 end)
+
+table.insert(consoleToolbar, {
+    id = "internet",
+    label = "Internet",
+    image = image.imageFromName(image.systemImageNames[module.watchInternetStatus:value() and "StatusAvailable" or "StatusUnavailable"]),
+    fn = function(bar, attachedTo, item)
+    end,
+    default = false,
+})
 
 module.toolbar = toolbar.new("_asmConsole_001", consoleToolbar)
       :canCustomize(true)
