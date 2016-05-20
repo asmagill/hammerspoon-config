@@ -63,6 +63,7 @@ local consoleToolbar = {
     {
         id = "cust",
         label = "customize",
+        tooltip = "Modify Toolbar",
         fn = function(t, w, i)
             t:customizePanel()
         end,
@@ -83,6 +84,7 @@ fnutils.each({
     table.insert(consoleToolbar, {
         id = bundleID,
         label = app,
+        tooltip = app,
         image = image.imageFromAppBundle(bundleID),
         fn = function(bar, attachedTo, item)
             application.launchOrFocus(app)
@@ -94,6 +96,7 @@ end)
 table.insert(consoleToolbar, {
     id = "internet",
     label = "Internet",
+    tooltip = "Internet Status",
     image = image.imageFromName(image.systemImageNames[module.watchInternetStatus:value() and "StatusAvailable" or "StatusUnavailable"]),
     fn = function(bar, attachedTo, item)
     end,

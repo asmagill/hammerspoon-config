@@ -12,6 +12,9 @@ local settings = require("hs.settings")
 local eventtap = require("hs.eventtap")
 local watchable = require"hs._asm.watchable"
 
+local window      = require"hs.window"
+local axuielement = require"hs._asm.axuielement"
+
 local commands = {}
 local title    = "Hammerspoon"
 local listenerCallback = function(listenerObj, text)
@@ -155,6 +158,15 @@ module.add("Open Mail", function() require("hs.application").launchOrFocus("Mail
 module.add("Open Terminal Application", function() require("hs.application").launchOrFocus("Terminal") end)
 module.add("Re-Load Hammerspoon", hs.reload)
 module.add("Re-Launch Hammerspoon", _asm.relaunch)
+module.add("Toggle Command List", function()
+    local dictationWindows = fnutils.ifilter(window.allWindows(), function(_)
+        return _:role() == "AXButton" and _:application():name() == "Dictation"
+    end)
+    local target = (#dictationWindows == 1) and dictationWindows[1]
+                   or fnutils.find(dictationWindows, function(_) return _:subrole() == "AXCloseButton" end)
+    axuielement.windowElement(target):doPress()
+end)
+
 -- module.add("Stop Listening", module.stop)
 module.add("Go away for a while", module.disableCompletely)
 
