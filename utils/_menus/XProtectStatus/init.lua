@@ -313,6 +313,11 @@ local generateFullMenu = function()
         },
         { title = "-", disabled = true },
         {
+            title = "Refresh Menu Content",
+            fn = function(mods) fullMenuRows = nil end,
+        },
+        { title = "-", disabled = true },
+        {
             title = "Notify on update",
             checked = module.changeWatcher and true or false,
             fn = function(mods)
@@ -330,7 +335,8 @@ local generateFullMenu = function()
             title = "Remove XProtect Status Menu",
             fn = function(mods)
                 module.fullMenu = module.fullMenu:delete()
-            end
+            end,
+            disabled = not module.fullMenu:isInMenubar()
         }
     }
 end
@@ -339,7 +345,7 @@ module.createFullMenu = function()
     if not module.fullMenu then
         module.fullMenu = menubar():setIcon(fullMenuIcon)
             :setMenu(function(mods)
-                if not fullMenuRows then
+                if not fullMenuRows then -- refresh is slow, so don't re-do if it's been done recently
                     fullMenuRows = generateFullMenu()
                 end
                 return fullMenuRows
@@ -396,6 +402,7 @@ watchForUpdates = function()
     if not module.changeWatcher then
         if hashHasChanged() then module.onHashUpdate() end
         module.changeWatcher = timer.new(3600, function()
+            fullMenuRows = nil -- doesn't hurt to force refresh in case a new/updated extension has been installed
             if hashHasChanged() then
                 module.onHashUpdate()
             end
