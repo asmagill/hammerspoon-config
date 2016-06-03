@@ -27,7 +27,9 @@ module.watchListenerStatus = watchable.watch("utils.speech.isListening", functio
 end)
 
 module.watchInternetStatus = watchable.watch("generalStatus.internet", function(w, p, i, oldValue, value)
-    module.toolbar:modifyItem{ id = "internet", image = image.imageFromName(image.systemImageNames[value and "StatusAvailable" or "StatusUnavailable"]) }
+--     module.toolbar:modifyItem{ id = "internet", image = image.imageFromName(image.systemImageNames[value and "StatusAvailable" or "StatusUnavailable"]) }
+    module.toolbar:modifyItem{ id = "internet", image = image.imageFromName(value and "NSToolbarBookmarks" or "NSStopProgressFreestandingTemplate") }
+
 end)
 
 local consoleToolbar = {
@@ -97,8 +99,25 @@ table.insert(consoleToolbar, {
     id = "internet",
     label = "Internet",
     tooltip = "Internet Status",
-    image = image.imageFromName(image.systemImageNames[module.watchInternetStatus:value() and "StatusAvailable" or "StatusUnavailable"]),
+--     image = image.imageFromName(image.systemImageNames[module.watchInternetStatus:value() and "StatusAvailable" or "StatusUnavailable"]),
+    image = image.imageFromName(module.watchInternetStatus:value() and "NSToolbarBookmarks" or "NSStopProgressFreestandingTemplate"),
     fn = function(bar, attachedTo, item)
+    end,
+    default = false,
+})
+
+table.insert(consoleToolbar, {
+    id = "hammerspoonDocumentation",
+    label = "HS Documentation",
+    tooltip = "Show HS Documentation Browser",
+    image = image.imageFromName("NXHelpIndex"),
+    fn = function(bar, attachedTo, item)
+        local base = require"hs.doc.hsdocs"
+        if not base._browser then
+            base.help()
+        else
+            base._browser:show()
+        end
     end,
     default = false,
 })
