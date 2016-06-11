@@ -47,12 +47,14 @@ module.batteryNotifications = {
                 -- apparently some devices don't have a volume or mute...
                 if volume then audio:setVolume(100) end
                 if muted then audio:setMuted(false) end
-                local sp = speech.new("Zarvox"):speak("LOW BATTERY")
-                if volume then audio:setVolume(volume) end
-                if muted then audio:setMuted(true) end
-            else
-                alert.show("LOW BATTERY")
+                local sp = speech.new("Zarvox"):setCallback(function(s, why, ...)
+                    if why == "didFinish" then
+                        if volume then audio:setVolume(volume) end
+                        if muted then audio:setMuted(true) end
+                    end
+                end):speak("LOW BATTERY")
             end
+            alert.show("LOW BATTERY")
         end
     },
     { onBattery = true, percentage = 5, doEvery = 60,
@@ -63,12 +65,14 @@ module.batteryNotifications = {
                 -- apparently some devices don't have a volume or mute...
                 if volume then audio:setVolume(100) end
                 if muted then audio:setMuted(false) end
-                local sp = speech.new("Zarvox"):speak("PLUG ME IN NOW")
-                if volume then audio:setVolume(volume) end
-                if muted then audio:setMuted(true) end
-            else
-                alert.show("PLUG ME IN NOW")
+                local sp = speech.new("Zarvox"):setCallback(function(s, why, ...)
+                    if why == "didFinish" then
+                        if volume then audio:setVolume(volume) end
+                        if muted then audio:setMuted(true) end
+                    end
+                end):speak("PLUG ME IN NOW")
             end
+            alert.show("PLUG ME IN NOW")
         end
     },
     { onBattery = true, timeRemaining = 30, doEvery = 300,
