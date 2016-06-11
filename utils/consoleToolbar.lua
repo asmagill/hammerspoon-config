@@ -27,7 +27,6 @@ module.watchListenerStatus = watchable.watch("utils.speech.isListening", functio
 end)
 
 module.watchInternetStatus = watchable.watch("generalStatus.internet", function(w, p, i, oldValue, value)
---     module.toolbar:modifyItem{ id = "internet", image = image.imageFromName(image.systemImageNames[value and "StatusAvailable" or "StatusUnavailable"]) }
     module.toolbar:modifyItem{ id = "internet", image = image.imageFromName(value and "NSToolbarBookmarks" or "NSStopProgressFreestandingTemplate") }
 
 end)
@@ -40,7 +39,6 @@ local consoleToolbar = {
         tooltip = "Hide the Hammerspoon Console when focus changes?",
         fn = function(bar, attachedTo, item)
             _asm._menus.hammerspoonMenu.toggleWatcher()
---                 module.toolbar:modifyItem{ id = item, image = image.imageFromPath(autoHideImage()) }
         end,
     },
     {
@@ -58,7 +56,6 @@ local consoleToolbar = {
             else
                 listener.init():start()
             end
---                 module.toolbar:modifyItem{ id = item, image = image.imageFromPath(listenerImage()) }
         end,
     },
     { id = "NSToolbarFlexibleSpaceItem" },
@@ -81,6 +78,7 @@ fnutils.each({
     { "BBEdit",           "com.barebones.bbedit" },
     { "Safari",           "com.apple.Safari" },
     { "Activity Monitor", "com.apple.ActivityMonitor"},
+    { "AXUI Inspector",   "com.apple.AccessibilityInspector"},
 }, function(entry)
     local app, bundleID = table.unpack(entry)
     table.insert(consoleToolbar, {
@@ -99,7 +97,6 @@ table.insert(consoleToolbar, {
     id = "internet",
     label = "Internet",
     tooltip = "Internet Status",
---     image = image.imageFromName(image.systemImageNames[module.watchInternetStatus:value() and "StatusAvailable" or "StatusUnavailable"]),
     image = image.imageFromName(module.watchInternetStatus:value() and "NSToolbarBookmarks" or "NSStopProgressFreestandingTemplate"),
     fn = function(bar, attachedTo, item)
     end,
@@ -122,6 +119,61 @@ table.insert(consoleToolbar, {
     default = false,
 })
 
+-- get list of hammerspoon modules
+local list = {}
+
+-- local input = io.open(hs.docstrings_json_file, "rb")
+-- local converted = require"hs.json".decode(input:read("a")),
+-- input:close()
+--
+-- for i,v in ipairs(converted) do
+--     table.insert(list1, v.name)
+-- --     if v.items then
+-- --         for i2, v2 in ipairs(converted) do
+-- --             table.insert(list, v.name .. "." .. v2.name)
+-- --         end
+-- --     end
+-- end
+
+-- a little uglier, misses "space-holder, empty-of-functions" modules (like hs.spaces, which hs no formal definition in the docs, but is auto-created as a place-holder for hs.spaces.watcher), but faster
+local examine
+examine = function(tblName)
+    local myTable = {}
+    for i, v in pairs(tblName) do
+        if type(v) == "table" then
+            if v.__name == v.__path then
+                table.insert(myTable, v.__name)
+                local more = examine(v)
+                if #more > 0 then
+                    for i2,v2 in ipairs(more) do table.insert(myTable, v2) end
+                end
+            end
+        end
+    end
+    return myTable
+end
+list = examine(hs.help.hs)
+table.insert(list, "hs")
+
+table.sort(list)
+
+table.insert(consoleToolbar, {
+    id = "searchID",
+    label = "HS Doc Search",
+    tooltip = "Search for a HS function or method",
+    fn = function(t, w, i, text)
+--         print(("~~ HS Doc Search callback with '%s'"):format(text))
+        if text ~= "" then require"hs.doc.hsdocs".help(text) end
+    end,
+    default = false,
+
+    searchfield               = true,
+    searchHistoryLimit        = 10,
+    searchHistoryAutoSaveName = "HSDocsHistory",
+    searchPredefinedSearches  = list,
+    searchMaxWidth = 200, -- 327 seems to be the max that actually changes the field size (higher is allowed, but the field doesn't get any bigger), but I don't know why
+})
+
 module.toolbar = toolbar.new("_asmConsole_001", consoleToolbar)
       :canCustomize(true)
       :autosaves(true)
@@ -130,15 +182,5 @@ module.toolbar = toolbar.new("_asmConsole_001", consoleToolbar)
                    end)
 
 toolbar.attachToolbar(module.toolbar)
-
--- -- really need a way to register/un-register for watching a variable in another module...
--- -- like Objective-C's KVO, but maybe a little easier to understand...
--- -- Must ponder...  worth resurrecting inter-application listener/poster?
--- timer.doEvery(1, function()
---     if module.toolbar then
---         module.toolbar:modifyItem{ id = "autoHide", image = image.imageFromPath(autoHideImage()) }
---         module.toolbar:modifyItem{ id = "listener", image = image.imageFromPath(listenerImage()) }
---     end
--- end)
 
 return module
