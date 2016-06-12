@@ -66,7 +66,7 @@ local consoleToolbar = {
         fn = function(t, w, i)
             t:customizePanel()
         end,
-        image = hs.image.imageFromName("NSAdvanced")
+        image = hs.image.imageFromName("NSToolbarCustomizeToolbarItemImage")
     }
 }
 
@@ -87,7 +87,7 @@ fnutils.each({
         tooltip = app,
         image = image.imageFromAppBundle(bundleID),
         fn = function(bar, attachedTo, item)
-            application.launchOrFocus(app)
+            application.launchOrFocusByBundleID(bundleID)
         end,
         default = false,
     })
@@ -171,7 +171,7 @@ table.insert(consoleToolbar, {
     searchHistoryLimit        = 10,
     searchHistoryAutoSaveName = "HSDocsHistory",
     searchPredefinedSearches  = list,
-    searchMaxWidth = 200, -- 327 seems to be the max that actually changes the field size (higher is allowed, but the field doesn't get any bigger), but I don't know why
+    searchWidth               = 200,
 })
 
 module.toolbar = toolbar.new("_asmConsole_001", consoleToolbar)
