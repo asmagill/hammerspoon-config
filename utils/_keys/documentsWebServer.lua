@@ -48,5 +48,4 @@ module.hotkey = hotkey.bind({"cmd", "alt"}, "f10", function()
     end
 end)
 
-module.server:start() -- using it quite a bit right now; may change default or remove key sequence toggle in the future depending upon my usage
 return module
