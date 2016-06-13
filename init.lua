@@ -92,7 +92,7 @@ if not minimal then -- normal init continues...
 -- For my convenience while testing and screwing around...
 -- If something grows into usefulness, I'll modularize it.
 _xtras = require("hs._asm.extras")
-_xtras.docmaker = require("utils.docmaker")
+-- _xtras.docmaker = require("utils.docmaker")
 
 -- _xtras.console = require("hs.console")
 

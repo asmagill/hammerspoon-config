@@ -18,7 +18,7 @@ local sectionsMDOrder = {
 
 module = {
 
-genMarkdown = function(mods)
+genMarkdown = function(mods, withTOC)
     if type(mods) == "string" then mods = docBuilder.genComments(mods) end
     local results = ""
     local onceThrough = false
@@ -37,6 +37,30 @@ genMarkdown = function(mods)
         results = results.."~~~lua\n"
         results = results..m.name:match("^.-([^%.]+)$").." = require(\""..m.name.."\")\n"
         results = results.."~~~\n"
+
+        if (withTOC) then
+            results = results.."\n"
+            results = results.."### Contents\n"
+            results = results.."\n"
+            for k, _ in fnutils.sortByKeyValues(sectionsMDOrder) do
+                local sectionLabelPrinted = false
+                for _, i in ipairs(m.items) do
+                    if i["type"] == k then
+                        if not sectionLabelPrinted then
+                            sectionLabelPrinted = true
+                            results = results.."\n"
+                            results = results.."##### Module "..k..(k ~= "Deprecated" and "s" or "").."\n"
+                        end
+                        results = results.."* <a href=\"#"..i.name.."\">"
+                        results = results..i.def:match("^.-("..m.name:match("^.-([^%.]+)$").."[%.:]"..i.name..".*)$")
+                        results = results.."</a>\n"
+                    end
+                end
+            end
+            results = results.."\n"
+            results = results.."- - -\n"
+        end
+
         for k, _ in fnutils.sortByKeyValues(sectionsMDOrder) do
             local sectionLabelPrinted = false
             for _, i in ipairs(m.items) do
@@ -60,6 +84,25 @@ genMarkdown = function(mods)
             end
         end
     end
+
+    results = results .. [[
+
+- - -
+
+### License
+
+>     The MIT License (MIT)
+>
+> Copyright (c) 2016 Aaron Magill
+>
+> Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+>
+> The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+>
+> THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+>
+
+]]
     return results
 end,
 

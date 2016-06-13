@@ -171,7 +171,7 @@ table.insert(consoleToolbar, {
     searchHistoryLimit        = 10,
     searchHistoryAutoSaveName = "HSDocsHistory",
     searchPredefinedSearches  = list,
-    searchWidth               = 200,
+    searchWidth               = 250,
 })
 
 module.toolbar = toolbar.new("_asmConsole_001", consoleToolbar)
