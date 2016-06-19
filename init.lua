@@ -160,11 +160,11 @@ timer.waitUntil(
 )
 
 -- hs.drawing.windowBehaviors.moveToActiveSpace
-console.asHSDrawing():setBehavior(2)
+console.behavior(2)
 console.smartInsertDeleteEnabled(false)
 console.windowBackgroundColor({red=.6,blue=.7,green=.7})
 console.outputBackgroundColor({red=.8,blue=.8,green=.8})
-console.asHSDrawing():setAlpha(.9)
+console.alpha(.9)
 
 _asm.consoleToolbar = require"utils.consoleToolbar"
 
@@ -210,14 +210,47 @@ resetSpaces = function()
     hs.execute("killall Dock")
 end
 
-mb = function(url)
+mbNew = function(url, datastore)
+    local webview     = require("hs.webview")
+    if type(url) ~= "string" then
+        url, datastore = "http://www.google.com", url
+    end
+
+    local options = {
+        developerExtrasEnabled = true,
+    }
+    if type(datastore) == "userdata" then
+        options.datastore = datastore
+    else
+        options.privateBrowsing = datastore and true or false
+    end
+
+    local miniB = webview.new({
+            x=100,y=100,h=500,w=500
+        },options):windowStyle(1+2+4+8)
+                  :allowTextEntry(true)
+                  :allowGestures(true)
+                  :closeOnEscape(true)
+    return miniB:url(url):show()
+end
+
+mb = function(url, name)
     local webview     = require("hs.webview")
     url = url or "https://www.google.com"
+
+    local options = {
+            developerExtrasEnabled = true,
+--             privateBrowsing = true,
+    }
+    if name then
+        options.applicationName = name
+    end
+
     if not _asm.mb then
-        _asm.mb = webview.new({x=100,y=100,h=500,w=500},{
-            developerExtrasEnabled=true
-        }):windowStyle(1+2+4+8)
-          :allowTextEntry(true):allowGestures(true)
+        _asm.mb = webview.new({
+            x=100,y=100,h=500,w=500
+        }, options):windowStyle(1+2+4+8)
+          :allowTextEntry(true):allowGestures(true):closeOnEscape(true)
     end
     return _asm.mb:url(url):show()
 end

@@ -85,7 +85,7 @@ Notes:
         }
         </script>
     ]]):show()
-    view:asHSDrawing():setLevel(drawing.windowLevels.screenSaver)
+    view:level(drawing.windowLevels.screenSaver)
 
     return setmetatable({view}, {
         __index = {

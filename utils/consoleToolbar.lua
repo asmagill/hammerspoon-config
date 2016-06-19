@@ -1,4 +1,4 @@
-local toolbar     = require"hs._asm.toolbar"
+local toolbar     = require"hs.webview.toolbar"
 local console     = require"hs.console"
 local image       = require"hs.image"
 local fnutils     = require"hs.fnutils"
@@ -66,7 +66,7 @@ local consoleToolbar = {
         fn = function(t, w, i)
             t:customizePanel()
         end,
-        image = hs.image.imageFromName("NSToolbarCustomizeToolbarItemImage")
+        image = image.imageFromName("NSToolbarCustomizeToolbarItemImage")
     }
 }
 
@@ -181,6 +181,6 @@ module.toolbar = toolbar.new("_asmConsole_001", consoleToolbar)
                         print("+++ Oops! You better assign me something to do!")
                    end)
 
-toolbar.attachToolbar(module.toolbar)
+console.toolbar(module.toolbar)
 
 return module
