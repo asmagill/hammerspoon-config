@@ -44,6 +44,6 @@ end
 
 module.menu = menubar.new()
 module.menu:setClickCallback(function() setIcon(caffeinate.toggle("displayIdle")) end)
-setIcon(hs.caffeinate.get("displayIdle"))
+setIcon(caffeinate.get("displayIdle"))
 
 return module

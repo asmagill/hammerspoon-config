@@ -12,12 +12,14 @@ local events   = eventtap.event.types
 
 local module   = {}
 
-module.autoDismiss    = true
-module.showEmptyMenus = false
+module.autoDismiss     = true
+module.showEmptyMenus  = false
+module.cmdKeyPressTime = 3.5
 
 module.bgColor  = "#bbd" -- "#eee"
 module.font     = "arial"
 module.fontSize = 13
+
 
 ------------------------------------------------------------------------
 --/ Cheatsheet Copycat /--
@@ -222,7 +224,7 @@ module.cs = hotkey.modal.new()
               :html(generateHtml())
               :allowGestures(true)
               :windowTitle("CheatSheets")
-              :setLevel(require("hs.drawing").windowLevels.floating)
+              :level(require("hs.drawing").windowLevels.floating)
               :show()
               alert.closeAll() -- hide alert, if we finish fast enough
         end)
@@ -249,7 +251,7 @@ module.eventwatcher = eventtap.new({events.flagsChanged, events.keyDown, events.
     if module.myView ~= nil and module.autoDismiss then module.cs:exit() end
 
     if module.cmdPressed then
-        module.countDown = timer.doAfter(3, function()
+        module.countDown = timer.doAfter(module.cmdKeyPressTime, function()
             module.cs:enter()
             module.cmdPressed = false
         end)
