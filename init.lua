@@ -68,11 +68,14 @@ inspectm = function (what, how)
 end
 inspect1 = function(what) return inspect(what, {depth=1}) end
 inspect2 = function(what) return inspect(what, {depth=2}) end
+inspecta = function(what) return inspect(what, {
+    process = function(i,p) if p[#p] ~= "n" then return i end end
+}) end
 
 -- need to make third-party docs possible; this is totally out of date
 -- -- may include locally added json files in docs versus built in help
 -- doc = require("utils.docs")
-doc = help
+doc = hs.hsdocs
 
 tobits = function(num, bits)
     bits = bits or (math.floor(math.log(num,2) / 8) + 1) * 8
@@ -210,47 +213,34 @@ resetSpaces = function()
     hs.execute("killall Dock")
 end
 
-mbNew = function(url, datastore)
-    local webview     = require("hs.webview")
-    if type(url) ~= "string" then
-        url, datastore = "http://www.google.com", url
-    end
-
-    local options = {
-        developerExtrasEnabled = true,
-    }
-    if type(datastore) == "userdata" then
-        options.datastore = datastore
-    else
-        options.privateBrowsing = datastore and true or false
-    end
-
-    local miniB = webview.new({
-            x=100,y=100,h=500,w=500
-        },options):windowStyle(1+2+4+8)
-                  :allowTextEntry(true)
-                  :allowGestures(true)
-                  :closeOnEscape(true)
-    return miniB:url(url):show()
-end
-
-mb = function(url, name)
+mb = function(url, extras)
     local webview     = require("hs.webview")
     url = url or "https://www.google.com"
 
     local options = {
             developerExtrasEnabled = true,
---             privateBrowsing = true,
     }
-    if name then
-        options.applicationName = name
+    if type(extras) == "table" then
+        for k,v in pairs(extras) do options[k] = v end
     end
 
     if not _asm.mb then
-        _asm.mb = webview.new({
-            x=100,y=100,h=500,w=500
-        }, options):windowStyle(1+2+4+8)
-          :allowTextEntry(true):allowGestures(true):closeOnEscape(true)
+        _asm.mblog = {}
+        _asm.mb = webview.newBrowser({
+            x = 100, y = 100,
+            h = 500, w = 500
+        }, options):closeOnEscape(true)
+                   :navigationCallback(function(a, w, n, e)
+                      table.insert(_asm.mblog, { os.date("%D %T"), a, n, e })
+                   end)
+                   :policyCallback(function(a, w, d1, d2)
+                      table.insert(_asm.mblog, { os.date("%D %T"), a, d1, d2 })
+                      return true
+                   end)
+                   :sslCallback(function(w, p)
+                      table.insert(_asm.mblog, { os.date("%D %T"), "sslServerTrust", p })
+                      return true
+                   end)
     end
     return _asm.mb:url(url):show()
 end
@@ -260,6 +250,34 @@ bundleIDForApp = function(app)
 end
 
 history = _asm._actions.consoleHistory.history
+local previousParser = hs._consoleInputPreparser
+hs._consoleInputPreparser = function(s)
+    if previousParser then s = previousParser(s) end
+
+    -- allow !# like bash to redo a command from the history
+    local historyNumber = s:match("^!(-?%d+)$")
+    if historyNumber then s = "history(" .. historyNumber .. ")" end
+
+    -- allow `history what`
+    if s:match("^history%s+[^\"]") then s = s:gsub("^history ", "history \"") .. "\"" end
+
+    if s:match("^help") and not s:match("^help%.") then
+        -- allow help(what) without quotes
+        local helpParen = s:match("^help%s*%(([^\"]*)%)%s*$")
+        if helpParen then
+            if helpParen == "" then
+                s = "help"
+            else
+                s = "help." .. helpParen
+            end
+        end
+
+        -- allow `help what`
+        if s:match("^help%s+[^\"]") then s = s:gsub("^help%s+", "help.") end
+    end
+
+    return s
+end
 
 idunno = "¯\\_(ツ)_/¯" -- I like it and may want to use it sometime
 

@@ -169,12 +169,13 @@ table.insert(consoleToolbar, {
 
     searchfield               = true,
     searchHistoryLimit        = 10,
-    searchHistoryAutoSaveName = "HSDocsHistory",
+    searchHistoryAutosaveName = "HSDocsHistory",
     searchPredefinedSearches  = list,
     searchWidth               = 250,
 })
 
-module.toolbar = toolbar.new("_asmConsole_001", consoleToolbar)
+module.toolbar = toolbar.new("_asmConsole_001")
+      :addItems(consoleToolbar)
       :canCustomize(true)
       :autosaves(true)
       :setCallback(function(...)

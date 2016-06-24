@@ -41,6 +41,7 @@ local currentPowerSource = ""
 module.batteryNotifications = {
     { onBattery = true, percentage = 10, doEvery = false,
         fn = function()
+            local alert = require("hs.alert")
             if not suppressAudio then
                 local audio = require("hs.audiodevice").defaultOutputDevice()
                 local volume, muted = audio:volume(), audio:muted()
@@ -59,6 +60,7 @@ module.batteryNotifications = {
     },
     { onBattery = true, percentage = 5, doEvery = 60,
         fn = function()
+            local alert = require("hs.alert")
             if not suppressAudio then
                 local audio = require("hs.audiodevice").defaultOutputDevice()
                 local volume, muted = audio:volume(), audio:muted()
