@@ -9,8 +9,8 @@ local module = {
     help = "⌘-F11 and ⌘⌥-F11"
 }
 
-settings.clear("hs.redshift.inverted.override")
-settings.clear("hs.redshift.disabled.override")
+-- settings.clear("hs.redshift.inverted.override")
+-- settings.clear("hs.redshift.disabled.override")
 
 redshift.start(2800,'21:00','7:00','4h')
 
