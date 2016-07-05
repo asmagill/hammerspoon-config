@@ -15,7 +15,7 @@ local mods        = require("hs._asm.extras").mods
 local hotkey      = require("hs.hotkey")
 local fnutils     = require("hs.fnutils")
 local application = require("hs.application")
-local alert       = require("hs.alert").show
+local alert       = require("hs.alert")
 
 local app = hotkey.modal.new(mods.CAsC, "a")
 
@@ -38,10 +38,18 @@ local app = hotkey.modal.new(mods.CAsC, "a")
     )
 
     function app:entered()
-        alert("Entering Application Mode")
+        if alert.closeSpecific then
+            app.alertUUID = alert("Application Selection Mode", true)
+        else
+            alert("Entering Application Mode")
+        end
     end
     function app:exited()
-        alert("Leaving Application Mode")
+        if app.alertUUID then
+            alert.closeSpecific(app.alertUUID)
+        else
+            alert("Leaving Application Mode")
+        end
     end
 app:bind(mods.casc, "ESCAPE", function() app:exit() end)
 

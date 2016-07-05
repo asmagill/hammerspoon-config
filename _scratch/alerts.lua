@@ -85,9 +85,7 @@ end
 module.show = function(message, duration)
     message = tostring(message)
     duration = duration or 2.0
-    if duration and duration > 0.0 then
-        return showAlert(message, duration)
-    end
+    return showAlert(message, duration)
 end
 
 module.closeAll = function(duration)
@@ -102,4 +100,4 @@ module.closeSpecific = function(UUID, duration)
     purgeAlert(UUID, duration)
 end
 
-return module
+return setmetatable(module, { __call = function(_, ...) return module.show(...) end })

@@ -18,8 +18,21 @@ require("hs.crash").crashLogToNSLog = true
 require("hs.crash").crashLog("Disabled require logging to make log file sane")
 require("hs.logger").historySize(1000)
 
--- adjust hotkey logging... info as the default is too much.
-require("hs.hotkey").setLogLevel("warning")
+-- -- Testing lua/hs.drawing based replacement for alert
+
+local R, M = pcall(require,"_scratch.alerts")
+if R then
+   print()
+   print("**** Replacing internal hs.alert with experimental module.")
+   print()
+   hs.alert = M
+   package.loaded["hs.alert"] = M   -- make sure require("hs.alert") returns us
+   package.loaded["hs/alert"] = M   -- make sure require("hs/alert") returns us
+else
+   print()
+   print("**** Error with experimental hs.alert: "..tostring(M))
+   print()
+end
 
 -- -- Testing eventtap replacement for hotkey
 --
@@ -36,6 +49,10 @@ require("hs.hotkey").setLogLevel("warning")
 --    print("**** Error with experimental hs.hotkey: "..tostring(M))
 --    print()
 --end
+
+
+-- adjust hotkey logging... info as the default is too much.
+require("hs.hotkey").setLogLevel("warning")
 
 local requirePlus = require("utils.require")
 local settings    = require("hs.settings")
