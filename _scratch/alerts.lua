@@ -63,7 +63,8 @@ local showAlert = function(message, duration)
                                             :setStrokeWidth(2)
                                             :setStrokeColor{white = 1, alpha = 1}
                                             :setFill(true)
-                                            :setFillColor{white = 0, alpha = 0.75}
+-- :setFillColor{white = 0, alpha = 0.75} -- use something different so its obvious if our replacement isn't being used by something
+                                            :setFillColor{blue = 0.25, green = 0.25, alpha = 0.75}
                                             :setRoundedRectRadii(27, 27)
                                             :show(0.15)
     )
