@@ -38,7 +38,9 @@ local app = hotkey.modal.new(mods.CAsC, "a")
     )
 
     function app:entered()
+-- checks to see if we're using the new one or not; this way this will work even if I disable it in `init.lua`
         if alert.closeSpecific then
+-- app is the modal hotkey we created, and since it's a table, its as good a place as any to store something, as long as we don't overwrite any of its required internals (see `hs.inspect(hs.hotkey.modal.new({"ctrl","shift"}, "a"), {metatables = true})` if you want to see what these are)
             app.alertUUID = alert("Application Selection Mode", true)
         else
             alert("Entering Application Mode")
