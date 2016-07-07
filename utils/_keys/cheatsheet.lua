@@ -16,7 +16,11 @@ module.autoDismiss     = true
 module.showEmptyMenus  = false
 module.cmdKeyPressTime = 3.5
 
-module.bgColor  = "#bbd" -- "#eee"
+-- module.bgColor  = "#bbd" -- "#eee"
+module.bgColor  = "#003f3f"
+module.fgColor  = "#fff"
+module.alpha    = 0.85
+
 module.font     = "arial"
 module.fontSize = 13
 
@@ -95,6 +99,7 @@ local generateHtml = function()
               background-color:]]..module.bgColor..[[;
               font-family: ]]..module.font..[[;
               font-size: ]]..module.fontSize..[[px;
+              color: ]]..module.fgColor..[[;
             }
             a{
               text-decoration:none;
@@ -225,6 +230,7 @@ module.cs = hotkey.modal.new()
               :allowGestures(true)
               :windowTitle("CheatSheets")
               :level(require("hs.drawing").windowLevels.floating)
+              :alpha(module.alpha or 1.0)
               :show()
               alert.closeAll() -- hide alert, if we finish fast enough
         end)
