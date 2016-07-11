@@ -22,7 +22,7 @@ module.fgColor  = "#fff"
 module.alpha    = 0.85
 
 module.font     = "arial"
-module.fontSize = 13
+module.fontSize = 12
 
 
 ------------------------------------------------------------------------
@@ -68,7 +68,7 @@ getAllMenuItems = function(t)
                 elseif(val['AXRole'] =="AXMenuItem" and not val['AXChildren']) then
                     if( val['AXMenuItemCmdModifiers'] ~='0' and (val['AXMenuItemCmdChar'] ~='' or type(val['AXMenuItemCmdGlyph']) == "number")) then
                         if val['AXMenuItemCmdChar'] == "" then
-                            menu = menu.."<li><div class='cmdModifiers'>"..commandEnum[val['AXMenuItemCmdModifiers']].." "..(glyphs[val['AXMenuItemCmdGlyph']] or "?"..tostring(val['AXMenuItemCmdGlyph']).."?").."</div><div class='cmdtext'>".." "..val['AXTitle'].."</div></li>"
+                            menu = menu.."<li><div class='cmdModifiers'>"..(commandEnum[val['AXMenuItemCmdModifiers']] or tostring(val['AXMenuItemCmdModifiers']).."?").." "..(glyphs[val['AXMenuItemCmdGlyph']] or "?"..tostring(val['AXMenuItemCmdGlyph']).."?").."</div><div class='cmdtext'>".." "..val['AXTitle'].."</div></li>"
                         else
                             menu = menu.."<li><div class='cmdModifiers'>"..commandEnum[val['AXMenuItemCmdModifiers']].." "..val['AXMenuItemCmdChar'].."</div><div class='cmdtext'>".." "..val['AXTitle'].."</div></li>"
                         end
@@ -104,7 +104,7 @@ local generateHtml = function()
             a{
               text-decoration:none;
               color:#000;
-              font-size:12px;
+              font-size: ]]..module.fontSize..[[px;
             }
             li.title{ text-align:center;}
             ul, li{list-style: inside none; padding: 0 0 5px;}
@@ -138,7 +138,7 @@ local generateHtml = function()
             li.title{padding: 0  10px 15px}
             .content{
               padding: 0 0 15px;
-              font-size:12px;
+              font-size: ]]..module.fontSize..[[px;
               overflow:hidden;
             }
             .content.maincontent{
@@ -218,10 +218,10 @@ module.cs = hotkey.modal.new()
         timer.doAfter(.1, function()
             local screenFrame = require("hs.screen").mainScreen():frame()
             local viewFrame = {
-                x = screenFrame.x + 100,
-                y = screenFrame.y + 100,
-                h = screenFrame.h - 200,
-                w = screenFrame.w - 200,
+                x = screenFrame.x + 50,
+                y = screenFrame.y + 50,
+                h = screenFrame.h - 100,
+                w = screenFrame.w - 100,
             }
             module.myView = require("hs.webview").new(viewFrame, { developerExtrasEnabled = true })
               :windowStyle("utility")

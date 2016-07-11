@@ -21,15 +21,17 @@ local module = {
 --]=]
 }
 
-local menubar  = require("hs.menubar")
-local utf8     = require("hs.utf8")
-local battery  = require("hs.battery")
-local fnutils  = require("hs.fnutils")
-local settings = require("hs.settings")
-local speech   = require("hs.speech")
+local menubar    = require("hs.menubar")
+local utf8       = require("hs.utf8")
+local battery    = require("hs.battery")
+local fnutils    = require("hs.fnutils")
+local settings   = require("hs.settings")
+local speech     = require("hs.speech")
+local styledtext = require("hs.styledtext")
+local timer      = require("hs.timer")
 
-local onAC      = utf8.codepointToUTF8(0x1F50C) -- plug
-local onBattery = utf8.codepointToUTF8(0x1F50B) -- battery
+local onAC       = utf8.codepointToUTF8(0x1F50C) -- plug
+local onBattery  = utf8.codepointToUTF8(0x1F50B) -- battery
 
 local suppressAudioKey = "_asm.battery.suppressAudio"
 local suppressAudio = settings.get(suppressAudioKey) or false
@@ -104,6 +106,32 @@ module.batteryNotifications = {
 
 local notificationStatus = {}
 
+local updateMenuTitle = function()
+    if menuUserData then
+        local text = string.format("%+d\n", battery.amperage())
+
+        local timeValue = -999
+        if battery.isCharging() then
+            timeValue = battery.timeToFullCharge()
+        else
+            timeValue = battery.timeRemaining()
+        end
+
+        text = text ..((timeValue < 0) and "???" or
+                string.format("%2d:%02d", math.floor(timeValue/60), timeValue%60))
+
+        menuUserData:setTitle(styledtext.new(text,  {
+                                                        font = {
+                                                            name = "Menlo",
+                                                            size = 9
+                                                        },
+                                                        paragraphStyle = {
+                                                            alignment = "center",
+                                                        },
+                                                    }))
+    end
+end
+
 local powerSourceChangeFN = function(justOn)
     local newPowerSource = battery.powerSource()
     local test = {
@@ -128,11 +156,12 @@ local powerSourceChangeFN = function(justOn)
             end
         end
         if menuUserData then
-            if currentPowerSource == "AC Power" then
-                menuUserData:setTitle(onAC)
-            else
-                menuUserData:setTitle(onBattery)
-            end
+--             if currentPowerSource == "AC Power" then
+--                 menuUserData:setTitle(onAC)
+--             else
+--                 menuUserData:setTitle(onBattery)
+--             end
+        updateMenuTitle()
         end
     end
     if not justOn then
@@ -264,19 +293,23 @@ end
 --module.menuUserdata = menuUserData -- for debugging, may remove in the future
 
 module.start = function()
-    menuUserData, currentPowerSource = menubar.new(), ""
+--     menuUserData, currentPowerSource = menubar.new(), ""
+    menuUserData, currentPowerSource = menubar.newWithPriority(999), ""
 
     powerSourceChangeFN(true)
     powerWatcher:start()
 
     menuUserData:setMenu(displayBatteryData)
 
+    module.menuTitleChanger = timer.doEvery(5, updateMenuTitle)
     module.menuUserdata = menuUserData -- for debugging, may remove in the future
     return module
 end
 
 module.stop = function()
     powerWatcher:stop()
+    module.menuTitleChanger:stop()
+    module.menuTitleChanger = nil
     menuUserData = menuUserData:delete()
     return module
 end
