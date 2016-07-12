@@ -3,8 +3,11 @@ local console     = require"hs.console"
 local image       = require"hs.image"
 local fnutils     = require"hs.fnutils"
 local listener    = require"utils.speech"
-local watchable   = require"hs._asm.watchable"
 local application = require"hs.application"
+local styledtext  = require"hs.styledtext"
+
+local watchable   = require"hs._asm.watchable"
+local canvas      = require"hs._asm.canvas"
 
 local module = {}
 
@@ -29,6 +32,40 @@ end)
 module.watchInternetStatus = watchable.watch("generalStatus.internet", function(w, p, i, oldValue, value)
     module.toolbar:modifyItem{ id = "internet", image = image.imageFromName(value and "NSToolbarBookmarks" or "NSStopProgressFreestandingTemplate") }
 
+end)
+
+
+local imageHolder = canvas.new{x = 10, y = 10, h = 50, w = 50}
+imageHolder[1] = {
+    frame = { h = 50, w = 50, x = 0, y = -6 },
+    text = styledtext.new("⌘", {
+        font = { name = ".AppleSystemUIFont", size = 50 },
+        paragraphStyle = { alignment = "center" }
+    }),
+    type = "text",
+}
+local cheatSheetOn = imageHolder:imageOfCanvas()
+imageHolder[2] = {
+    action = "stroke",
+    closed = false,
+    coordinates = { { x = 0, y = 0 }, { x = 50, y = 50 } },
+    strokeColor = { red = 1.0 },
+    strokeWidth = 3,
+    type = "segments",
+}
+imageHolder[3] = {
+    action = "stroke",
+    closed = false,
+    coordinates = { { x = 50, y = 0 }, { x = 0, y = 50 } },
+    strokeColor = { red = 1.0 },
+    strokeWidth = 3,
+    type = "segments",
+}
+local cheatSheetOff = imageHolder:imageOfCanvas()
+imageHolder = imageHolder:delete()
+
+module.watchCheatSheetStatus = watchable.watch("cheatsheet.enabled", function(w, p, i, oldValue, value)
+    module.toolbar:modifyItem{ id = "cheatsheet", image = value and cheatSheetOn or cheatSheetOff }
 end)
 
 local consoleToolbar = {
@@ -115,6 +152,17 @@ table.insert(consoleToolbar, {
         else
             base._browser:show()
         end
+    end,
+    default = false,
+})
+
+table.insert(consoleToolbar, {
+    id = "cheatsheet",
+    label = "CheatSheet Status",
+    tooltop = "Toggle CheatSheet Functionality",
+    image = module.watchCheatSheetStatus:value() and cheatSheetOn or cheatSheetOff,
+    fn = function(t, a, i)
+        _asm._keys.cheatsheet.toggle()
     end,
     default = false,
 })

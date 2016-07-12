@@ -7,10 +7,16 @@ local alert    = require("hs.alert")
 local hotkey   = require("hs.hotkey")
 local timer    = require("hs.timer")
 local eventtap = require("hs.eventtap")
+local notify   = require("hs.notify")
+local distributednotifications = require"hs.distributednotifications"
+
+local watchables = require("hs._asm.watchable")
 
 local events   = eventtap.event.types
 
 local module   = {}
+
+module.watchables = watchables.new("cheatsheet")
 
 module.autoDismiss     = true
 module.showEmptyMenus  = false
@@ -270,5 +276,30 @@ module.eventwatcher = eventtap.new({events.flagsChanged, events.keyDown, events.
     return false ;
 end):start()
 
+module.remoteAccessWatcher = distributednotifications.new(function(n,o,i)
+    local vn = i and i.ViewerNames or nil
+    if not vn then
+        print("~~ com.apple.remotedesktop.viewerNames with unknown details: object = " .. tostring(o) .. ", info = " .. tostring(i))
+    else
+        if #vn > 0 and module.eventwatcher:isEnabled() then
+            notify.show("Remote Viewer Detected", "...disabling Cmd-Key Cheatsheat", "", "")
+            module.eventwatcher:stop()
+        elseif #vn == 0 and not module.eventwatcher:isEnabled() then
+            notify.show("Remote Viewer Left", "...re-enabling Cmd-Key Cheatsheat", "", "")
+            module.eventwatcher:start()
+        end
+        module.watchables.enabled = module.eventwatcher:isEnabled()
+    end
+end, "com.apple.remotedesktop.viewerNames"):start()
 
+module.toggle = function()
+    if module.eventwatcher:isEnabled() then
+        module.eventwatcher:stop()
+    else
+        module.eventwatcher:start()
+    end
+    module.watchables.enabled = module.eventwatcher:isEnabled()
+end
+
+module.watchables.enabled = module.eventwatcher:isEnabled()
 return module
