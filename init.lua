@@ -146,8 +146,6 @@ _asm._CMI.addMenu(_asm._menus.volumes.menu,                 "icon",  -1, true)
 _asm._CMI.addMenu(_asm._menus.dateMenu.menuUserdata,        "title", -1, true)
 _asm._CMI.addMenu(_asm._menus.amphetamine.menu,             "icon",  -1, true)
 _asm._CMI.addMenu(_asm._menus.XProtectStatus.fullMenu,      "icon",  -1, true)
--- _asm._CMI.addMenu(_asm._menus.XProtectStatus.pluginMenu,    "icon",  -2, true)
--- _asm._CMI.addMenu(_asm._menus.XProtectStatus.statusMenu,    "icon",  -2, true)
 _asm._CMI.panelShow()
 
 dofile("geekery.lua")

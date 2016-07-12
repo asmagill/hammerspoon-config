@@ -118,7 +118,7 @@ local updateMenuTitle = function()
         end
 
         text = text ..((timeValue < 0) and "???" or
-                string.format("%2d:%02d", math.floor(timeValue/60), timeValue%60))
+                string.format("%d:%02d", math.floor(timeValue/60), timeValue%60))
 
         menuUserData:setTitle(styledtext.new(text,  {
                                                         font = {
