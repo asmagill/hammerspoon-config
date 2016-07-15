@@ -44,7 +44,7 @@ imageHolder[1] = {
     }),
     type = "text",
 }
-local cheatSheetOn = imageHolder:imageOfCanvas()
+local cheatSheetOn = imageHolder:imageFromCanvas()
 imageHolder[2] = {
     action = "stroke",
     closed = false,
@@ -61,7 +61,7 @@ imageHolder[3] = {
     strokeWidth = 3,
     type = "segments",
 }
-local cheatSheetOff = imageHolder:imageOfCanvas()
+local cheatSheetOff = imageHolder:imageFromCanvas()
 imageHolder = imageHolder:delete()
 
 module.watchCheatSheetStatus = watchable.watch("cheatsheet.enabled", function(w, p, i, oldValue, value)
