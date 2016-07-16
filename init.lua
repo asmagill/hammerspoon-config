@@ -295,6 +295,7 @@ hs._consoleInputPreparser = function(s)
 end
 
 idunno = "¯\\_(ツ)_/¯" -- I like it and may want to use it sometime
+graphpaperImage = require("_scratch.graphpaper2")
 
 else
     print("++ Running minimal configuration")
