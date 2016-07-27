@@ -120,11 +120,14 @@ local updateMenuTitle = function()
         text = text ..((timeValue < 0) and "???" or
                 string.format("%d:%02d", math.floor(timeValue/60), timeValue%60))
 
+        local titleColor = (require"hs.host".interfaceStyle() == "Dark") and { white = 1 } or { white = 0 }
+
         menuUserData:setTitle(styledtext.new(text,  {
                                                         font = {
                                                             name = "Menlo",
                                                             size = 9
                                                         },
+                                                        color = titleColor,
                                                         paragraphStyle = {
                                                             alignment = "center",
                                                         },
