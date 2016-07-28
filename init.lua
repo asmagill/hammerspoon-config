@@ -20,6 +20,23 @@ require("hs.logger").historySize(1000)
 
 -- -- Testing lua/hs.drawing based replacement for alert
 
+if require"hs.settings".get("_asm.test.canvas.drawing") then
+    local R, M = pcall(require,"hs._asm.canvas.drawing")
+    if R then
+       print()
+       print("**** Replacing internal hs.drawing with experimental wrapper.")
+       print()
+       hs.drawing = M
+       package.loaded["hs.drawing"] = M   -- make sure require("hs.drawing") returns us
+       package.loaded["hs/drawing"] = M   -- make sure require("hs/drawing") returns us
+       debug.getregistry()["hs.drawing"] = hs.getObjectMetatable("hs._asm.canvas.drawing")
+    else
+       print()
+       print("**** Error with experimental hs.drawing wrapper: "..tostring(M))
+       print()
+    end
+end
+
 local R, M = pcall(require,"_scratch.alerts")
 if R then
    print()

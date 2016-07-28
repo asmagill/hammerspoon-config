@@ -40,7 +40,7 @@ local hsConsoleWatcherFN = function(name,event,hsapp)
         if name == "Hammerspoon" and event == appwatch.deactivated then
             local test = window.get("Hammerspoon Console")
             if test then
-                print("~~ auto-closing Hammerspoon console")
+--                 print("~~ auto-closing Hammerspoon console")
                 test:close()
             end
         end
