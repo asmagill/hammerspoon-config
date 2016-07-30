@@ -420,7 +420,7 @@ module.addMenu = function(menu, icon, position, autoRemove)
         CMI.drawing = drawing.text({h = iconHeight, w = iconWidth}, icon)
                              :setTextSize(iconHeight * .75)
                              :setTextColor(boxStroke)
-                             :setAlpha(boxStroke.alpha)
+--                              :setAlpha(boxStroke.alpha)
                              :clickCallbackActivating(false)
     else
         if type(icon) == "string" then
@@ -428,7 +428,7 @@ module.addMenu = function(menu, icon, position, autoRemove)
             icon = menu:icon()
         end
         CMI.drawing = drawing.image({h = iconHeight, w = iconWidth}, icon)
-                             :setAlpha(boxStroke.alpha)
+--                              :setAlpha(boxStroke.alpha)
                              :clickCallbackActivating(false)
     end
 
