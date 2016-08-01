@@ -3,6 +3,8 @@ local module = {}
 local task         = require("hs.task")
 local stext        = require("hs.styledtext")
 local timer        = require("hs.timer")
+local settings     = require("hs.settings")
+
 local reachability = require("hs.network.reachability")
 
 local hosts = {
@@ -72,7 +74,7 @@ module.updateTasks = function()
 end
 
 -- force a recheck when the status changes
-module.vpnStatus = reachability.forAddress("10.161.81.10"):setCallback(module.updateTasks):start()
+module.vpnStatus = reachability.forAddress(settings.get("_asm.remoteCheckIP")):setCallback(module.updateTasks):start()
 
 module.output = myOutput
 module.tasks  = myTasks

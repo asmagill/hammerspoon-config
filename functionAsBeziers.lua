@@ -109,11 +109,12 @@ module.coordinatesForCanvasElementForFofX = function(frame, fn, start, stop, inc
 end
 
 module.canvasElementForFofX = function(frame, fn, start, stop, inc, tension)
+    local coordinates = module.coordinatesForCanvasElementForFofX(frame, fn, start, stop, inc, tension)
     return canvas.new(frame):insertElement{
         type = "segments",
         action = "stroke",
-        transformation = matrix.translate(0, frame.h / 2):scale(1, -1),
-        coordinates = module.coordinatesForCanvasElementForFofX(frame, fn, start, stop, inc, tension),
+        transformation = matrix.translate(-1 * coordinates[1].x, frame.h / 2):scale(1, -1),
+        coordinates = coordinates,
     }
 end
 
