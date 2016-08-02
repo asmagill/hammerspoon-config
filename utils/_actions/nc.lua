@@ -29,7 +29,7 @@ local distributednotifications = require"hs.distributednotifications"
 module.workspaceObserver = nc.workspaceObserver(function(n,o,i)
     if not ignoreInWorkspaceObserver[n] then
         local f = io.open("__workspaceobserver.txt","a") ;
-        f:write(os.date().."\t".."name:"..n.."\tobj:"..inspect(o):gsub("%s+"," ").."\tinfo:"..inspect(i):gsub("%s+"," ").."\n")
+        f:write(os.date().."\t".."name:"..inspect(n).."\tobj:"..inspect(o):gsub("%s+"," ").."\tinfo:"..inspect(i):gsub("%s+"," ").."\n")
         f:close()
     end
 end):start()
@@ -42,7 +42,7 @@ end):start()
 
 module.distributedObserver_core = distributednotifications.new(function(n,o,i)
     local f = io.open("__distributedobserver_core.txt","a") ;
-    f:write(os.date().."\t".."name:"..n.."\tobj:"..inspect(o):gsub("%s+"," ").."\tinfo:"..inspect(i):gsub("%s+"," ").."\n")
+    f:write(os.date().."\t".."name:"..inspect(n).."\tobj:"..inspect(o):gsub("%s+"," ").."\tinfo:"..inspect(i):gsub("%s+"," ").."\n")
     f:close()
 end):start()
 
