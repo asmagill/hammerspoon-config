@@ -75,8 +75,8 @@ watcherMenu:setIcon(image.imageFromName("statusicon"))
               { title = "Reload Config", fn = hs.reload },
               { title = "Open Config", fn = function() os.execute("open ~/.hammerspoon/init.lua") end },
               { title = "-" },
-              { title = "Console...", menu = {
-                      { title = "Open", fn = function() hs.openConsole() end },
+              { title = "Console...", fn = hs.openConsole, menu = {
+                      { title = "Open", fn = hs.openConsole },
                       { title = "-" },
                       { title = "Reveal", fn = function() hs.openConsole(false) end },
                       { title = "Close", fn = function()
@@ -93,7 +93,7 @@ watcherMenu:setIcon(image.imageFromName("statusicon"))
                       },
                   },
               },
-              { title = "Preferences...", menu = {
+              { title = "Preferences...", fn = hs.openPreferences, menu = {
                       { title = "Open", fn = hs.openPreferences },
                       { title = "-" },
                       { title = "Dock Icon", checked = hs.dockIcon(), fn = function()
