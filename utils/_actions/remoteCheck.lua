@@ -1,11 +1,12 @@
 local module = {}
 
-local task         = require("hs.task")
-local stext        = require("hs.styledtext")
-local timer        = require("hs.timer")
-local settings     = require("hs.settings")
+local task          = require("hs.task")
+local stext         = require("hs.styledtext")
+local timer         = require("hs.timer")
+local settings      = require("hs.settings")
+local configuration = require("hs.network.configuration")
 
-local reachability = require("hs.network.reachability")
+local vpnQueryKey = "State:/Network/Interface/utun0/IPv4"
 
 local hosts = {
     "cousteau.private",
@@ -27,7 +28,7 @@ module.updateTasks = function()
         if myTasks[v] and myTasks[v]:isRunning() then
             -- print("-- "..v.." still running")
         else
-            if (module.vpnStatus:status() & reachability.flags.isLocalAddress) > 0 then
+            if module.vpnStatus and (module.vpnStatus:contents(vpnQueryKey))[vpnQueryKey] then
                 myOutput[v] = stext.new(v.." is polling...\n", style):setStyle{
                     color = { list = "Crayons", name = "Sea Foam" },
                     font  = stext.convertFont(style.font, stext.fontTraits.italicFont),
@@ -74,7 +75,9 @@ module.updateTasks = function()
 end
 
 -- force a recheck when the status changes
-module.vpnStatus = reachability.forAddress(settings.get("_asm.remoteCheckIP")):setCallback(module.updateTasks):start()
+module.vpnStatus = configuration.open():setCallback(module.updateTasks)
+                                       :monitorKeys(vpnQueryKey)
+                                       :start()
 
 module.output = myOutput
 module.tasks  = myTasks
