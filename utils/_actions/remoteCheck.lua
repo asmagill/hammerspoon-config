@@ -6,7 +6,7 @@ local timer         = require("hs.timer")
 local settings      = require("hs.settings")
 local configuration = require("hs.network.configuration")
 
-local vpnQueryKey = "State:/Network/Interface/utun0/IPv4"
+local vpnQueryKey = "State:/Network/Interface/utun[0-9]+/IPv4"
 
 local hosts = {
     "cousteau.private",
@@ -23,12 +23,28 @@ local style = {
 local myTasks  = {}
 local myOutput = {}
 
+local ourVPNisUp = function()
+    local status = false
+    if module.vpnStatus then
+        for k, v in pairs(module.vpnStatus:contents(vpnQueryKey, true)) do
+            for i2, v2 in ipairs(v["Addresses"]) do
+                if v2:match("^10%.161%.81%.") then
+                    status = true
+                    break
+                end
+            end
+            if status then break end
+        end
+    end
+    return status
+end
+
 module.updateTasks = function()
     for i, v in ipairs(hosts) do
         if myTasks[v] and myTasks[v]:isRunning() then
             -- print("-- "..v.." still running")
         else
-            if module.vpnStatus and (module.vpnStatus:contents(vpnQueryKey))[vpnQueryKey] then
+            if ourVPNisUp() then
                 myOutput[v] = stext.new(v.." is polling...\n", style):setStyle{
                     color = { list = "Crayons", name = "Sea Foam" },
                     font  = stext.convertFont(style.font, stext.fontTraits.italicFont),
@@ -76,7 +92,7 @@ end
 
 -- force a recheck when the status changes
 module.vpnStatus = configuration.open():setCallback(module.updateTasks)
-                                       :monitorKeys(vpnQueryKey)
+                                       :monitorKeys(vpnQueryKey, true)
                                        :start()
 
 module.output = myOutput
