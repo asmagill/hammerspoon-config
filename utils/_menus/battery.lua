@@ -164,7 +164,7 @@ local powerSourceChangeFN = function(justOn)
 --             else
 --                 menuUserData:setTitle(onBattery)
 --             end
-        updateMenuTitle()
+            updateMenuTitle()
         end
     end
     if not justOn then
@@ -227,7 +227,7 @@ local powerSourceChangeFN = function(justOn)
     end
 end
 
-local powerWatcher = battery.watcher.new(powerSourceChangeFN)
+-- local powerWatcher = battery.watcher.new(powerSourceChangeFN)
 
 local displayBatteryData = function(modifier)
     local menuTable = {}
@@ -300,17 +300,18 @@ module.start = function()
     menuUserData, currentPowerSource = menubar.newWithPriority(999), ""
 
     powerSourceChangeFN(true)
-    powerWatcher:start()
+--     powerWatcher:start()
 
     menuUserData:setMenu(displayBatteryData)
 
-    module.menuTitleChanger = timer.doEvery(5, updateMenuTitle)
+--     module.menuTitleChanger = timer.doEvery(5, updateMenuTitle)
+    module.menuTitleChanger = timer.doEvery(5, powerSourceChangeFN)
     module.menuUserdata = menuUserData -- for debugging, may remove in the future
     return module
 end
 
 module.stop = function()
-    powerWatcher:stop()
+--     powerWatcher:stop()
     module.menuTitleChanger:stop()
     module.menuTitleChanger = nil
     menuUserData = menuUserData:delete()
@@ -318,11 +319,12 @@ module.stop = function()
 end
 
 module = setmetatable(module, {
-  __gc = function(self)
-      if powerWatcher then powerWatcher:stop() end
-  end,
+    __gc = function(self)
+--         if powerWatcher then powerWatcher:stop() end
+        if module.menuTitleChanger then module.menuTitleChanger:stop() end
+    end,
 })
 
-module.powerWatcher = powerWatcher
+-- module.powerWatcher = powerWatcher
 
 return module.start()
