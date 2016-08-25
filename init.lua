@@ -13,6 +13,19 @@ local minimal = false
 --
 
 hs.require = require
+
+-- due to the way dSYM libraries are loaded, this can only work for actual lua files, but it's still
+-- better then constantly restarting Hammerspoon to clear or ignore package.path during development
+weakrequire = function(what)
+    local path, err = package.searchpath(what, package.path)
+
+    if path then
+        return dofile(path)
+    else
+        error("no module " .. what .. " found" .. err, 2)
+    end
+end
+
 require = rawrequire
 require("hs.crash").crashLogToNSLog = true
 require("hs.crash").crashLog("Disabled require logging to make log file sane")
@@ -281,6 +294,22 @@ bundleIDForApp = function(app)
     return hs.execute([[mdls -name kMDItemCFBundleIdentifier -r "$(mdfind 'kMDItemKind==Application' | grep /]] .. app .. [[.app | head -1)"]])
 end
 
+-- from http://stackoverflow.com/a/11402486
+-- should probably add this to fnutils or somesuch
+caseInsensitivePattern = function(pattern)
+    -- find an optional '%' (group 1) followed by any character (group 2)
+    local p = pattern:gsub("(%%?)(.)", function(percent, letter)
+        if percent ~= "" or not letter:match("%a") then
+            -- if the '%' matched, or `letter` is not a letter, return "as is"
+            return percent .. letter
+        else
+            -- else, return a case-insensitive character class of the matched letter
+            return string.format("[%s%s]", letter:lower(), letter:upper())
+        end
+    end)
+    return p
+end
+
 history = _asm._actions.consoleHistory.history
 local previousParser = hs._consoleInputPreparser
 hs._consoleInputPreparser = function(s)
@@ -313,6 +342,12 @@ end
 
 idunno = "¯\\_(ツ)_/¯" -- I like it and may want to use it sometime
 graphpaperImage = require("_scratch.graphpaper2")
+
+print([[
+
+    CLEAN UP INIT.LUA -- MOVE MINOR STUFF TO _asm.extras!!
+
+]])
 
 else
     print("++ Running minimal configuration")
