@@ -31,9 +31,11 @@ end)
 
 module.watchInternetStatus = watchable.watch("generalStatus.internet", function(w, p, i, oldValue, value)
     module.toolbar:modifyItem{ id = "internet", image = image.imageFromName(value and "NSToolbarBookmarks" or "NSStopProgressFreestandingTemplate") }
-
 end)
 
+module.watchVPNStatus = watchable.watch("generalStatus.privateVPN", function(w, p, i, oldValue, value)
+    module.toolbar:modifyItem{ id = "privateVPN", image = image.imageFromName(value and "NSLockLockedTemplate" or "NSLockUnlockedTemplate") }
+end)
 
 local imageHolder = canvas.new{x = 10, y = 10, h = 50, w = 50}
 imageHolder[1] = {
@@ -135,6 +137,16 @@ table.insert(consoleToolbar, {
     label = "Internet",
     tooltip = "Internet Status",
     image = image.imageFromName(module.watchInternetStatus:value() and "NSToolbarBookmarks" or "NSStopProgressFreestandingTemplate"),
+    fn = function(bar, attachedTo, item)
+    end,
+    default = false,
+})
+
+table.insert(consoleToolbar, {
+    id = "privateVPN",
+    label = "Private VPN",
+    tooltip = "Private VPN State",
+    image = image.imageFromName(module.watchVPNStatus:value() and "NSLockLockedTemplate" or "NSLockUnlockedTemplate"),
     fn = function(bar, attachedTo, item)
     end,
     default = false,
