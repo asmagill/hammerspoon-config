@@ -50,20 +50,20 @@ if require"hs.settings".get("_asm.test.canvas.drawing") then
     end
 end
 
-local R, M = pcall(require,"_scratch.alerts")
-if R then
-   print()
-   print("**** Replacing internal hs.alert with experimental module.")
-   print()
-   hs.alert = M
-   package.loaded["hs.alert"] = M   -- make sure require("hs.alert") returns us
-   package.loaded["hs/alert"] = M   -- make sure require("hs/alert") returns us
-else
-   print()
-   print("**** Error with experimental hs.alert: "..tostring(M))
-   print()
-end
-
+-- local R, M = pcall(require,"_scratch.alerts")
+-- if R then
+--    print()
+--    print("**** Replacing internal hs.alert with experimental module.")
+--    print()
+--    hs.alert = M
+--    package.loaded["hs.alert"] = M   -- make sure require("hs.alert") returns us
+--    package.loaded["hs/alert"] = M   -- make sure require("hs/alert") returns us
+-- else
+--    print()
+--    print("**** Error with experimental hs.alert: "..tostring(M))
+--    print()
+-- end
+--
 -- -- Testing eventtap replacement for hotkey
 --
 --local R, M = pcall(require,"hs._asm.hotkey")
@@ -123,19 +123,6 @@ inspecta = function(what) return inspect(what, {
 -- -- may include locally added json files in docs versus built in help
 -- doc = require("utils.docs")
 doc = hs.hsdocs
-
-tobits = function(num, bits)
-    bits = bits or (math.floor(math.log(num,2) / 8) + 1) * 8
-    if bits == -(1/0) then bits = 8 end
-    local value = ""
-    for i = (bits - 1), 0, -1 do
-        value = value..tostring((num >> i) & 0x1)
-    end
-    return value
-end
-
-isinf = function(x) return x == math.huge end
-isnan = function(x) return x ~= x end
 
 if not minimal then -- normal init continues...
 
@@ -216,25 +203,11 @@ console.alpha(.9)
 
 _asm.consoleToolbar = require"utils.consoleToolbar"
 
+-- override print so that it can render styled text objects directly in the console
 _asm.hs_default_print = print
 print = function(...)
     hs.rawprint(...)
     console.printStyledtext(...)
-end
-
-colorsFor = function(name)
-    local a = stext.new("")
-    for i,v in fnutils.sortByKeys(drawing.color.colorsFor(name)) do
-        a = a..stext.new(i.."\n", { color = { white = .5 }, backgroundColor = v })
-    end
-    print(a)
-end
-
-colorDump = function()
-    for i,v in fnutils.sortByKeys(drawing.color.lists()) do
-        print(i)
-        colorsFor(i)
-    end
 end
 
 resetSpaces = function()
@@ -290,26 +263,6 @@ mb = function(url, extras)
     return _asm.mb:url(url):show()
 end
 
-bundleIDForApp = function(app)
-    return hs.execute([[mdls -name kMDItemCFBundleIdentifier -r "$(mdfind 'kMDItemKind==Application' | grep /]] .. app .. [[.app | head -1)"]])
-end
-
--- from http://stackoverflow.com/a/11402486
--- should probably add this to fnutils or somesuch
-caseInsensitivePattern = function(pattern)
-    -- find an optional '%' (group 1) followed by any character (group 2)
-    local p = pattern:gsub("(%%?)(.)", function(percent, letter)
-        if percent ~= "" or not letter:match("%a") then
-            -- if the '%' matched, or `letter` is not a letter, return "as is"
-            return percent .. letter
-        else
-            -- else, return a case-insensitive character class of the matched letter
-            return string.format("[%s%s]", letter:lower(), letter:upper())
-        end
-    end)
-    return p
-end
-
 history = _asm._actions.consoleHistory.history
 local previousParser = hs._consoleInputPreparser
 hs._consoleInputPreparser = function(s)
@@ -339,9 +292,6 @@ hs._consoleInputPreparser = function(s)
 
     return s
 end
-
-idunno = "¯\\_(ツ)_/¯" -- I like it and may want to use it sometime
-graphpaperImage = require("_scratch.graphpaper2")
 
 print([[
 
