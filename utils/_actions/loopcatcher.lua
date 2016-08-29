@@ -64,6 +64,6 @@ end
 --     end
 -- end):start()
 
-setHook(module._loopChecker, "", 1000)
+setHook(module._loopChecker, "", 100)
 
 return module

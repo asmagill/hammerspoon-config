@@ -29,7 +29,10 @@ end
 require = rawrequire
 require("hs.crash").crashLogToNSLog = true
 require("hs.crash").crashLog("Disabled require logging to make log file sane")
-require("hs.logger").historySize(1000)
+local logger = require("hs.logger")
+logger.historySize(1000)
+logger.truncateID = "head"
+logger.truncateIDWithEllipsis = true
 
 -- -- Testing lua/hs.drawing based replacement for alert
 
