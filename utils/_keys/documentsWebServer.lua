@@ -22,7 +22,7 @@ module.server = hsminweb.new(documentRoot):port(serverPort)
                                               {"X-Remote-Addr", "::1",            false, true},
                                               {"X-Remote-Addr", "127.0.0.1",      false, true},
                                               {"X-Remote-Addr", "^10%.0%.1%.",    true,  true},
-                                              {"X-Remote-Addr", "^10%.161%.81%.", true,  true},
+                                              {"X-Remote-Addr", "^10%.161%.82%.", true,  true},
                                               {"*",             "*",              false, false},
                                           }
 

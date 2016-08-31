@@ -36,7 +36,7 @@ local verifyOurVPNisUp = function()
     if module.vpnWatcher then
         for k, v in pairs(module.vpnWatcher:contents(vpnQueryKey, true)) do
             for i2, v2 in ipairs(v["Addresses"]) do
-                if v2:match("^10%.161%.81%.") then
+                if v2:match("^10%.161%.82%.") then
                     status = true
                     break
                 end
