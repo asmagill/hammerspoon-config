@@ -137,6 +137,9 @@ _xtras = require("hs._asm.extras")
 -- _xtras.console = require("hs.console")
 
 _asm = {}
+_asm.gc = require("utils.gc")
+_asm.gc.patch("hs.timer")
+_asm.gc.patch("hs._asm.canvas")
 
 _asm.relaunch = function()
     os.execute([[ (while ps -p ]]..hs.processInfo.processID..[[ > /dev/null ; do sleep 1 ; done ; open -a "]]..hs.processInfo.bundlePath..[[" ) & ]])
