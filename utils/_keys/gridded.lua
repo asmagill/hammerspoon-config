@@ -156,16 +156,16 @@ end
 
 -- Public interface ------------------------------------------------------
 
--- slide/stretch window
-    hotkey.bind(mods.CAsC, 'h', gridAction("push",   "left"),    nil, gridAction("push",   "left"))
-    hotkey.bind(mods.CAsC, 'k', gridAction("push",   "up"),      nil, gridAction("push",   "up"))
-    hotkey.bind(mods.CAsC, 'j', gridAction("push",   "down"),    nil, gridAction("push",   "down"))
-    hotkey.bind(mods.CAsC, 'l', gridAction("push",   "right"),   nil, gridAction("push",   "right"))
-
-    hotkey.bind(mods.CASC, 'h', gridAction("resize", "thinner"), nil, gridAction("resize", "thinner"))
-    hotkey.bind(mods.CASC, 'k', gridAction("resize", "taller"),  nil, gridAction("resize", "taller"))
-    hotkey.bind(mods.CASC, 'j', gridAction("resize", "shorter"), nil, gridAction("resize", "shorter"))
-    hotkey.bind(mods.CASC, 'l', gridAction("resize", "wider"),   nil, gridAction("resize", "wider"))
+---- slide/stretch window
+--    hotkey.bind(mods.CAsC, 'h', gridAction("push",   "left"),    nil, gridAction("push",   "left"))
+--    hotkey.bind(mods.CAsC, 'k', gridAction("push",   "up"),      nil, gridAction("push",   "up"))
+--    hotkey.bind(mods.CAsC, 'j', gridAction("push",   "down"),    nil, gridAction("push",   "down"))
+--    hotkey.bind(mods.CAsC, 'l', gridAction("push",   "right"),   nil, gridAction("push",   "right"))
+--
+--    hotkey.bind(mods.CASC, 'h', gridAction("resize", "thinner"), nil, gridAction("resize", "thinner"))
+--    hotkey.bind(mods.CASC, 'k', gridAction("resize", "taller"),  nil, gridAction("resize", "taller"))
+--    hotkey.bind(mods.CASC, 'j', gridAction("resize", "shorter"), nil, gridAction("resize", "shorter"))
+--    hotkey.bind(mods.CASC, 'l', gridAction("resize", "wider"),   nil, gridAction("resize", "wider"))
 
 -- snap in place
     hotkey.bind(mods.CAsC, '.', gridAction("snap"))
@@ -195,58 +195,58 @@ end
 -- visual aid
     hotkey.bind(mods.CAsC, "v", gridAction("visual"))
 
--- center window
-hotkey.bind(mods.CASC, 'c', gridAction("center"))
-local centerKey = hotkey.modal.new(mods.CAsC, "c")
-    fnutils.each({
-        { key = "1", size = 0.1 }, { key = "2", size =  0.2 },
-        { key = "3", size = 0.3 }, { key = "4", size =  0.4 },
-        { key = "5", size = 0.5 }, { key = "6", size =  0.6 },
-        { key = "7", size = 0.7 }, { key = "8", size =  0.8 },
-        { key = "9", size = 0.9 }, { key = "0", size =  1.0 },
-        { key = "q", size = 1.0 }, { key = "w", size =  2.0 },
-        { key = "e", size = 3.0 }, { key = "r", size =  4.0 },
-        { key = "t", size = 5.0 }, { key = "y", size =  6.0 },
-        { key = "u", size = 7.0 }, { key = "i", size =  8.0 },
-        { key = "o", size = 9.0 }, { key = "p", size = 10.0 },
-    },
-        function(object)
-            centerKey:bind(mods.casc, object.key,
-                function() change("center", object.size) end,
-                function() centerKey:exit() end
-            )
-        end
-    )
-
-    function centerKey:entered() alert("Select % for Center")         end
-    function centerKey:exited() alert("Thank you, please come again") end
-centerKey:bind(mods.casc, "ESCAPE", function() centerKey:exit()       end)
-
--- scale window
-local resizeKey = hotkey.modal.new(mods.CAsC, "s")
-    fnutils.each({
-        { key = "1", size = 0.1 }, { key = "2", size =  0.2 },
-        { key = "3", size = 0.3 }, { key = "4", size =  0.4 },
-        { key = "5", size = 0.5 }, { key = "6", size =  0.6 },
-        { key = "7", size = 0.7 }, { key = "8", size =  0.8 },
-        { key = "9", size = 0.9 }, { key = "0", size =  1.0 },
-        { key = "q", size = 1.0 }, { key = "w", size =  2.0 },
-        { key = "e", size = 3.0 }, { key = "r", size =  4.0 },
-        { key = "t", size = 5.0 }, { key = "y", size =  6.0 },
-        { key = "u", size = 7.0 }, { key = "i", size =  8.0 },
-        { key = "o", size = 9.0 }, { key = "p", size = 10.0 },
-    },
-        function(object)
-            resizeKey:bind(mods.casc, object.key,
-                function() change("scale", object.size) end,
-                function() resizeKey:exit() end
-            )
-        end
-    )
-
-    function resizeKey:entered() alert("Select % for Resize")         end
-    function resizeKey:exited() alert("Thank you, please come again") end
-resizeKey:bind(mods.casc, "ESCAPE", function() resizeKey:exit()       end)
+---- center window
+--hotkey.bind(mods.CASC, 'c', gridAction("center"))
+--local centerKey = hotkey.modal.new(mods.CAsC, "c")
+--    fnutils.each({
+--        { key = "1", size = 0.1 }, { key = "2", size =  0.2 },
+--        { key = "3", size = 0.3 }, { key = "4", size =  0.4 },
+--        { key = "5", size = 0.5 }, { key = "6", size =  0.6 },
+--        { key = "7", size = 0.7 }, { key = "8", size =  0.8 },
+--        { key = "9", size = 0.9 }, { key = "0", size =  1.0 },
+--        { key = "q", size = 1.0 }, { key = "w", size =  2.0 },
+--        { key = "e", size = 3.0 }, { key = "r", size =  4.0 },
+--        { key = "t", size = 5.0 }, { key = "y", size =  6.0 },
+--        { key = "u", size = 7.0 }, { key = "i", size =  8.0 },
+--        { key = "o", size = 9.0 }, { key = "p", size = 10.0 },
+--    },
+--        function(object)
+--            centerKey:bind(mods.casc, object.key,
+--                function() change("center", object.size) end,
+--                function() centerKey:exit() end
+--            )
+--        end
+--    )
+--
+--    function centerKey:entered() alert("Select % for Center")         end
+--    function centerKey:exited() alert("Thank you, please come again") end
+--centerKey:bind(mods.casc, "ESCAPE", function() centerKey:exit()       end)
+--
+---- scale window
+--local resizeKey = hotkey.modal.new(mods.CAsC, "s")
+--    fnutils.each({
+--        { key = "1", size = 0.1 }, { key = "2", size =  0.2 },
+--        { key = "3", size = 0.3 }, { key = "4", size =  0.4 },
+--        { key = "5", size = 0.5 }, { key = "6", size =  0.6 },
+--        { key = "7", size = 0.7 }, { key = "8", size =  0.8 },
+--        { key = "9", size = 0.9 }, { key = "0", size =  1.0 },
+--        { key = "q", size = 1.0 }, { key = "w", size =  2.0 },
+--        { key = "e", size = 3.0 }, { key = "r", size =  4.0 },
+--        { key = "t", size = 5.0 }, { key = "y", size =  6.0 },
+--        { key = "u", size = 7.0 }, { key = "i", size =  8.0 },
+--        { key = "o", size = 9.0 }, { key = "p", size = 10.0 },
+--    },
+--        function(object)
+--            resizeKey:bind(mods.casc, object.key,
+--                function() change("scale", object.size) end,
+--                function() resizeKey:exit() end
+--            )
+--        end
+--    )
+--
+--    function resizeKey:entered() alert("Select % for Resize")         end
+--    function resizeKey:exited() alert("Thank you, please come again") end
+--resizeKey:bind(mods.casc, "ESCAPE", function() resizeKey:exit()       end)
 
 -- Return Module Object --------------------------------------------------
 
