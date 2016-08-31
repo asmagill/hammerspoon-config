@@ -87,6 +87,11 @@ hotkey.bind(mods.CASC, "space", function()
     hints.windowHints(window.focusedWindow():application():allWindows())
 end)
 
+hotkey.bind(mods.CAsC, "k", function()
+    _asm.kodiRemote = require("utils.kodiRemote")
+    _asm.kodiRemote.toggle()
+end)
+
 -- Public interface ------------------------------------------------------
 -- Return Module Object --------------------------------------------------
 
