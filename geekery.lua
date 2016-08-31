@@ -26,7 +26,7 @@ geekery.registerShellGeeklet("wifi", 60,  "geeklets/wifi.sh",
             :setRoundedRectRadii(5,5)
         }):start()
 
-geekery.registerLuaGeeklet("hwm_check", 300,  "geeklets/hwm_check.lua",
+geekery.registerLuaGeeklet("hwm_check", 60,  "geeklets/hwm_check.lua",
         { x = 22, y = monitorTopY + 182, h = 20, w = 350}, { color = { alpha = 1 } },
         { drawing.rectangle{ x = 12, y = monitorTopY + 172, h = 40, w = 370 }
               :setFillColor{ alpha=.7, white = .5 }
