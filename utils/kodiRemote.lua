@@ -15,17 +15,26 @@ local menu     = require("hs.menubar")
 local eventtap = require("hs.eventtap")
 local mouse    = require("hs.mouse")
 local geometry = require("hs.geometry")
+local timer    = require("hs.timer")
 
 local events   = eventtap.event.types
 
-local remoteTopLeft = settings.get(USERDATA_TAG .. ".topLeft") or { x = 100, y = 100 }
-local autosave      = settings.get(USERDATA_TAG .. ".autosave") or false
-local startVisible  = settings.get(USERDATA_TAG .. ".startVisible") or false
+local btnRepeatDelay    = settings.get(USERDATA_TAG .. ".btnRepeatDelay") or 0.5
+local btnRepeatInterval = settings.get(USERDATA_TAG .. ".btnRepeatInterval") or 0.1
+local remoteTopLeft     = settings.get(USERDATA_TAG .. ".topLeft") or { x = 100, y = 100 }
+local autosave          = settings.get(USERDATA_TAG .. ".autosave") or false
+local startVisible      = settings.get(USERDATA_TAG .. ".startVisible") or false
+local autodim           = settings.get(USERDATA_TAG .. ".autodim") or false
 
 local log  = logger.new(USERDATA_TAG, settings.get(USERDATA_TAG .. ".logLevel") or "warning")
 
 local remoteFrame = { x = remoteTopLeft.x, y = remoteTopLeft.y, h = 200, w = 150 }
 local dialFrame   = { x = 25, y = 10, h = 100, w = 100 }
+
+-- forward declarations
+local updateMutedStatus
+local updateLinkStatus
+local attachedKODI
 
 local remote = canvas.new(remoteFrame):level(canvas.windowLevels.popUpMenu)
 
@@ -40,20 +49,16 @@ local findIndex = function(id)
     return idx
 end
 
-local doCommandForPlayers = function(id, params)
-    params = params or {}
-    local oldplayerid = params.playerid
-    if module.KODI and module.KODI:isRunning() then
-        local players = module.KODI:submit("Player.GetActivePlayers")
-        if players then
-            for i, v in ipairs(players) do
-                params.playerid = v.playerid
-                module.KODI(id, params)
-            end
-        end
-    end
-    params.playerid = oldplayerid
-end
+local volumeIndicatorMuted = {
+    [true]  = stext.new(utf8.char(0x1f507), {
+                  font = { name = "Menlo", size = 18 },
+                  paragraphStyle = { alignment = "center" },
+              }),
+    [false] = stext.new(utf8.char(0x1f508), {
+                  font = { name = "Menlo", size = 18 },
+                  paragraphStyle = { alignment = "center" },
+              })
+}
 
 local labelChars = {
     ["Input.Left"] = stext.new(utf8.char(0x25c0), {
@@ -130,8 +135,17 @@ local labelChars = {
                             font = { name = "Menlo", size = 18 },
                             paragraphStyle = { alignment = "center" },
                         }),
-
+    ["Application.SetMute.toggle"] = volumeIndicatorMuted[true],
+    ["Application.SetVolume.increment"] = stext.new(utf8.char(0x1f50a), {
+                            font = { name = "Menlo", size = 18 },
+                            paragraphStyle = { alignment = "center" },
+                        }),
+    ["Application.SetVolume.decrement"] = stext.new(utf8.char(0x1f509), {
+                            font = { name = "Menlo", size = 18 },
+                            paragraphStyle = { alignment = "center" },
+                        }),
 }
+
 local labelOffsets = {
     ["Input.Left"] = { x = 0, y = -3 },
     ["Input.Right"] = { x = 0, y = -3 },
@@ -150,49 +164,135 @@ local labelOffsets = {
     ["Player.PlayPause"] = { x = .5, y = -.5 },
     ["Player.SetSpeed.increment"] = { x = .5, y = -.5 },
     ["Player.SetSpeed.decrement"] = { x = .5, y = -.5 },
-
+    ["Application.SetMute.toggle"] = { x = 2, y = 0 },
+    ["Volume.SetVolume.increment"] = { x = 2, y = -2 },
+    ["Volume.SetVolume.decrement"] = { x = 2, y = -2 },
 }
 
-local labelDownFN = {
-    ["Input.ExecuteAction"] = function(c, m, id, x, y)
-        local idx = findIndex(id)
-        if not idx then
-            log.wf("unable to match %s to an element index for callback", tostring(id))
-            return
+local repeatTimers = {}
+
+local doCommandForPlayers = function(id, params)
+    params = params or {}
+    local oldplayerid = params.playerid
+    if module.KODI and module.KODI:isRunning() then
+        local players = module.KODI("Player.GetActivePlayers")
+        if players then
+            for i, v in ipairs(players) do
+                params.playerid = v.playerid
+                module.KODI(id, params)
+            end
         end
-        local menuList = {}
+    end
+    params.playerid = oldplayerid
+end
+
+local movementMouseDown = function(c, m, id, x, y)
+    if module.KODI and module.KODI:isRunning() then
+        module.KODI(id)
+        if not repeatTimers.movement then
+            repeatTimers.movement = timer.doAfter(btnRepeatDelay, function()
+                module.KODI(id)
+        log.d(id)
+                repeatTimers.movement = timer.doEvery(btnRepeatInterval, function()
+                    module.KODI(id)
+        log.d(id)
+                end)
+            end)
+        else
+            repeatTimers.movement:stop()
+            repeatTimers.movement = nil
+            log.e("Input movement mouseDown detected while repeat timer active; disabling timer")
+        end
+    end
+end
+
+local movementMouseUp = function(c, m, id, x, y)
+    if repeatTimers.movement then
+        repeatTimers.movement:stop()
+        repeatTimers.movement = nil
+    end
+end
+
+local labelDownFN = {
+    ["Input.Left"]  = movementMouseDown,
+    ["Input.Right"] = movementMouseDown,
+    ["Input.Up"]    = movementMouseDown,
+    ["Input.Down"]  = movementMouseDown,
+    ["Application.SetVolume.increment"] = function(c, m, id, x, y)
         if module.KODI and module.KODI:isRunning() then
-            local InputActions = module.KODI:API().types["Input.Action"].enums
-            table.sort(InputActions)
-            for i, v in ipairs(InputActions) do
+            module.KODI("Application.SetVolume", { volume = "increment" })
+            if not repeatTimers.volume then
+                repeatTimers.volume = timer.doAfter(btnRepeatDelay, function()
+                    module.KODI("Application.SetVolume", { volume = "increment" })
+                    repeatTimers.volume = timer.doEvery(btnRepeatInterval, function()
+                        module.KODI("Application.SetVolume", { volume = "increment" })
+                    end)
+                end)
+            else
+                repeatTimers.volume:stop()
+                repeatTimers.volume = nil
+                log.e("Volume mouseDown detected while repeat timer active; disabling timer")
+            end
+        end
+    end,
+    ["Application.SetVolume.decrement"] = function(c, m, id, x, y)
+        if module.KODI and module.KODI:isRunning() then
+            module.KODI("Application.SetVolume", { volume = "decrement" })
+            if not repeatTimers.volume then
+                repeatTimers.volume = timer.doAfter(btnRepeatDelay, function()
+                    module.KODI("Application.SetVolume", { volume = "decrement" })
+                    repeatTimers.volume = timer.doEvery(btnRepeatInterval, function()
+                        module.KODI("Application.SetVolume", { volume = "decrement" })
+                    end)
+                end)
+            else
+                repeatTimers.volume:stop()
+                repeatTimers.volume = nil
+                log.e("Volume mouseDown detected while repeat timer active; disabling timer")
+            end
+        end
+    end,
+    ["Input.ExecuteAction"] = function(c, m, id, x, y)
+        if eventtap.checkMouseButtons().right or eventtap.checkKeyboardModifiers().ctrl then
+            local idx = findIndex(id)
+            if not idx then
+                log.wf("unable to match %s to an element index for callback", tostring(id))
+                return
+            end
+            local menuList = {}
+            if module.KODI and module.KODI:isRunning() then
+                local InputActions = module.KODI:API().types["Input.Action"].enums
+                table.sort(InputActions)
+                for i, v in ipairs(InputActions) do
+                    table.insert(menuList, {
+                        title = stext.new(v, {
+                            font = {
+                                name = "Menlo",
+                                size = 10,
+                            },
+                        }),
+                        fn = function() module.KODI(id, { action = v }) end,
+                    })
+                end
+            else
                 table.insert(menuList, {
-                    title = stext.new(v, {
+                    title = stext.new("KODI offline",  {
                         font = {
-                            name = "Menlo",
+                            name = "Menlo-Italic",
                             size = 10,
                         },
                     }),
-                    fn = function() module.KODI(id, { action = v }) end,
+                    disabled = true,
                 })
+
             end
-        else
-            table.insert(menuList, {
-                title = stext.new("KODI offline",  {
-                    font = {
-                        name = "Menlo-Italic",
-                        size = 10,
-                    },
-                }),
-                disabled = true,
-            })
+            local bounds = remote:elementBounds(idx)
+            local topLeft = remote:topLeft()
+            bounds.x = topLeft.x + bounds.x
+            bounds.y = topLeft.y + bounds.y
 
+            menu.new(false):setMenu(menuList):popupMenu({ x = bounds.x, y = bounds.y + bounds.h })
         end
-        local bounds = remote:elementBounds(idx)
-        local topLeft = remote:topLeft()
-        bounds.x = topLeft.x + bounds.x
-        bounds.y = topLeft.y + bounds.y
-
-        menu.new(false):setMenu(menuList):popupMenu({ x = bounds.x, y = bounds.y + bounds.h })
     end,
     ["MoveWindow"] = function(c, m, id, x, y)
         local idx = findIndex(id)
@@ -217,6 +317,35 @@ local labelDownFN = {
 }
 
 local labelUpFN = {
+    ["Input.Left"]  = movementMouseUp,
+    ["Input.Right"] = movementMouseUp,
+    ["Input.Up"]    = movementMouseUp,
+    ["Input.Down"]  = movementMouseUp,
+    ["Application.SetVolume.increment"] = function(c, m, id, x, y)
+        if repeatTimers.volume then
+            repeatTimers.volume:stop()
+            repeatTimers.volume = nil
+        end
+    end,
+    ["Application.SetVolume.decrement"] = function(c, m, id, x, y)
+        if repeatTimers.volume then
+            repeatTimers.volume:stop()
+            repeatTimers.volume = nil
+        end
+    end,
+    ["Application.SetMute.toggle"] = function(c, m, id, x, y)
+        if module.KODI and module.KODI:isRunning() then
+            module.KODI("Application.SetMute", { mute = "toggle" })
+        end
+        updateMutedStatus()
+    end,
+    ["Input.ExecuteAction"] = function(c, m, id, x, y)
+        if module.KODI and module.KODI:isRunning() then
+            if not (eventtap.checkMouseButtons().right or eventtap.checkKeyboardModifiers().ctrl) then
+                module.KODI("Input.ContextMenu")
+            end
+        end
+    end,
     ["CloseWindow"] = function(c, m, id, x, y)
         local idx = findIndex(id)
         if not idx then
@@ -247,6 +376,15 @@ remote[#remote + 1] = { id = "remoteBackground",
     fillColor = { white = 0.4, alpha = 0.25 },
     trackMouseEnterExit = true,
 }
+
+remote[#remote + 1] = { id = "LinkStatus",
+    type = "oval",
+    action = "fill",
+    fillColor   = { red = 1 },
+    frame = { x = 10, y = 10, h = 10, w = 10 },
+}
+
+local linkStatusIndex = #remote
 
 remote[#remote + 1] = { id = "Input.Up",
     type = "segments",
@@ -566,7 +704,7 @@ remote[#remote + 1] = { id = "Player.SetSpeed.decrement",
     roundedRectRadii = { xRadius = 5, yRadius = 5 },
     frame = {
         x = remoteFrame.w / 2 - 44,
-        y = dialFrame.h + 40,
+        y = dialFrame.y + dialFrame.h + 30,
         h = 22,
         w = 22,
     },
@@ -584,7 +722,7 @@ remote[#remote + 1] = { id = "Player.PlayPause",
     roundedRectRadii = { xRadius = 5, yRadius = 5 },
     frame = {
         x = remoteFrame.w / 2 - 22,
-        y = dialFrame.h + 40,
+        y = dialFrame.y + dialFrame.h + 30,
         h = 22,
         w = 22,
     },
@@ -602,7 +740,7 @@ remote[#remote + 1] = { id = "Player.Stop",
     roundedRectRadii = { xRadius = 5, yRadius = 5 },
     frame = {
         x = remoteFrame.w / 2 + 2,
-        y = dialFrame.h + 40,
+        y = dialFrame.y + dialFrame.h + 30,
         h = 22,
         w = 22,
     },
@@ -620,7 +758,61 @@ remote[#remote + 1] = { id = "Player.SetSpeed.increment",
     roundedRectRadii = { xRadius = 5, yRadius = 5 },
     frame = {
         x = remoteFrame.w / 2 + 24,
-        y = dialFrame.h + 40,
+        y = dialFrame.y + dialFrame.h + 30,
+        h = 22,
+        w = 22,
+    },
+    trackMouseDown      = true,
+    trackMouseEnterExit = true,
+    trackMouseUp        = true,
+}
+
+remote[#remote + 1] = { id = "Application.SetMute.toggle",
+    type = "rectangle",
+    action = "fill",
+    strokeColor = { white = .25 },
+    fillColor   = { white = .25, alpha = 0 },
+    strokeWidth = 2,
+    roundedRectRadii = { xRadius = 5, yRadius = 5 },
+    frame = {
+        x = remoteFrame.w / 2 - 11,
+        y = dialFrame.y + dialFrame.h + 5,
+        h = 22,
+        w = 22,
+    },
+    trackMouseDown      = true,
+    trackMouseEnterExit = true,
+    trackMouseUp        = true,
+}
+
+remote[#remote + 1] = { id = "Application.SetVolume.increment",
+    type = "rectangle",
+    action = "fill",
+    strokeColor = { white = .25 },
+    fillColor   = { white = .25, alpha = 0 },
+    strokeWidth = 2,
+    roundedRectRadii = { xRadius = 5, yRadius = 5 },
+    frame = {
+        x = remoteFrame.w / 2 + 13,
+        y = dialFrame.y + dialFrame.h + 5,
+        h = 22,
+        w = 22,
+    },
+    trackMouseDown      = true,
+    trackMouseEnterExit = true,
+    trackMouseUp        = true,
+}
+
+remote[#remote + 1] = { id = "Application.SetVolume.decrement",
+    type = "rectangle",
+    action = "fill",
+    strokeColor = { white = .25 },
+    fillColor   = { white = .25, alpha = 0 },
+    strokeWidth = 2,
+    roundedRectRadii = { xRadius = 5, yRadius = 5 },
+    frame = {
+        x = remoteFrame.w / 2 - 35,
+        y = dialFrame.y + dialFrame.h + 5,
         h = 22,
         w = 22,
     },
@@ -638,6 +830,7 @@ for k, v in pairs(labelChars) do
         local size   = remote:minimumTextSize(v)
         local offset = labelOffsets[k] or { x = 0, y = 0 }
         remote[#remote + 1] = {
+            id = k .. ".text",
             type = "text",
             text = v,
             frame = {
@@ -650,31 +843,59 @@ for k, v in pairs(labelChars) do
     end
 end
 
+-- record initial actions for when remote is being displayed ; used by autodim code
 local standardActions = {}
 for i = 2, #remote, 1 do
     standardActions[i] = remote[i].action
-    remote[i].action = "skip"
+end
+
+local updateVisibility = function()
+    local state = true
+    if autodim then
+        local mousePos = mouse.getAbsolutePosition()
+        state = geometry.inside(mousePos, remote:frame())
+    end
+    for i = 2, #remote, 1 do
+        remote[i].action = state and standardActions[i] or "skip"
+    end
+end
+
+local volumeIndicatorIndex = findIndex("Application.SetMute.toggle.text")
+
+local updateLinkStatus = function()
+    if module.KODI and module.KODI:isRunning() then
+        remote[linkStatusIndex].fillColor = { green = 1 }
+    else
+        remote[linkStatusIndex].fillColor = { red = 1 }
+    end
+end
+
+updateMutedStatus = function()
+    if module.KODI and module.KODI:isRunning() and volumeIndicatorIndex then
+        local muted = module.KODI("Application.GetProperties", { properties = { "muted" } })
+        remote[volumeIndicatorIndex].text = volumeIndicatorMuted[muted.muted]
+    else
+        remote[volumeIndicatorIndex].text = volumeIndicatorMuted[true]
+    end
 end
 
 remote:mouseCallback(function(c, m, id, x, y)
+    updateLinkStatus()
+    updateMutedStatus()
+    updateVisibility()
+
     local idx = findIndex(id)
     if not idx then
         log.wf("unable to match %s to an element index for callback", tostring(id))
         return
     end
+
     if m == "mouseEnter" then
         remote[idx].fillColor.alpha = 0.75
-        if id == "remoteBackground" then
-            for i = 2, #remote, 1 do
-                remote[i].action = standardActions[i]
-            end
-        end
     elseif m == "mouseExit" then
         if id == "remoteBackground" then
+            -- don't reset background alpha if exit is because we entered a button
             if not geometry.inside({ x = x, y = y }, remote[idx].frame_raw) then
-                for i = 2, #remote, 1 do
-                    remote[i].action = "skip"
-                end
                 remote[idx].fillColor.alpha = 0.25
             end
         else
@@ -697,12 +918,38 @@ remote:mouseCallback(function(c, m, id, x, y)
     end
 end)
 
+-- anytime a KODI instance is assigned, run a timer to update the link status and muted
+-- displays
+module = setmetatable(module, {
+    __index = function(_, key)
+        if key == "KODI" then
+            return attachedKODI
+        end
+    end,
+    __newindex = function(_, key, value)
+        if key == "KODI" then
+            attachedKODI = value
+            remote[linkStatusIndex].fillColor = { red = 1 }
+            remote[volumeIndicatorIndex].text = volumeIndicatorMuted[true]
+            timer.waitUntil(function()
+                return module.KODI and module.KODI:isRunning()
+            end, function(...)
+                updateLinkStatus()
+                updateMutedStatus()
+            end, .5)
+        else
+            rawset(_, key, value)
+        end
+    end
+})
+
 module.log = log
 module.remote = remote
 
 module.KODI = kodi.KODI
 
 module.show = function()
+    -- force display when explicitly shown to make it easier to find
     for i = 2, #remote, 1 do
         remote[i].action = standardActions[i]
     end
@@ -752,5 +999,15 @@ module.startVisible = function(state)
     return startVisible
 end
 
+module.autodim = function(state)
+    if type(state) == "boolean" then
+        autodim = state
+        settings.set(USERDATA_TAG .. ".autodim", state)
+        updateVisibility()
+    end
+    return autodim
+end
+
 if startVisible then remote:show() end
+
 return module
