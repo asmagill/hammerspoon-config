@@ -243,5 +243,7 @@ module.toolbar = toolbar.new("_asmConsole_001")
                    end)
 
 console.toolbar(module.toolbar)
+-- not in core yet
+if console.titleVisibility then console.titleVisibility("hidden") end
 
 return module

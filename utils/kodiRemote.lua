@@ -6,18 +6,20 @@
 local module = {}
 local USERDATA_TAG = "kodiRemote"
 
-local kodi     = require("hs._asm.kodi")
-local canvas   = require("hs._asm.canvas")
-local logger   = require("hs.logger")
-local settings = require("hs.settings")
-local stext    = require("hs.styledtext")
-local menu     = require("hs.menubar")
-local eventtap = require("hs.eventtap")
-local mouse    = require("hs.mouse")
-local geometry = require("hs.geometry")
-local timer    = require("hs.timer")
+local kodi       = require("hs._asm.kodi")
+local canvas     = require("hs._asm.canvas")
+local logger     = require("hs.logger")
+local settings   = require("hs.settings")
+local stext      = require("hs.styledtext")
+local menu       = require("hs.menubar")
+local eventtap   = require("hs.eventtap")
+local mouse      = require("hs.mouse")
+local geometry   = require("hs.geometry")
+local timer      = require("hs.timer")
+local hotkey     = require("hs.hotkey")
+local caffeinate = require("hs.caffeinate")
 
-local events   = eventtap.event.types
+local events     = eventtap.event.types
 
 local btnRepeatDelay    = settings.get(USERDATA_TAG .. ".btnRepeatDelay") or 0.5
 local btnRepeatInterval = settings.get(USERDATA_TAG .. ".btnRepeatInterval") or 0.1
@@ -25,6 +27,7 @@ local remoteTopLeft     = settings.get(USERDATA_TAG .. ".topLeft") or { x = 100,
 local autosave          = settings.get(USERDATA_TAG .. ".autosave") or false
 local startVisible      = settings.get(USERDATA_TAG .. ".startVisible") or false
 local autodim           = settings.get(USERDATA_TAG .. ".autodim") or false
+local keyEquivalents    = settings.get(USERDATA_TAG .. ".keyEquivalents") or false
 
 local log  = logger.new(USERDATA_TAG, settings.get(USERDATA_TAG .. ".logLevel") or "warning")
 
@@ -37,6 +40,7 @@ local updateLinkStatus
 local attachedKODI
 
 local remote = canvas.new(remoteFrame):level(canvas.windowLevels.popUpMenu)
+                                      :behaviorAsLabels({"canJoinAllSpaces"})
 
 local findIndex = function(id)
     local idx
@@ -144,6 +148,10 @@ local labelChars = {
                             font = { name = "Menlo", size = 18 },
                             paragraphStyle = { alignment = "center" },
                         }),
+    ["Keyboard"] = stext.new(utf8.char(0x2328), {
+                            font = { name = "Menlo", size = 18 },
+                            paragraphStyle = { alignment = "center" },
+                        }),
 }
 
 local labelOffsets = {
@@ -167,6 +175,7 @@ local labelOffsets = {
     ["Application.SetMute.toggle"] = { x = 2, y = 0 },
     ["Volume.SetVolume.increment"] = { x = 2, y = -2 },
     ["Volume.SetVolume.decrement"] = { x = 2, y = -2 },
+    ["Keyboard"] = { x = 0, y = 0 },
 }
 
 local repeatTimers = {}
@@ -366,6 +375,9 @@ local labelUpFN = {
     end,
     ["Player.SetSpeed.decrement"] = function(c, m, id, x, y)
         doCommandForPlayers("Player.SetSpeed", { speed = "decrement" })
+    end,
+    ["Keyboard"] = function(c, m, id, x, y)
+        module.keyEquivalents(not keyEquivalents)
     end,
 }
 
@@ -623,6 +635,25 @@ remote[#remote + 1] = { id = "Input.Info",
     trackMouseUp        = true,
 }
 
+remote[#remote + 1] = { id = "Keyboard",
+    type = "rectangle",
+    action = "fill",
+    strokeColor = { white = .25 },
+    fillColor   = keyEquivalents and { green = .25, alpha = 0 }
+                                  or { white = .25, alpha = 0 },
+    strokeWidth = 2,
+    roundedRectRadii = { xRadius = 5, yRadius = 5 },
+    frame = {
+        x = 23,
+        y = remoteFrame.h - 20,
+        h = 18,
+        w = 18,
+    },
+    trackMouseDown      = true,
+    trackMouseEnterExit = true,
+    trackMouseUp        = true,
+}
+
 remote[#remote + 1] = { id = "Input.ShowOSD",
     type = "rectangle",
     action = "fill",
@@ -849,14 +880,27 @@ for i = 2, #remote, 1 do
     standardActions[i] = remote[i].action
 end
 
+local keysEnabled = false
+
 local updateVisibility = function()
     local state = true
-    if autodim then
-        local mousePos = mouse.getAbsolutePosition()
-        state = geometry.inside(mousePos, remote:frame())
-    end
+    local mousePos = mouse.getAbsolutePosition()
+    local onOff = geometry.inside(mousePos, remote:frame())
+
+    if autodim then state = onOff end
     for i = 2, #remote, 1 do
         remote[i].action = state and standardActions[i] or "skip"
+    end
+
+    local keyIndex = findIndex("Keyboard")
+    local keyAlpha = remote[keyIndex].fillColor.alpha
+    remote[keyIndex].fillColor = keyEquivalents and { green = .25, alpha = keyAlpha }
+                                                 or { white = .25, alpha = keyAlpha }
+
+    if onOff and keyEquivalents and not keysEnabled then
+        module.modalKeys:enter()
+    elseif not onOff and keysEnabled then
+        module.modalKeys:exit()
     end
 end
 
@@ -873,16 +917,19 @@ end
 updateMutedStatus = function()
     if module.KODI and module.KODI:isRunning() and volumeIndicatorIndex then
         local muted = module.KODI("Application.GetProperties", { properties = { "muted" } })
-        remote[volumeIndicatorIndex].text = volumeIndicatorMuted[muted.muted]
+        if type(muted) == "table" and type(muted.muted) ~= "nil" then
+            remote[volumeIndicatorIndex].text = volumeIndicatorMuted[muted.muted]
+        else
+            remote[volumeIndicatorIndex].text = volumeIndicatorMuted[true]
+        end
     else
         remote[volumeIndicatorIndex].text = volumeIndicatorMuted[true]
     end
 end
 
-remote:mouseCallback(function(c, m, id, x, y)
+local mouseCallback = function(c, m, id, x, y)
     updateLinkStatus()
     updateMutedStatus()
-    updateVisibility()
 
     local idx = findIndex(id)
     if not idx then
@@ -893,8 +940,9 @@ remote:mouseCallback(function(c, m, id, x, y)
     if m == "mouseEnter" then
         remote[idx].fillColor.alpha = 0.75
     elseif m == "mouseExit" then
+        -- don't reset background alpha if exit is because we entered a button
         if id == "remoteBackground" then
-            -- don't reset background alpha if exit is because we entered a button
+            -- but dim it if we leave the remote entirely
             if not geometry.inside({ x = x, y = y }, remote[idx].frame_raw) then
                 remote[idx].fillColor.alpha = 0.25
             end
@@ -907,7 +955,7 @@ remote:mouseCallback(function(c, m, id, x, y)
             labelDownFN[id](c, m, id, x, y)
         end
     elseif m == "mouseUp" then
-        remote[idx].fillColor.alpha = 0.7
+        remote[idx].fillColor.alpha = 0.75
         if labelUpFN[id] then
             labelUpFN[id](c, m, id, x, y)
         elseif module.KODI and module.KODI:isRunning() and not labelDownFN[id] then
@@ -916,7 +964,24 @@ remote:mouseCallback(function(c, m, id, x, y)
     else
         log.wf("unrecognized message %s", m)
     end
-end)
+    updateVisibility()
+end
+
+remote:mouseCallback(mouseCallback)
+
+local mimicCallback = function(id, m)
+    local idx = findIndex(id)
+    if not idx then
+        log.wf("unable to match %s to an element index for callback", tostring(id))
+        return
+    end
+    local frame = remote[idx].frame_raw
+    local x, y = frame.x + frame.w / 2, frame.y + frame.h / 2
+    mouseCallback(remote, m, id, x, y)
+    if m == "mouseUp" then
+        mouseCallback(remote, "mouseExit", id, x, y)
+    end
+end
 
 -- anytime a KODI instance is assigned, run a timer to update the link status and muted
 -- displays
@@ -948,6 +1013,46 @@ module.remote = remote
 
 module.KODI = kodi.KODI
 
+module.modalKeys = hotkey.modal.new()
+
+module.modalKeys.entered = function(self)
+    keysEnabled = true
+    log.d("enabling key equivalents")
+    -- toggle keyboard visible flag
+end
+
+module.modalKeys:bind({}, "left",   function() mimicCallback("Input.Left", "mouseDown") end,
+                                    function() mimicCallback("Input.Left", "mouseUp") end,
+                                    function() mimicCallback("Input.Left", "mouseDown") end)
+module.modalKeys:bind({}, "right",  function() mimicCallback("Input.Right", "mouseDown") end,
+                                    function() mimicCallback("Input.Right", "mouseUp") end,
+                                    function() mimicCallback("Input.Right", "mouseDown") end)
+module.modalKeys:bind({}, "up",     function() mimicCallback("Input.Up", "mouseDown") end,
+                                    function() mimicCallback("Input.Up", "mouseUp") end,
+                                    function() mimicCallback("Input.Up", "mouseDown") end)
+module.modalKeys:bind({}, "down",   function() mimicCallback("Input.Down", "mouseDown") end,
+                                    function() mimicCallback("Input.Down", "mouseUp") end,
+                                    function() mimicCallback("Input.Down", "mouseDown") end)
+module.modalKeys:bind({}, "escape", function() mimicCallback("Input.Back", "mouseDown") end,
+                                    function() mimicCallback("Input.Back", "mouseUp") end)
+module.modalKeys:bind({}, "return", function() mimicCallback("Input.Select", "mouseDown") end,
+                                    function() mimicCallback("Input.Select", "mouseUp") end)
+module.modalKeys:bind({}, "space",  function() mimicCallback("Player.PlayPause", "mouseDown") end,
+                                    function() mimicCallback("Player.PlayPause", "mouseUp") end)
+
+module.modalKeys:bind({"cmd"}, "left",
+              function() mimicCallback("Player.SetSpeed.decrement", "mouseDown") end,
+              function() mimicCallback("Player.SetSpeed.decrement", "mouseUp") end)
+module.modalKeys:bind({"cmd"}, "right",
+              function() mimicCallback("Player.SetSpeed.increment", "mouseDown") end,
+              function() mimicCallback("Player.SetSpeed.increment", "mouseUp") end)
+
+module.modalKeys.exited = function(self)
+    keysEnabled = false
+    log.d("disabling key equivalents")
+    -- toggle keyboard visible flag
+end
+
 module.show = function()
     -- force display when explicitly shown to make it easier to find
     for i = 2, #remote, 1 do
@@ -957,6 +1062,7 @@ module.show = function()
 end
 
 module.hide = function()
+    if keysEnabled then module.modalKeys:exit() end
     remote:hide()
 end
 
@@ -1007,6 +1113,21 @@ module.autodim = function(state)
     end
     return autodim
 end
+
+module.keyEquivalents = function(state)
+    if type(state) == "boolean" then
+        keyEquivalents = state
+        settings.set(USERDATA_TAG .. ".keyEquivalents", state)
+        updateVisibility()
+    end
+    return keyEquivalents
+end
+
+module._sleepWatcher = caffeinate.watcher.new(function(state)
+    if state == caffeinate.watcher.systemWillSleep then
+        if keysEnabled then module.modalKeys:exit() end
+    end
+end):start()
 
 if startVisible then remote:show() end
 

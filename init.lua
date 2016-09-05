@@ -53,20 +53,21 @@ if require"hs.settings".get("_asm.test.canvas.drawing") then
     end
 end
 
--- local R, M = pcall(require,"_scratch.alerts")
+-- -- copy into _coresetup/init.lua
+-- local R, M = pcall(require,"hs._asm.canvas.toolbar")
 -- if R then
 --    print()
---    print("**** Replacing internal hs.alert with experimental module.")
+--    print("**** Replacing internal hs.webview.toolbar with experimental module.")
 --    print()
---    hs.alert = M
---    package.loaded["hs.alert"] = M   -- make sure require("hs.alert") returns us
---    package.loaded["hs/alert"] = M   -- make sure require("hs/alert") returns us
+-- --    hs.webview.toolbar = M
+--    package.loaded["hs.webview.toolbar"] = M   -- make sure require("hs.webview.toolbar") returns us
+--    package.loaded["hs/webview/toolbar"] = M   -- make sure require("hs/webview/toolbar") returns us
 -- else
 --    print()
---    print("**** Error with experimental hs.alert: "..tostring(M))
+--    print("**** Error with experimental hs.webview.toolbar: "..tostring(M))
 --    print()
 -- end
---
+
 -- -- Testing eventtap replacement for hotkey
 --
 --local R, M = pcall(require,"hs._asm.hotkey")
