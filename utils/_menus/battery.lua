@@ -111,12 +111,12 @@ local updateMenuTitle = function()
         local text = string.format("%+d\n", battery.amperage())
 
         local timeValue = -999
-        if battery.isCharging() then
+        if battery.powerSource() == "AC Power" then
             timeValue = battery.timeToFullCharge()
         else
             timeValue = battery.timeRemaining()
         end
-
+-- print(timeValue)
         text = text ..((timeValue < 0) and "???" or
                 string.format("%d:%02d", math.floor(timeValue/60), timeValue%60))
 
@@ -143,6 +143,7 @@ local powerSourceChangeFN = function(justOn)
         timeRemaining = battery.timeRemaining(),
         timeStamp = os.time()
     }
+    if menuUserData then updateMenuTitle() end
 
     if currentPowerSource ~= newPowerSource then
         currentPowerSource = newPowerSource
@@ -158,14 +159,13 @@ local powerSourceChangeFN = function(justOn)
                 end
             end
         end
-        if menuUserData then
+--         if menuUserData then
 --             if currentPowerSource == "AC Power" then
 --                 menuUserData:setTitle(onAC)
 --             else
 --                 menuUserData:setTitle(onBattery)
 --             end
-            updateMenuTitle()
-        end
+--         end
     end
     if not justOn then
         for i,v in ipairs(module.batteryNotifications) do
@@ -231,7 +231,7 @@ end
 
 local displayBatteryData = function(modifier)
     local menuTable = {}
-
+    updateMenuTitle()
     local pwrIcon = (battery.powerSource() == "AC Power") and onAC or onBattery
     table.insert(menuTable, { title = pwrIcon.."  "..(
             (battery.isCharged()  and "Fully Charged") or
