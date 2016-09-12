@@ -23,6 +23,8 @@ local events     = eventtap.event.types
 
 local btnRepeatDelay    = settings.get(USERDATA_TAG .. ".btnRepeatDelay") or 0.5
 local btnRepeatInterval = settings.get(USERDATA_TAG .. ".btnRepeatInterval") or 0.1
+local tooltipDelay      = settings.get(USERDATA_TAG .. ".tooltipDelay") or 3
+local showTooltips      = settings.get(USERDATA_TAG .. ".showTooltips") or false
 local remoteTopLeft     = settings.get(USERDATA_TAG .. ".topLeft") or { x = 100, y = 100 }
 local autosave          = settings.get(USERDATA_TAG .. ".autosave") or false
 local startVisible      = settings.get(USERDATA_TAG .. ".startVisible") or false
@@ -38,6 +40,8 @@ local dialFrame   = { x = 25, y = 10, h = 100, w = 100 }
 local updateMutedStatus
 local updateLinkStatus
 local attachedKODI
+local tooltipTimer
+local keysEnabled = false
 
 local remote = canvas.new(remoteFrame):level(canvas.windowLevels.popUpMenu)
                                       :behaviorAsLabels({"canJoinAllSpaces"})
@@ -201,10 +205,10 @@ local movementMouseDown = function(c, m, id, x, y)
         if not repeatTimers.movement then
             repeatTimers.movement = timer.doAfter(btnRepeatDelay, function()
                 module.KODI(id)
-        log.d(id)
+--         log.d(id)
                 repeatTimers.movement = timer.doEvery(btnRepeatInterval, function()
                     module.KODI(id)
-        log.d(id)
+--         log.d(id)
                 end)
             end)
         else
@@ -300,7 +304,11 @@ local labelDownFN = {
             bounds.x = topLeft.x + bounds.x
             bounds.y = topLeft.y + bounds.y
 
+            -- allow arrow keys to be used in the pop-up menu
+            if keysEnabled then module.modalKeys:exit() end
             menu.new(false):setMenu(menuList):popupMenu({ x = bounds.x, y = bounds.y + bounds.h })
+            if keysEnabled then module.modalKeys:enter() end
+
         end
     end,
     ["MoveWindow"] = function(c, m, id, x, y)
@@ -874,13 +882,28 @@ for k, v in pairs(labelChars) do
     end
 end
 
+remote[#remote + 1] = { id = "tooltip",
+    action = "skip",
+    type = "rectangle",
+    fillColor = { list = "System", name = "selectedTextBackgroundColor" },
+    roundedRectRadii = { xRadius = 5, yRadius = 5 },
+}
+local tooltipIndex = #remote
+
+remote[#remote + 1] = { id = "tooltipText",
+    action        = "skip",
+    textFont      = "Menlo-Italic",
+    textLineBreak = "charWrap",
+    textSize      = 10,
+    textColor     = { white = 0 },
+    type = "text",
+}
+
 -- record initial actions for when remote is being displayed ; used by autodim code
 local standardActions = {}
 for i = 2, #remote, 1 do
     standardActions[i] = remote[i].action
 end
-
-local keysEnabled = false
 
 local updateVisibility = function()
     local state = true
@@ -891,6 +914,8 @@ local updateVisibility = function()
     for i = 2, #remote, 1 do
         remote[i].action = state and standardActions[i] or "skip"
     end
+    remote[tooltipIndex].action     = "skip"
+    remote[tooltipIndex + 1].action = "skip"
 
     local keyIndex = findIndex("Keyboard")
     local keyAlpha = remote[keyIndex].fillColor.alpha
@@ -901,6 +926,11 @@ local updateVisibility = function()
         module.modalKeys:enter()
     elseif not onOff and keysEnabled then
         module.modalKeys:exit()
+        remote[1].fillColor.alpha = 0.25
+        if tooltipTimer then
+            tooltipTimer:stop()
+            tooltipTimer = nil
+        end
     end
 end
 
@@ -928,6 +958,11 @@ updateMutedStatus = function()
 end
 
 local mouseCallback = function(c, m, id, x, y)
+    if tooltipTimer then
+        tooltipTimer:stop()
+        tooltipTimer = nil
+    end
+
     updateLinkStatus()
     updateMutedStatus()
 
@@ -939,6 +974,35 @@ local mouseCallback = function(c, m, id, x, y)
 
     if m == "mouseEnter" then
         remote[idx].fillColor.alpha = 0.75
+        if idx > 1 and showTooltips then
+            tooltipTimer = timer.doAfter(tooltipDelay, function()
+                local txt = remote[idx].id
+                local size = remote:minimumTextSize(tooltipIndex + 1, txt)
+                local remoteSize = remote:size()
+                local xOffset = math.max(0, x + size.w + 4 - remoteSize.w)
+                local baseFrame = { x = x - xOffset, y = y - (size.h + 4), h = size.h + 4, w = size.w + 4 }
+                if baseFrame.x < 0 then
+                    baseFrame.h = baseFrame.h + size.h
+                    baseFrame.w = remoteSize.w
+                    baseFrame.x = 0
+                end
+                if baseFrame.y + baseFrame.h > remoteSize.h then
+                    baseFrame.y = baseFrame.y + baseFrame.h - remoteSize.h
+                end
+                if baseFrame.y < 0 then baseFrame.y = 0 end
+                remote[tooltipIndex].frame = baseFrame
+                baseFrame.x = baseFrame.x + 2
+                baseFrame.y = baseFrame.y + 2
+                baseFrame.w = baseFrame.w - 4
+                baseFrame.h = baseFrame.h - 4
+                remote[tooltipIndex + 1].frame = baseFrame
+
+                remote[tooltipIndex + 1].text   = txt
+                remote[tooltipIndex].action     = "fill"
+                remote[tooltipIndex + 1].action = "stroke"
+                tooltipTimer = nil
+            end)
+        end
     elseif m == "mouseExit" then
         -- don't reset background alpha if exit is because we entered a button
         if id == "remoteBackground" then
@@ -1017,8 +1081,7 @@ module.modalKeys = hotkey.modal.new()
 
 module.modalKeys.entered = function(self)
     keysEnabled = true
-    log.d("enabling key equivalents")
-    -- toggle keyboard visible flag
+--     log.d("enabling key equivalents")
 end
 
 module.modalKeys:bind({}, "left",   function() mimicCallback("Input.Left", "mouseDown") end,
@@ -1049,8 +1112,7 @@ module.modalKeys:bind({"cmd"}, "right",
 
 module.modalKeys.exited = function(self)
     keysEnabled = false
-    log.d("disabling key equivalents")
-    -- toggle keyboard visible flag
+--     log.d("disabling key equivalents")
 end
 
 module.show = function()
@@ -1063,6 +1125,10 @@ end
 
 module.hide = function()
     if keysEnabled then module.modalKeys:exit() end
+    if tooltipTimer then
+        tooltipTimer:stop()
+        tooltipTimer = nil
+    end
     remote:hide()
 end
 
@@ -1121,6 +1187,14 @@ module.keyEquivalents = function(state)
         updateVisibility()
     end
     return keyEquivalents
+end
+
+module.showTooltips = function(state)
+    if type(state) == "boolean" then
+        showTooltips = state
+        settings.set(USERDATA_TAG .. ".showTooltips", state)
+    end
+    return showTooltips
 end
 
 module._sleepWatcher = caffeinate.watcher.new(function(state)
