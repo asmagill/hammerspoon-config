@@ -45,7 +45,7 @@ if require"hs.settings".get("_asm.test.canvas.drawing") then
        hs.drawing = M
        package.loaded["hs.drawing"] = M   -- make sure require("hs.drawing") returns us
        package.loaded["hs/drawing"] = M   -- make sure require("hs/drawing") returns us
-       debug.getregistry()["hs.drawing"] = hs.getObjectMetatable("hs._asm.canvas.drawing")
+--        debug.getregistry()["hs.drawing"] = hs.getObjectMetatable("hs._asm.canvas.drawing")
     else
        print()
        print("**** Error with experimental hs.drawing wrapper: "..tostring(M))
@@ -54,7 +54,7 @@ if require"hs.settings".get("_asm.test.canvas.drawing") then
 end
 
 -- -- copy into _coresetup/init.lua
--- local R, M = pcall(require,"hs._asm.canvas.toolbar")
+-- local R, M = pcall(require,"hs._asm.enclosure.toolbar")
 -- if R then
 --    print()
 --    print("**** Replacing internal hs.webview.toolbar with experimental module.")
@@ -138,9 +138,6 @@ _xtras = require("hs._asm.extras")
 -- _xtras.console = require("hs.console")
 
 _asm = {}
-_asm.gc = require("utils.gc")
-_asm.gc.patch("hs.timer")
-_asm.gc.patch("hs._asm.canvas")
 
 _asm.relaunch = function()
     os.execute([[ (while ps -p ]]..hs.processInfo.processID..[[ > /dev/null ; do sleep 1 ; done ; open -a "]]..hs.processInfo.bundlePath..[[" ) & ]])
@@ -300,11 +297,17 @@ hs._consoleInputPreparser = function(s)
     return s
 end
 
-print([[
+-- print([[
+--
+--     CLEAN UP INIT.LUA -- MOVE MINOR STUFF TO _asm.extras!!
+--
+-- ]])
 
-    CLEAN UP INIT.LUA -- MOVE MINOR STUFF TO _asm.extras!!
-
-]])
+_asm.gc = require("utils.gc")
+-- _asm.gc.patch("hs.timer")
+-- _asm.gc.patch("hs._asm.enclosure.canvas")
+_asm.gc.patch("hs._asm.enclosure")
+_asm.gc.patch("hs._asm.canvas")
 
 else
     print("++ Running minimal configuration")
