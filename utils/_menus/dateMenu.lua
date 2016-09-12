@@ -1,182 +1,152 @@
-local module = {
---[=[
-    _NAME        = 'dateMenu',
-    _VERSION     = '',
-    _URL         = 'https://github.com/asmagill/hydra_config',
-    _DESCRIPTION = [[
+local module = {}
 
-          Starting to replace itsyCal
+local menubar  = require("hs.menubar")
+local timer    = require("hs.timer")
+local stext    = require("hs.styledtext")
+local settings = require("hs.settings")
+local calendar = require("hs._asm.calendar")
 
-    ]],
-    _TODO        = [[]],
-    _LICENSE     = [[ See README.md ]]
---]=]
-}
+local USERDATA_TAG = "calendarMenu"
+local log  = require"hs.logger".new(USERDATA_TAG, settings.get(USERDATA_TAG .. ".logLevel") or "warning")
+module.log = log
 
-local menubar    = require("hs.menubar")
-local alert      = require("hs.alert")
-local timer      = require("hs.timer")
-local drawing    = require("hs.drawing")
-local screen     = require("hs.screen")
-local mouse      = require("hs.mouse")
 
-local R, utf8 = pcall(require,"hs.utf8_53")
-if not R then utf8 = require("hs.utf8") end
+local _eventCal = calendar.events()
 
-local dayInUTF8 = function(x)    --  U+2460-2473 = 1 - 20, U+3251-325F = 21 - 35
-    if x < 21 then
-        return utf8.codepointToUTF8(0x245F + x)
+module.upcomingEventSummary = function(days, whichCalendars)
+    days = days or 7
+
+    local events = _eventCal:events(calendar.startOfDay(os.time()), calendar.endOfDay(os.time() + 86400 * (days - 1)), whichCalendars)
+
+    local results = {}
+    for i, v in ipairs(events) do
+        local text = os.date("%m/%d ", v.startDate):gsub("0(%d)", " %1")
+        if v.allDay then
+            text = text .. "* All Day    "
+        else
+            text = text .. os.date("%H:%M - ", v.startDate) .. os.date("%H:%M", v.endDate)
+        end
+        text = text .. ": " .. v.title
+        local textColor = _eventCal:calendarDetails(v.calendarIdentifier).color or { white = 0 }
+        table.insert(results, {
+            title = stext.new(text, { font = { name = "Menlo", size = 10 }, color = textColor }),
+            fn = function() if v.URL then os.execute("open " .. v.URL) else require"hs.application".launchOrFocusByBundleID("com.apple.iCal") end end,
+        })
+    end
+    table.sort(results, function(a, b) return a.title < b.title end)
+    return results
+end
+
+local cal = function(month, day, year, style, todayStyle)
+    local highlightToday = day and true or false
+    day = day or 1
+    style = style or {
+        font  = { name = "Menlo", size = 12 },
+        color = { white = 0 },
+    }
+    todayStyle = todayStyle or { color = { red = 1 } }
+
+    local dayLabels = { "Su", "Mo", "Tu", "We", "Th", "Fr", "Sa" }
+    local monthLabels = {
+        "January", "February", "March",     "April",   "May",      "June",
+        "July",    "August",   "September", "October", "November", "December",
+    }
+    local date = os.date("*t", os.time({ year = year, month = month, day = day }))
+    local monthStartsOn = os.date("*t", os.time({
+        year  = date.year,
+        month = date.month,
+        day   = 1,
+    })).wday - 1
+    local daysInMonth = os.date("*t", os.time({
+        year  = date.year + (date.month == 12 and 1 or 0),
+        month = date.month == 12 and 1 or date.month + 1,
+        day   = 1,
+        hour  = 0, -- for some reason, lua defaults this to 12 if not set
+    }) - 1).day
+
+--     local offSet = math.floor(10 - (string.len(monthLabels[date.month]) + 1 + string.len(tostring(date.year))) / 2)
+--     local result = string.rep(" ", offSet) .. monthLabels[date.month] .. " " .. tostring(date.year) .. "\n"
+    local result = monthLabels[date.month] .. " " .. tostring(date.year) .. "\n"
+    result = result .. table.concat(dayLabels, " ") .. "\n"
+    result = result .. string.rep("   ", monthStartsOn)
+
+    local whereIsToday
+    for day = 1, daysInMonth, 1 do
+        if day == date.day then whereIsToday = #result end
+        result = result .. string.format("%2d", day)
+        monthStartsOn = (monthStartsOn + 1) % 7
+        if day ~= daysInMonth then
+            if monthStartsOn > 0 then
+                result = result .. " "
+            else
+                result = result .. "\n"
+            end
+        else
+            result = result .. string.rep(utf8.char(0x00A0), 3 * (7 - monthStartsOn))
+        end
+    end
+
+    result = stext.new(result, style)
+    if highlightToday then
+        result = result:setStyle(todayStyle, whereIsToday + 1, whereIsToday + 2)
+    end
+    return result
+end
+
+local makeMenu = function(mods)
+    local results = {}
+    local t = os.date("*t", os.time())
+    table.insert(results, {
+        title = cal(t.month, t.day, t.year,
+        { font = { name = "Menlo", size = 12 }, color = { white = .5 }, paragraphStyle = { alignment = "center" } },
+        { color = { white = 0 }, backgroundColor = { red = 1, blue = 1, green = 0 } }),
+        disabled = true,
+        fn = function() require"hs.application".launchOrFocusByBundleID("com.apple.iCal") end,
+    })
+    table.insert(results, { title = "-" })
+    for i,v in ipairs(module.upcomingEventSummary(14)) do
+        table.insert(results, v)
+    end
+    return results
+end
+
+local setMenuTitle = function()
+    local x = tonumber(os.date("%d"))
+    --  U+2460-2473 = 1 - 20, U+3251-325F = 21 - 35
+    module.menuUserdata:setTitle(utf8.char((x < 21 and 0x245F or 0x323C) + x))
+end
+
+module.startCalendarMenu = function()
+    if not module.menuUserdata then
+        module.menuUserdata = menubar.new():setMenu(makeMenu)
+        setMenuTitle()
+        module._timer = timer.doAt(0, 86400, function()
+            if module.menuUserdata then
+                setMenuTitle()
+            else
+                module._timer:stop()
+                module._timer = nil
+                log.ef("rogue timer detected; timer stopped")
+            end
+        end)
     else
-        return utf8.codepointToUTF8(0x323C + x)
+        log.wf("menu already instantiated")
     end
 end
 
-local function secsToMidnight(z)
-    local t = os.date("*t",z)
-    t.hour=0    ; t.min=0    ; t.sec=0
-    t.isdst=nil ; t.wday=nil ; t.yday=nil
-    return os.time(t) + 86400 - os.time(os.date("*t",z))
+module.stopCalendarMenu = function()
+    if module.menuUserdata then
+        module._timer:stop()
+        module._timer = nil
+        module.menuUserdata:delete()
+        module.menuUserdata = nil
+    else
+        log.wf("menu has not been instantiated")
+    end
 end
 
-module.changeDay = ""
-
-local changeDayFunction, menu
-
-changeDayFunction = function()
-    menu:setTitle(tostring(dayInUTF8(os.date("*t").day)))
-    module.changeDay = timer.doAfter(secsToMidnight(), changeDayFunction)
+if settings.get(USERDATA_TAG .. ".autoMenu") then
+    module.startCalendarMenu()
 end
+return module
 
-local visible = false
-
-local textFont   = "Menlo"
-local textSize   = 12
-local blockSizeH = textSize * (4/3)
-local blockSizeW = textSize * (2/3)
-
-local edgeBuffer = 15
-
-local calWidth   = 19
-local calHeight  = 9
-local textWidth  = blockSizeW * calWidth
-local textHeight = blockSizeH * calHeight
-local rectWidth  = textWidth  + 2 * edgeBuffer
-local rectHeight = textHeight + 2 * edgeBuffer
-
-local HLWidth    = blockSizeW  * 2
-local HLHeight   = blockSizeH
-local HLEdge     = 4
-
-local HL         = drawing.rectangle{
-                      x = 0,
-                      y = 0,
-                      h = HLHeight + 2,
-                      w = HLWidth + 2
-                  }:setFill(true):setStroke(false):setFillColor{
-                      red = 1, blue = 1, green = 0, alpha = .6
-                  }:setRoundedRectRadii(HLEdge, HLEdge)--:setStrokeWidth(4)
-
-local rect       = drawing.rectangle{
-                      x = 0,
-                      y = 0,
-                      h = rectHeight,
-                      w = rectWidth
-                  }:setFill(true):setStroke(false):setFillColor{
-                      red = 0, blue = 0, green = 0, alpha = .8
-                  }:setRoundedRectRadii(edgeBuffer, edgeBuffer)
-local textRect   = drawing.text({
-                      x = 0,
-                      y = 0,
-                      h = textHeight,
-                      w = textWidth
-                  },""):setTextFont(textFont):setTextSize(textSize):setTextColor{
-                      red = 1, blue = 1, green = 1, alpha = 1
-                  }
-
-module.start = function()
-    menu = menubar.new()
-    module.menuUserdata = menu
-    menu:setTitle(tostring(dayInUTF8(os.date("*t").day)))
-    menu:setClickCallback(function()
-        menu:setTitle(tostring(dayInUTF8(os.date("*t").day))) -- just in case timing off
-
-        if visible then
-            HL:hide()
-            textRect:hide()
-            rect:hide()
-        else
-            local text    = hs.execute("cal")
-            local frame   = screen.mainScreen():frame()
-            local clickAt = mouse.getAbsolutePosition()
-
--- newX and newY are approximate fixes for consolidateMenus.lua... now that we can't
--- assume we're in the menubar, gotta take some guesses and make some allowances...
-            local newX = clickAt.x
-            if newX + rectWidth > frame.x + frame.w then
-                newX = frame.x + frame.w - rectWidth * .5
-            end
-
-            local newY = frame.y
-            if clickAt.y > frame.y then
-                newY =  screen.mainScreen():fullFrame().y + (frame.y - screen.mainScreen():fullFrame().y) * 2 + 6
-            end
-
-            rect:setTopLeft{
-                x = newX - rectWidth * .5,
-                y = newY
-            }:show()
-
-            local t = os.date("*t")
-            t.day=1 ; t.wday=nil ; t.yday=nil
-
-            local wom = (os.date("*t").day -
-                        (os.date("*t").wday - os.date("*t",os.time(t)).wday) - 1) /
-                        7
-
--- I really need to dig into how NSTextView goes into NSView and figure out why lining things
--- up is so damn picky...
-            local dayOffset  = (os.date("*t").wday - 1) * 3 * (blockSizeW - .75)
-            local weekOffset = (2 + wom) * (blockSizeH + 2.5)
---                  dayOffset  = (1 - 1) * 3 * (blockSizeW - .75)
---                  weekOffset = (2 + 2) * (blockSizeH + 2.5)
-            HL:setTopLeft{
-                x = newX - textWidth * .5 + dayOffset,
-                y = newY + edgeBuffer + weekOffset
-            }:show()
-
-            textRect:setTopLeft{
-                x = newX - textWidth * .5,
-                y = newY + edgeBuffer
-            }:setText(text):show()
-
-        end
-        visible = not visible
-    end)
-
-    module.changeDay = timer.doAfter(secsToMidnight(), changeDayFunction)
-    return module
-end
-
-module.stop = function()
-    module.changeDay:stop()
-    module.changeDay = nil
-
-    visible = false
-    HL:hide()
-    textRect:hide()
-    rect:hide()
-    menu:delete()
-    menu = nil
-    return module
-end
-
-module = setmetatable(module, {
-  __gc = function(self)
-      if module.changeDay then module.changeDay:stop() ; module.changeDay = nil end
-      if HL then HL:delete() ; HL = nil end
-      if textRect then textRect:delete() ; textRect = nil end
-      if rect then rect:delete() ; rect = nil end
-  end,
-})
-
-return module.start()
