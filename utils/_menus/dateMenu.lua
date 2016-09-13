@@ -17,23 +17,22 @@ module.upcomingEventSummary = function(days, whichCalendars)
     days = days or 7
 
     local events = _eventCal:events(calendar.startOfDay(os.time()), calendar.endOfDay(os.time() + 86400 * (days - 1)), whichCalendars)
+    table.sort(events, function(a, b) print(a.startDate, b.startDate) ; return a.startDate < b.startDate end)
 
     local results = {}
     for i, v in ipairs(events) do
-        local text = os.date("%m/%d ", v.startDate):gsub("0(%d)", " %1")
-        if v.allDay then
-            text = text .. "* All Day    "
-        else
-            text = text .. os.date("%H:%M - ", v.startDate) .. os.date("%H:%M", v.endDate)
-        end
-        text = text .. ": " .. v.title
         local textColor = _eventCal:calendarDetails(v.calendarIdentifier).color or { white = 0 }
+        local dateText = os.date("%m/%d ", v.startDate):gsub("0(%d)", " %1") ..
+                         os.date("%I:%M %p - ", v.startDate):gsub("^0(%d)", " %1") ..
+                         os.date("%m/%d ", v.endDate):gsub("0(%d)", " %1") ..
+                         os.date("%I:%M %p", v.endDate):gsub("^0(%d)", " %1")
+        local text = stext.new(dateText .. ": " .. v.title, { font = { name = "Menlo", size = 10 }, color = textColor })
+        local URL = v.URL
         table.insert(results, {
-            title = stext.new(text, { font = { name = "Menlo", size = 10 }, color = textColor }),
-            fn = function() if v.URL then os.execute("open " .. v.URL) else require"hs.application".launchOrFocusByBundleID("com.apple.iCal") end end,
+            title = text,
+            fn = function() if URL then os.execute("open " .. URL) else require"hs.application".launchOrFocusByBundleID("com.apple.iCal") end end,
         })
     end
-    table.sort(results, function(a, b) return a.title < b.title end)
     return results
 end
 
