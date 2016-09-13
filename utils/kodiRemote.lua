@@ -42,6 +42,7 @@ local updateLinkStatus
 local attachedKODI
 local tooltipTimer
 local keysEnabled = false
+local isVisible   = false
 
 local remote = canvas.new(remoteFrame):level(canvas.windowLevels.popUpMenu)
                                       :behaviorAsLabels({"canJoinAllSpaces"})
@@ -908,7 +909,7 @@ end
 local updateVisibility = function()
     local state = true
     local mousePos = mouse.getAbsolutePosition()
-    local onOff = geometry.inside(mousePos, remote:frame())
+    local onOff = isVisible and geometry.inside(mousePos, remote:frame())
 
     if autodim then state = onOff end
     for i = 2, #remote, 1 do
@@ -924,8 +925,8 @@ local updateVisibility = function()
 
     if onOff and keyEquivalents and not keysEnabled then
         module.modalKeys:enter()
-    elseif not onOff and keysEnabled then
-        module.modalKeys:exit()
+    elseif not onOff then
+        if keysEnabled then module.modalKeys:exit() end
         remote[1].fillColor.alpha = 0.25
         if tooltipTimer then
             tooltipTimer:stop()
@@ -1121,15 +1122,17 @@ module.show = function()
         remote[i].action = standardActions[i]
     end
     remote:show()
+    isVisible = true
 end
 
 module.hide = function()
-    if keysEnabled then module.modalKeys:exit() end
+--     if keysEnabled then module.modalKeys:exit() end
     if tooltipTimer then
         tooltipTimer:stop()
         tooltipTimer = nil
     end
     remote:hide()
+    isVisible = false
 end
 
 module.toggle = function()
