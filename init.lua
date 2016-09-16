@@ -34,57 +34,6 @@ logger.historySize(1000)
 logger.truncateID = "head"
 logger.truncateIDWithEllipsis = true
 
--- -- Testing lua/hs.drawing based replacement for alert
-
-if require"hs.settings".get("_asm.test.canvas.drawing") then
-    local R, M = pcall(require,"hs._asm.canvas.drawing")
-    if R then
-       print()
-       print("**** Replacing internal hs.drawing with experimental wrapper.")
-       print()
-       hs.drawing = M
-       package.loaded["hs.drawing"] = M   -- make sure require("hs.drawing") returns us
-       package.loaded["hs/drawing"] = M   -- make sure require("hs/drawing") returns us
---        debug.getregistry()["hs.drawing"] = hs.getObjectMetatable("hs._asm.canvas.drawing")
-    else
-       print()
-       print("**** Error with experimental hs.drawing wrapper: "..tostring(M))
-       print()
-    end
-end
-
--- -- copy into _coresetup/init.lua
--- local R, M = pcall(require,"hs._asm.enclosure.toolbar")
--- if R then
---    print()
---    print("**** Replacing internal hs.webview.toolbar with experimental module.")
---    print()
--- --    hs.webview.toolbar = M
---    package.loaded["hs.webview.toolbar"] = M   -- make sure require("hs.webview.toolbar") returns us
---    package.loaded["hs/webview/toolbar"] = M   -- make sure require("hs/webview/toolbar") returns us
--- else
---    print()
---    print("**** Error with experimental hs.webview.toolbar: "..tostring(M))
---    print()
--- end
-
--- -- Testing eventtap replacement for hotkey
---
---local R, M = pcall(require,"hs._asm.hotkey")
---if R then
---    print()
---    print("**** Replacing internal hs.hotkey with experimental module.")
---    print()
---    hs.hotkey = M
---    package.loaded["hs.hotkey"] = M   -- make sure require("hs.hotkey") returns us
---    package.loaded["hs/hotkey"] = M   -- make sure require("hs/hotkey") returns us
---else
---    print()
---    print("**** Error with experimental hs.hotkey: "..tostring(M))
---    print()
---end
-
-
 -- adjust hotkey logging... info as the default is too much.
 require("hs.hotkey").setLogLevel("warning")
 
