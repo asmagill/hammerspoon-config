@@ -307,7 +307,7 @@ _asm.gc = require("utils.gc")
 -- _asm.gc.patch("hs.timer")
 -- _asm.gc.patch("hs._asm.enclosure.canvas")
 _asm.gc.patch("hs._asm.enclosure")
-_asm.gc.patch("hs._asm.canvas")
+-- _asm.gc.patch("hs._asm.canvas")
 
 else
     print("++ Running minimal configuration")
