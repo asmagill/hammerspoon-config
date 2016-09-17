@@ -262,6 +262,12 @@ else
     print("++ Running minimal configuration")
 end
 
-print("++ Running: "..hs.processInfo.bundlePath)
-print("++ Accessibility: "..tostring(hs.accessibilityState()))
-
+print()
+print("++ Application Path: "..hs.processInfo.bundlePath)
+print("++    Accessibility: "..tostring(hs.accessibilityState()))
+if hs.processInfo.debugBuild then
+    print("++    Debug Version: " .. hs.processInfo.version .. ", " .. hs.processInfo.buildTime)
+else
+    print("++  Release Version: " .. hs.processInfo.version)
+end
+print()
