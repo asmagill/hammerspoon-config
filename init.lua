@@ -63,12 +63,15 @@ requirePlus.updatePaths("In Home", {
 requirePlus.updatePaths("Luarocks", "luarocks-5.3 path", true)
 
 inspect = require("hs.inspect")
-inspectm = function (what, how)
-    if how then return inspect(what, how) else return inspect(what, { metatables = 1 }) end
+local inspectWrapper = function(what, how, actual)
+    how = how or {}
+    for k, v in pairs(how) do actual[k] = v end
+    return inspect(what, actual)
 end
-inspect1 = function(what) return inspect(what, {depth=1}) end
-inspect2 = function(what) return inspect(what, {depth=2}) end
-inspecta = function(what) return inspect(what, {
+inspectm = function(what, how) return inspectWrapper(what, how, { metatables = 1 }) end
+inspect1 = function(what, how) return inspectWrapper(what, how, { depth = 1 }) end
+inspect2 = function(what, how) return inspectWrapper(what, how, { depth = 2 }) end
+inspecta = function(what, how) return inspectWrapper(what, how, {
     process = function(i,p) if p[#p] ~= "n" then return i end end
 }) end
 
