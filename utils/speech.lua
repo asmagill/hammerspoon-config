@@ -13,7 +13,6 @@ local eventtap = require("hs.eventtap")
 local watchable = require"hs._asm.watchable"
 
 local window      = require"hs.window"
-local axuielement = require"hs._asm.axuielement"
 
 local commands = {}
 local title    = "Hammerspoon"
@@ -159,6 +158,7 @@ module.add("Open Terminal Application", function() require("hs.application").lau
 module.add("Re-Load Hammerspoon", hs.reload)
 module.add("Re-Launch Hammerspoon", _asm.relaunch)
 module.add("Toggle Command List", function()
+    local axuielement = require"hs._asm.axuielement"
     local dictationWindows = fnutils.ifilter(window.allWindows(), function(_)
         return _:role() == "AXButton" and _:application():name() == "Dictation"
     end)
