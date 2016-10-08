@@ -249,6 +249,11 @@ hs._consoleInputPreparser = function(s)
     return s
 end
 
+timestamp = function(date)
+    date = date or require"hs.timer".secondsSinceEpoch()
+    return os.date("%F %T" .. ((tostring(date):match("(%.%d+)$")) or ""), math.floor(date))
+end
+
 -- print([[
 --
 --     CLEAN UP INIT.LUA -- MOVE MINOR STUFF TO _asm.extras!!
