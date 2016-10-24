@@ -126,7 +126,7 @@ local shouldRecordContents = function()
 end
 
 local addToHistory = function(theClipping, theHistory)
-    if shouldRecordContents() then
+    if shouldRecordContents() and theClipping then
         local hashValue = hashFN(theClipping)
         table.insert(theHistory.history, theClipping)
 
