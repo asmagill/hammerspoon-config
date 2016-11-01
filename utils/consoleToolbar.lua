@@ -171,7 +171,7 @@ table.insert(consoleToolbar, {
 table.insert(consoleToolbar, {
     id = "cheatsheet",
     label = "CheatSheet Status",
-    tooltop = "Toggle CheatSheet Functionality",
+    tooltip = "Toggle CheatSheet Functionality",
     image = module.watchCheatSheetStatus:value() and cheatSheetOn or cheatSheetOff,
     fn = function(t, a, i)
         _asm._keys.cheatsheet.toggle()
