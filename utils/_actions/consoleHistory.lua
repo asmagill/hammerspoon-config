@@ -75,7 +75,12 @@ module.history = function(toFind)
                 newHistory[#newHistory] = command
                 console.setHistory(newHistory)
             end)
-            return load(command)()
+
+            local fn, err = load("return " .. command)
+            if not fn then fn, err = load(command) end
+            if fn then return fn() else return err end
+
+--             return load(command)()
         else
             error("nil item at specified history position", 2)
         end
