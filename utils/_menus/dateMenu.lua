@@ -17,7 +17,10 @@ module.upcomingEventSummary = function(days, whichCalendars)
     days = days or 7
 
     local events = _eventCal:events(calendar.startOfDay(os.time()), calendar.endOfDay(os.time() + 86400 * (days - 1)), whichCalendars)
-    table.sort(events, function(a, b) print(a.startDate, b.startDate) ; return a.startDate < b.startDate end)
+    table.sort(events, function(a, b)
+--         print(a.startDate, b.startDate) ;
+        return a.startDate < b.startDate
+    end)
 
     local results = {}
     for i, v in ipairs(events) do
