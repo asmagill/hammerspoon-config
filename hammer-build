@@ -18,6 +18,7 @@ if [[ $1 != doc* ]]; then
 	make || exit
 
 	# signing with self-signed cert so I no longer have to reset accessibility all the time
+	xattr -cr "build/Hammerspoon.app" # codesign has become more anal in 10.12
 	codesign --verbose --sign "Internal Code Signing" "build/Hammerspoon.app/Contents/Frameworks/LuaSkin.framework/Versions/A"
 	codesign --verbose --sign "Internal Code Signing" "build/Hammerspoon.app"
 

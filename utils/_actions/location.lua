@@ -1,9 +1,15 @@
-local module   = {}
-local location = require("hs.location")
-local settings = require("hs.settings")
-local canvas   = require("hs._asm.canvas")
-local screen   = require("hs.screen")
-local stext    = require("hs.styledtext")
+-- i have a date/time format for logging that I like, but others copying this may not
+local timestamp = timestamp
+if not timestamp then timestamp = os.date end
+
+local module       = {}
+local location     = require("hs.location")
+local settings     = require("hs.settings")
+local canvas       = require("hs._asm.canvas")
+local screen       = require("hs.screen")
+local stext        = require("hs.styledtext")
+local timer        = require("hs.timer")
+local reachability = require("hs.network.reachability")
 
 -- _asm.monitoredLocations should be an array of the format:
 -- {
@@ -65,14 +71,40 @@ local updateLabel = function(err)
     label[2].text = text
 end
 
-local geocoderRequest = function()
-    if module._geocoder then module._geocoder = module._geocoder:cancel() end
-    module._geocoder = location.geocoder.lookupLocation(location.get(), function(state, result)
-        module.addressInfo = result
-        module._geocoder = nil
-    end)
+local notifiedAboutInternet = false
+
+local geocoderRequest
+geocoderRequest = function()
+    if not module._geocoder then
+        if location.get() then
+            module._geocoder = location.geocoder.lookupLocation(location.get(), function(good, result)
+                module.addressInfo = result
+                if good then
+                    notifiedAboutInternet = false
+                    module._geocoder = nil
+                else
+                    if module.internetCheck:status() & reachability.flags.reachable > 0 then
+                        print("~~ " .. timestamp() .. " geocoder error: " .. result .. ", will try again in 60 seconds")
+                    elseif not notifiedAboutInternet then
+                        print("~~ " .. timestamp() .. " geocoder requires internet access, waiting until reachability changes")
+                        notifiedAboutInternet = true
+                    end
+                    module._geocoder = timer.doAfter(60, function()
+                        module._geocoder = nil
+                        geocoderRequest()
+                    end)
+                end
+            end)
+        else
+            module._geocoder = timer.doAfter(60, function()
+                module._geocoder = nil
+                geocoderRequest()
+            end)
+        end
+    end
 end
 
+module.internetCheck = reachability.internet()
 module.label = label
 module.labelWatcher = location.new():callback(function(self, message, ...)
     if message:match("Region$") then updateLabel(table.pack(...)[2]) end -- will be nil unless error
@@ -84,10 +116,6 @@ geocoderRequest()
 -- secondary watcher for testing -- not a great example since the whole point of adding an object/method
 -- interface to hs.location was to allow different code to monitor for different region changes, but as a
 -- proof-of-concept, it'll do for now...
-
--- i have a date/time format for logging that I like, but others copying this may not
-local timestamp = timestamp
-if not timestamp then timestamp = os.date end
 
 module.manager = location.new():callback(function(self, message, ...)
     print(string.format("~~ %s:%s\n   %s", timestamp(), message, (inspecta(table.pack(...)):gsub("%s+", " "))))
