@@ -5,13 +5,18 @@ local seen_GCs = {}
 local __gc_replacement = function(modName, originalFN)
     seen_GCs[modName] = originalFN
     return function(...)
-        print("~~ " .. os.date("%Y-%m-%d %H:%M:%S") .. " : invoking " .. tostring(modName) .. ".__gc")
+--         print("~~ " .. os.date("%Y-%m-%d %H:%M:%S") .. " : invoking " .. tostring(modName) .. ".__gc")
+        print("~~ " .. timestamp() .. " : invoking " .. tostring(modName) .. ".__gc")
         originalFN(...)
     end
 end
 
 module.patch = function(k)
     local mt = hs.getObjectMetatable(k)
+    if mt and mt.__name and not mt.__gc then
+    -- does nothing because the object had no __gc, but we need something for this to work
+        mt.__gc = function(self) end
+    end
     if mt and type(mt.__gc) == "function" then
         if type(seen_GCs[k]) == "function" then
             print("~~ " .. tostring(k) .. " already patched")

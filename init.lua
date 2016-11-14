@@ -214,6 +214,10 @@ else
     print("++ Running minimal configuration")
 end
 
+if package.searchpath("hs.network.ping", package.path) then
+    ping = require("hs.network.ping")
+end
+
 print()
 print("++ Application Path: "..hs.processInfo.bundlePath)
 print("++    Accessibility: "..tostring(hs.accessibilityState()))
