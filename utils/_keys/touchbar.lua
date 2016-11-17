@@ -8,7 +8,7 @@ local events   = eventtap.event.types
 
 local createTouchbarIfNeeded = function()
     if not module.touchbar then
-        module.touchbar = touchbar.new():centered()
+        module.touchbar = touchbar.new():inactiveAlpha(.25)
     end
 end
 
@@ -28,7 +28,7 @@ module.eventwatcher = eventtap.new({events.flagsChanged, events.keyDown, events.
         module.countDown = timer.doAfter(module.rightOptPressTime, function()
             if module.rightOptPressed then
                 createTouchbarIfNeeded()
-                module.touchbar:toggle()
+                module.touchbar:centered():toggle()
             end
         end)
     else
@@ -42,7 +42,7 @@ end):start()
 
 module.toggle = function()
     createTouchbarIfNeeded()
-    module.touchbar:toggle()
+    module.touchbar:centered():toggle()
 end
 
 return module
