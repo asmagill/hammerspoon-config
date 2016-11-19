@@ -8,7 +8,7 @@ local events   = eventtap.event.types
 
 local createTouchbarIfNeeded = function()
     if not module.touchbar then
-        module.touchbar = touchbar.new():inactiveAlpha(.25)
+        module.touchbar = touchbar.new():inactiveAlpha(.4)
     end
 end
 
