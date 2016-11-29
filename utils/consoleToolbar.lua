@@ -70,6 +70,40 @@ module.watchCheatSheetStatus = watchable.watch("cheatsheet.enabled", function(w,
     module.toolbar:modifyItem{ id = "cheatsheet", image = value and cheatSheetOn or cheatSheetOff }
 end)
 
+imageHolder = canvas.new{x = 10, y = 10, h = 50, w = 50}
+imageHolder[1] = {
+    frame = { h = 50, w = 50, x = 0, y = 0 },
+    text = styledtext.new("🖥", {
+        font = { name = ".AppleSystemUIFont", size = 50 },
+        paragraphStyle = { alignment = "center" }
+    }),
+    type = "text",
+}
+local popConsoleOn = imageHolder:imageFromCanvas()
+imageHolder[2] = {
+    action = "stroke",
+    closed = false,
+    coordinates = { { x = 0, y = 0 }, { x = 50, y = 50 } },
+    strokeColor = { red = 1.0 },
+    strokeWidth = 3,
+    type = "segments",
+}
+imageHolder[3] = {
+    action = "stroke",
+    closed = false,
+    coordinates = { { x = 50, y = 0 }, { x = 0, y = 50 } },
+    strokeColor = { red = 1.0 },
+    strokeWidth = 3,
+    type = "segments",
+}
+local popConsoleOff = imageHolder:imageFromCanvas()
+imageHolder = imageHolder:delete()
+
+module.watchPopConsoleStatus = watchable.watch("popConsole.enabled", function(w, p, i, oldValue, value)
+    module.toolbar:modifyItem{ id = "popConsole", image = value and popConsoleOn or popConsoleOff }
+end)
+
+
 local consoleToolbar = {
     {
         id = "autoHide",
@@ -179,6 +213,17 @@ table.insert(consoleToolbar, {
     default = false,
 })
 
+table.insert(consoleToolbar, {
+    id = "popConsole",
+    label = "popConsole Status",
+    tooltip = "Toggle popConsole Functionality",
+    image = module.watchPopConsoleStatus:value() and popConsoleOn or popConsoleOff,
+    fn = function(t, a, i)
+        module.watchPopConsoleStatus:change(not module.watchPopConsoleStatus:value())
+    end,
+    default = false,
+})
+
 -- get list of hammerspoon modules
 local list = {}
 
@@ -228,8 +273,9 @@ table.insert(consoleToolbar, {
     default = false,
 
     searchfield               = true,
-    searchHistoryLimit        = 10,
-    searchHistoryAutosaveName = "HSDocsHistory",
+    searchPredefinedMenuTitle = false,
+--     searchHistoryLimit        = 10,
+--     searchHistoryAutosaveName = "HSDocsHistory",
     searchPredefinedSearches  = list,
     searchWidth               = 250,
 })
