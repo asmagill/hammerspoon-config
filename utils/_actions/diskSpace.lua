@@ -89,15 +89,17 @@ module.drawAt = function(x,y)
     width = width + 10
 
     for i,v in ipairs(module.getStats()) do
-        table.insert(results, drawing.arc({
-                x = x + 10 + height / 2,
-                y = y + (height + 10) * count + 10 + height / 2,
-            }, height / 2, 0, 360 * (v[3] / v[2]))
-            :setFillColor(module.availableColor)
-            :setFill(true)
-            :setStroke(false)
-            :setAlpha(.7)
-        )
+        if v[2] ~= 0 then
+            table.insert(results, drawing.arc({
+                    x = x + 10 + height / 2,
+                    y = y + (height + 10) * count + 10 + height / 2,
+                }, height / 2, 0, 360 * (v[3] / v[2]))
+                :setFillColor(module.availableColor)
+                :setFill(true)
+                :setStroke(false)
+                :setAlpha(.7)
+            )
+        end
         table.insert(results, drawing.circle{
                 x = x + 10,
                 y = y + (height + 10) * count + 10,
