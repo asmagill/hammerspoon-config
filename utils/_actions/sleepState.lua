@@ -1,5 +1,5 @@
 local module = {}
-local caffeinate = require("hs.caffeinate")
+local caffeinate = require("hs.caffeinate") -- still needed for lookups
 local settings   = require("hs.settings")
 local crash      = require("hs.crash")
 local fnutils    = require("hs.fnutils")
@@ -26,7 +26,19 @@ else
     crash.crashLog("unable to read " .. logFile .. " to check length (" .. err ..")")
 end
 
-module.watcher = caffeinate.watcher.new(function(state)
+-- module.watcher = caffeinate.watcher.new(function(state)
+--     local stateLabel = timestamp() .. " : Power State Change: " .. (caffeinate.watcher[state] or ("unknown state " .. tostring(state)))
+--     local f, err = io.open(logFile, "a")
+--     if f then
+--         f:write(stateLabel .. "\n") ;
+--         f:close()
+--     else
+--         crash.crashLog("unable to append '" .. stateLabel .. "' to " .. logFile .. " (" .. err ..")")
+--     end
+-- end):start()
+
+local watchable = require("hs._asm.watchable")
+module.watchCaffeinatedState = watchable.watch("generalStatus.caffeinatedState", function(w, p, i, old, state)
     local stateLabel = timestamp() .. " : Power State Change: " .. (caffeinate.watcher[state] or ("unknown state " .. tostring(state)))
     local f, err = io.open(logFile, "a")
     if f then
@@ -35,6 +47,6 @@ module.watcher = caffeinate.watcher.new(function(state)
     else
         crash.crashLog("unable to append '" .. stateLabel .. "' to " .. logFile .. " (" .. err ..")")
     end
-end):start()
+end)
 
 return module

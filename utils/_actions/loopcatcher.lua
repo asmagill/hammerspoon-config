@@ -17,7 +17,7 @@
 local module = {}
 
 local timer      = require("hs.timer")
-local caffeinate = require("hs.caffeinate")
+-- local caffeinate = require("hs.caffeinate")
 local eventtap   = require("hs.eventtap")
 
 -- -- testing infinite loop detector with debug.sethook

@@ -4,6 +4,7 @@ local watchable = require("hs._asm.watchable")
 local module = {}
 module.watchables = watchable.new("popConsole", true)
 module.watchables.enabled = true
+local prevValue = true
 
 module.callback = function(w)
     if w == 1 then     -- start "sssss" sound
@@ -21,6 +22,17 @@ module.watchExternalToggle = watchable.watch("popConsole.enabled", function(w, p
         module._noiseWatcher:stop()
     end
 --     print(module.watchables.enabled)
+end)
+
+module.watchCaffeinatedState = watchable.watch("generalStatus.caffeinatedState", function(w, p, i, old, new)
+    if new == 1 then -- systemWillSleep
+        prevValue = module.watchables.enabled
+        module.watchables.enabled = false
+--         print("%% willSleep")
+    elseif new == 0 then -- systemDidWake
+        module.watchables.enabled = prevValue
+--         print("%% didWake")
+    end
 end)
 
 return module

@@ -16,7 +16,7 @@ local drawing    = require("hs.drawing")
 local stext      = require("hs.styledtext")
 local task       = require("hs.task")
 local timer      = require("hs.timer")
-local caffeinate = require("hs.caffeinate")
+-- local caffeinate = require("hs.caffeinate")
 
 local log        = require("hs.logger").new("geeklets","warning")
 module.log       = log
@@ -92,19 +92,34 @@ local GeekTimer = timer.new(1, function()
     end
 end)
 
-local geekletSleepWatcher = caffeinate.watcher.new(function(event)
-    if event == caffeinate.watcher.systemDidWake then
-        for i,v in pairs(registeredGeeklets) do
-            v.lastNotified = 0
-        end
-    elseif event == caffeinate.watcher.systemWillSleep then
+-- local geekletSleepWatcher = caffeinate.watcher.new(function(event)
+--     if event == caffeinate.watcher.systemDidWake then
+--         for i,v in pairs(registeredGeeklets) do
+--             v.lastNotified = 0
+--         end
+--     elseif event == caffeinate.watcher.systemWillSleep then
+--         for i,v in pairs(registeredGeeklets) do
+--             if v.task and v.task:isRunning() then
+--                 v.task:setCallback(nil):terminate()
+--             end
+--         end
+--     end
+-- end):start()
+
+local watchable = require("hs._asm.watchable")
+module.watchCaffeinatedState = watchable.watch("generalStatus.caffeinatedState", function(w, p, i, old, new)
+    if new == 1 then -- systemWillSleep
         for i,v in pairs(registeredGeeklets) do
             if v.task and v.task:isRunning() then
                 v.task:setCallback(nil):terminate()
             end
         end
+    elseif new == 0 then -- systemDidWake
+        for i,v in pairs(registeredGeeklets) do
+            v.lastNotified = 0
+        end
     end
-end):start()
+end)
 
 -- Change the defaults in here if you don't like mine!
 
