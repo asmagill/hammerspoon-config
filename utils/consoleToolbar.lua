@@ -226,21 +226,6 @@ table.insert(consoleToolbar, {
 
 -- get list of hammerspoon modules
 local list = {}
-
--- local input = io.open(hs.docstrings_json_file, "rb")
--- local converted = require"hs.json".decode(input:read("a")),
--- input:close()
---
--- for i,v in ipairs(converted) do
---     table.insert(list1, v.name)
--- --     if v.items then
--- --         for i2, v2 in ipairs(converted) do
--- --             table.insert(list, v.name .. "." .. v2.name)
--- --         end
--- --     end
--- end
-
--- a little uglier, misses "space-holder, empty-of-functions" modules (like hs.spaces, which hs no formal definition in the docs, but is auto-created as a place-holder for hs.spaces.watcher), but faster
 local examine
 examine = function(tblName)
     local myTable = {}
@@ -267,15 +252,12 @@ table.insert(consoleToolbar, {
     label = "HS Doc Search",
     tooltip = "Search for a HS function or method",
     fn = function(t, w, i, text)
---         print(("~~ HS Doc Search callback with '%s'"):format(text))
         if text ~= "" then require"hs.doc.hsdocs".help(text) end
     end,
     default = false,
 
     searchfield               = true,
     searchPredefinedMenuTitle = false,
---     searchHistoryLimit        = 10,
---     searchHistoryAutosaveName = "HSDocsHistory",
     searchPredefinedSearches  = list,
     searchWidth               = 250,
 })
