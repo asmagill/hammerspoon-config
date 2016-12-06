@@ -1,11 +1,11 @@
 print("-- "..os.date())
 
 hs.logger = require("hs.logger")
-require("hs.crash").crashLogToNSLog = true
+-- require("hs.crash").crashLogToNSLog = true
 hs.logger.historySize(200)
 
 inspect = require("hs.inspect")
-_xtras = require("hs._asm.extras")
+-- _xtras = require("hs._asm.extras")
 
 inspect1 = function(what) return inspect(what, {depth=1}) end
 inspect2 = function(what) return inspect(what, {depth=2}) end
