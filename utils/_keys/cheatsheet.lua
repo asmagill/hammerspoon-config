@@ -10,7 +10,7 @@ local eventtap = require("hs.eventtap")
 local notify   = require("hs.notify")
 local distributednotifications = require"hs.distributednotifications"
 
-local watchables = require("hs._asm.watchable")
+local watchables = require("hs.watchable")
 
 local events   = eventtap.event.types
 

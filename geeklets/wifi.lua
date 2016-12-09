@@ -1,7 +1,7 @@
 local configuration = require("hs.network.configuration")
 local reachability  = require("hs.network.reachability")
 
-local watchable     = require"hs._asm.watchable"
+local watchable     = require"hs.watchable"
 
 local http          = require("hs.http")
 

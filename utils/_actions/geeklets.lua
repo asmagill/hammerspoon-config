@@ -106,7 +106,7 @@ end)
 --     end
 -- end):start()
 
-local watchable = require("hs._asm.watchable")
+local watchable = require("hs.watchable")
 module.watchCaffeinatedState = watchable.watch("generalStatus.caffeinatedState", function(w, p, i, old, new)
     if new == 1 then -- systemWillSleep
         for i,v in pairs(registeredGeeklets) do

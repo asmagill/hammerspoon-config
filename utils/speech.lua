@@ -10,7 +10,7 @@ local fnutils  = require("hs.fnutils")
 local log      = require("hs.logger").new("mySpeech","warning")
 local settings = require("hs.settings")
 local eventtap = require("hs.eventtap")
-local watchable = require"hs._asm.watchable"
+local watchable = require"hs.watchable"
 
 local window      = require"hs.window"
 

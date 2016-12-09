@@ -26,7 +26,7 @@ else
     crash.crashLog("unable to read " .. logFile .. " to check length (" .. err ..")")
 end
 
-local watchable = require("hs._asm.watchable")
+local watchable = require("hs.watchable")
 module.watchCaffeinatedState = watchable.watch("generalStatus.caffeinatedState", function(w, p, i, old, state)
     local stateLabel = timestamp() .. " : Power State Change: " .. (caffeinate.watcher[state] or ("unknown state " .. tostring(state)))
     local f, err = io.open(logFile, "a")

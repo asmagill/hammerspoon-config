@@ -21,7 +21,7 @@ local appwatch  = require("hs.application").watcher
 local image     = require("hs.image")
 local settings  = require("hs.settings")
 local window    = require("hs.window")
-local watchable = require"hs._asm.watchable"
+local watchable = require"hs.watchable"
 
 local listener  = require("utils.speech")
 

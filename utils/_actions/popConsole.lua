@@ -1,5 +1,5 @@
 local noises      = require("hs.noises")
-local watchable   = require("hs._asm.watchable")
+local watchable   = require("hs.watchable")
 local window      = require("hs.window")
 local application = require("hs.application")
 
@@ -50,5 +50,5 @@ module.watchCaffeinatedState = watchable.watch("generalStatus.caffeinatedState",
 end)
 
 return setmetatable(module, { __tostring = function(self)
-    return "Adjust with `self`.watchables.enabled or using hs._asm.watchables with path 'popConsole.enabled'"
+    return "Adjust with `self`.watchables.enabled or using hs.watchables with path 'popConsole.enabled'"
 end })

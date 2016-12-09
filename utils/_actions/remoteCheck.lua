@@ -4,7 +4,7 @@ local task        = require("hs.task")
 local stext       = require("hs.styledtext")
 local timer       = require("hs.timer")
 local settings    = require("hs.settings")
-local watchable   = require"hs._asm.watchable"
+local watchable   = require"hs.watchable"
 
 local hosts = {
     "cousteau.private",

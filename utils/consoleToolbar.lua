@@ -6,7 +6,7 @@ local listener    = require"utils.speech"
 local application = require"hs.application"
 local styledtext  = require"hs.styledtext"
 
-local watchable   = require"hs._asm.watchable"
+local watchable   = require"hs.watchable"
 local canvas      = require"hs._asm.canvas"
 
 local module = {}

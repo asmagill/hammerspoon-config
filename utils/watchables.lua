@@ -4,7 +4,7 @@ local module = {}
 
 local reachability = require"hs.network.reachability"
 local screen       = require"hs.screen"
-local watchable    = require"hs._asm.watchable"
+local watchable    = require"hs.watchable"
 local caffeinate   = require"hs.caffeinate"
 local configuration = require"hs.network.configuration"
 

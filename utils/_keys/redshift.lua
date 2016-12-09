@@ -23,7 +23,7 @@ hotkey.bind(mods.CAsc, "F11", function()
     redshift.toggle()
 end)
 
-local watchable = require("hs._asm.watchable")
+local watchable = require("hs.watchable")
 module.watchCaffeinatedState = watchable.watch("generalStatus.caffeinatedState", function(w, p, i, old, new)
     if new == 0 or new == 9 then -- systemDidWake or screensaverDidStop
         redshift.start(2800,'21:00','7:00','4h')
