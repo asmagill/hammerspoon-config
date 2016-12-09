@@ -48,7 +48,7 @@ devMenu:menuCriteria(function(file, path, purpose)
 
           -- we use hs.fs to determine if this a folder and return true and the filename
           -- (directory name) as the label if it is.
-          if FS.attributes(path.."/"..file, "mode") == "directory" then return true, file end
+          if FS.attributes(path.."/"..file, "mode") == "directory" and not file:match("%.so%.dSYM$") then return true, file end
           return false -- otherwise, return false
 
       elseif purpose == "update" then
@@ -59,7 +59,7 @@ devMenu:menuCriteria(function(file, path, purpose)
           -- admit looks more lua like, then this would cause an error if the file
           -- disappears quickly (e.g. a lock file) before the pathwatcher process
           -- completes.
-          if FS.attributes(path.."/"..file, "mode") == "directory" then return true, file end
+          if FS.attributes(path.."/"..file, "mode") == "directory" and not file:match("%.so%.dSYM$") then return true, file end
           return false
       end
     end
