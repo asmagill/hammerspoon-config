@@ -10,6 +10,7 @@ local minimal = false
 
 hs.require = require
 require = rawrequire
+
 local requirePlus = require("utils.require")
 local settings    = require("hs.settings")
 local ipc         = require("hs.ipc")
@@ -44,11 +45,11 @@ weakrequire = function(what)
 end
 
 crash.crashLogToNSLog = true
-local coreCrashLog = crash._crashLog
-crash._crashLog = function(message, passAlong)
-    print("** " .. timestamp() .. " " .. message)
-    return coreCrashLog(message, passAlong)
-end
+-- local coreCrashLog = crash._crashLog
+-- crash._crashLog = function(message, passAlong)
+--     print("** " .. timestamp() .. " " .. message)
+--     return coreCrashLog(message, passAlong)
+-- end
 crash.crashLog("Disabled require logging to make log file sane")
 
 logger.historySize(1000)
