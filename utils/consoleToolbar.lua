@@ -103,6 +103,39 @@ module.watchPopConsoleStatus = watchable.watch("popConsole.enabled", function(w,
     module.toolbar:modifyItem{ id = "popConsole", image = value and popConsoleOn or popConsoleOff }
 end)
 
+imageHolder = canvas.new{x = 10, y = 10, h = 50, w = 50}
+imageHolder[1] = {
+    frame = { h = 50, w = 50, x = 0, y = -6 },
+    text = styledtext.new("ⅵ", {
+        font = { name = ".AppleSystemUIFont", size = 50 },
+        paragraphStyle = { alignment = "center" }
+    }),
+    type = "text",
+}
+local viKeysOn = imageHolder:imageFromCanvas()
+imageHolder[2] = {
+    action = "stroke",
+    closed = false,
+    coordinates = { { x = 0, y = 0 }, { x = 50, y = 50 } },
+    strokeColor = { red = 1.0 },
+    strokeWidth = 3,
+    type = "segments",
+}
+imageHolder[3] = {
+    action = "stroke",
+    closed = false,
+    coordinates = { { x = 50, y = 0 }, { x = 0, y = 50 } },
+    strokeColor = { red = 1.0 },
+    strokeWidth = 3,
+    type = "segments",
+}
+local viKeysOff = imageHolder:imageFromCanvas()
+imageHolder = imageHolder:delete()
+
+module.watchViKeysStatus = watchable.watch("viKeys.enabled", function(w, p, i, oldValue, value)
+    module.toolbar:modifyItem{ id = "viKeys", image = value and viKeysOn or viKeysOff }
+end)
+
 
 local consoleToolbar = {
     {
@@ -220,6 +253,17 @@ table.insert(consoleToolbar, {
     image = module.watchPopConsoleStatus:value() and popConsoleOn or popConsoleOff,
     fn = function(t, a, i)
         module.watchPopConsoleStatus:change(not module.watchPopConsoleStatus:value())
+    end,
+    default = false,
+})
+
+table.insert(consoleToolbar, {
+    id = "viKeys",
+    label = "viKeys Status",
+    tooltip = "Toggle viKeys Functionality",
+    image = module.watchViKeysStatus:value() and viKeysOn or viKeysOff,
+    fn = function(t, a, i)
+        module.watchViKeysStatus:change(not module.watchViKeysStatus:value())
     end,
     default = false,
 })

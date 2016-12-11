@@ -35,6 +35,7 @@ module.inactiveAlpha = .4
 local touchbar = require("hs._asm.touchbar")
 local eventtap = require("hs.eventtap")
 local timer    = require("hs.timer")
+local screen   = require("hs.screen")
 
 local events   = eventtap.event.types
 
@@ -76,11 +77,19 @@ end
 
 local rightOptPressed = false
 
+local initialFrame = { x = 0, y = 0 }
+
 -- might want to call this from the "outside" of our normal watcher
 module.toggle = function()
     createTouchbarIfNeeded()
     module.touchbar:toggle()
-    if module.touchbar:isVisible() then module.touchbar:centered() end
+    if module.touchbar:isVisible() then
+        module.touchbar:centered()
+        initialFrame = module.touchbar:getFrame()
+        module.screenWatcher:start()
+    else
+        module.screenWatcher:stop()
+    end
 end
 
 -- we only care about events other than flagsChanged that should *stop* a current count down
@@ -106,5 +115,15 @@ module.eventwatcher = eventtap.new({events.flagsChanged, events.keyDown, events.
     end
     return false
 end):start()
+
+module.screenWatcher = screen.watcher.newWithActiveScreen(function(flag)
+    if module.touchbar:isVisible() then
+        local currentFrame = module.touchbar:getFrame()
+        if currentFrame.x == initialFrame.x and currentFrame.y == initialFrame.y then
+            module.touchbar:centered()
+            initialFrame = module.touchbar:getFrame()
+        end
+    end
+end)
 
 return module
