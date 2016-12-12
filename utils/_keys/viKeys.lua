@@ -16,7 +16,7 @@ local keyHandler = function(e)
         local isDown = e:getType() == event.types.keyDown
         local flags  = {}
         for k, v in pairs(e:getFlags()) do
-            if v and k ~= "ctrl" then -- ctrl will be down because that's our "wrapper", so ignore it
+            if v and k ~= "fn" then -- fn will be down because that's our "wrapper", so ignore it
                 table.insert(flags, k)
             end
         end
@@ -36,15 +36,15 @@ local modifierHandler = function(e)
     local flags = e:getFlags()
     local onlyControlPressed = false
     for k, v in pairs(flags) do
-        onlyControlPressed = v and k == "ctrl"
+        onlyControlPressed = v and k == "fn"
         if not onlyControlPressed then break end
     end
-    -- you must tap and hold ctrl by itself to turn this on
+    -- you must tap and hold fn by itself to turn this on
     if onlyControlPressed and not module.keyListener then
         if module.debugging then print("viKeys: keyhandler on") end
         module.keyListener = eventtap.new({ event.types.keyDown, event.types.keyUp }, keyHandler):start()
-    -- however, adding additional modifiers afterwards is ok... its only when ctrl isn't down that we switch back off
-    elseif not flags.ctrl and module.keyListener then
+    -- however, adding additional modifiers afterwards is ok... its only when fn isn't down that we switch back off
+    elseif not flags.fn and module.keyListener then
         if module.debugging then print("viKeys: keyhandler off") end
         module.keyListener:stop()
         module.keyListener = nil
