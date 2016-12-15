@@ -7,7 +7,7 @@ local module = {}
 local USERDATA_TAG = "kodiRemote"
 
 local kodi       = require("hs._asm.kodi")
-local canvas     = require("hs._asm.canvas")
+local canvas     = require("hs.canvas")
 local logger     = require("hs.logger")
 local settings   = require("hs.settings")
 local stext      = require("hs.styledtext")

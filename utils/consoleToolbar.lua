@@ -7,7 +7,7 @@ local application = require"hs.application"
 local styledtext  = require"hs.styledtext"
 
 local watchable   = require"hs.watchable"
-local canvas      = require"hs._asm.canvas"
+local canvas      = require"hs.canvas"
 
 local module = {}
 
