@@ -22,9 +22,9 @@ local window      = require("hs.window")
 
 local AppName   = (mjolnir and "mjolnir") or (hs and "hammerspoon") or "hellifino"
 
-hotkey.bind(mods.CAsC, "return", function()
-    _asm._menus.applicationMenu.menuUserdata:popupMenu(require("hs.mouse").getAbsolutePosition())
-end)
+-- hotkey.bind(mods.CAsC, "return", function()
+--     _asm._menus.applicationMenu.menuUserdata:popupMenu(require("hs.mouse").getAbsolutePosition())
+-- end)
 hotkey.bind(mods.casc, "f12", function() _asm._CMI.minToggle() end)
 hotkey.bind(mods.caSc, "f12", function() _asm._CMI.panelToggle() ; _asm._actions.geeklets.geeklets.clock:toggle() end)
 hotkey.bind(mods.Casc, "f12", function()
