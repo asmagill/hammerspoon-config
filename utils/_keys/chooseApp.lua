@@ -30,13 +30,17 @@ module.chooser:bgDark(true)
                   for i = 1, #module.apps, 1 do
                       local bid  = module.apps[i].kMDItemCFBundleIdentifier or "< not available >"
                       local path = module.apps[i].kMDItemPath
-                      table.insert(results, {
-                          text       = module.apps[i].kMDItemDisplayName,
-                          subText    = path .. " (" .. bid .. ")",
-                          image      = image.imageFromAppBundle(bid),
-                          index      = i,
-                          path       = path,
-                      })
+                      if not path then
+                          print("~~ null path for " .. module.apps[i].kMDItemDisplayName)
+                      else
+                          table.insert(results, {
+                              text       = module.apps[i].kMDItemDisplayName,
+                              subText    = path .. " (" .. bid .. ")",
+                              image      = image.imageFromAppBundle(bid),
+                              index      = i,
+                              path       = path,
+                          })
+                      end
                   end
                   table.sort(results, function(a, b) return a.text < b.text end)
                   return results

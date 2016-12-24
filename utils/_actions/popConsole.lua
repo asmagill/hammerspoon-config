@@ -2,29 +2,50 @@ local noises      = require("hs.noises")
 local watchable   = require("hs.watchable")
 local window      = require("hs.window")
 local application = require("hs.application")
+local timer       = require("hs.timer")
+
+local consoleToggleTime = 1.5
 
 local module = {}
 module.watchables = watchable.new("popConsole", true)
 module.watchables.enabled = true
 
 local prevWindowHolder
+
+local consoleToggleThingy = function()
+-- this attempts to keep track of the previously focused window and return us to it
+    local conswin = window.get("Hammerspoon Console")
+    if conswin and application.get("Hammerspoon"):isFrontmost() then
+        conswin:close()
+        if prevWindowHolder and #prevWindowHolder:role() ~= 0 then
+            prevWindowHolder:becomeMain():focus()
+            prevWindowHolder = nil
+        end
+    else
+        prevWindowHolder = window.frontmostWindow()
+        hs.openConsole()
+    end
+end
+
+local startTime = nil
+
 module.callback = function(w)
     if w == 1 then     -- start "sssss" sound
+--        hs.redshift.toggleInvert()
+--        startTime = timer.secondsSinceEpoch()
+----       print(timestamp(), "S")
     elseif w == 2 then -- end "sssss" sound
+--        hs.redshift.toggleInvert()
+----       print(timestamp(), "s")
+--        local duration = timer.secondsSinceEpoch() - startTime
+--        if duration >= consoleToggleTime and duration <= (consoleToggleTime + 1) then
+--            consoleToggleThingy()
+--        end
+--        startTime = nil
     elseif w == 3 then -- mouth popping sound
---         hs.toggleConsole()
--- this attempts to keep track of the previously focused window and return us to it
-      local conswin = window.get("Hammerspoon Console")
-      if conswin and application.get("Hammerspoon"):isFrontmost() then
-          conswin:close()
-          if prevWindowHolder and #prevWindowHolder:role() ~= 0 then
-              prevWindowHolder:becomeMain():focus()
-              prevWindowHolder = nil
-          end
-      else
-          prevWindowHolder = window.frontmostWindow()
-          hs.openConsole()
-      end
+--       print(timestamp(), "pop!")
+       consoleToggleThingy()
+        startTime = nil
     end
 end
 
