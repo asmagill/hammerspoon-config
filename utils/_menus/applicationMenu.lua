@@ -68,4 +68,6 @@ appMenu:activate()
 -- This allows you to include this file like 'menu = require(...)' and capture the
 -- menu object in case you want to manipulate it elsewhere.
 
+appMenu:itemImages(true)
+
 return appMenu
