@@ -20,8 +20,7 @@ module.apps = spotlight.new():queryString([[ kMDItemContentType = "com.apple.app
                              end):start()
 
 module.chooser = chooser.new(function(choice) if choice then application.launchOrFocus(choice.path) end end)
-module.chooser:bgDark(true)
-              :fgColor{ list = "x11", name = "lightskyblue" }
+module.chooser:fgColor{ list = "x11", name = "lightskyblue" }
               :subTextColor{ list = "x11", name = "darkseagreen" }
               :width(60)
               :searchSubText(true)
@@ -70,6 +69,7 @@ module.chooser:bgDark(true)
                   table.sort(menuItems, function(a, b) return a.title < b.title end)
                   local menu = menubar.new(false):setMenu(menuItems):popupMenu(mouse.getAbsolutePosition())
               end)
+--              :bgDark(true)
 
 module.hotkey = hotkey.bind({"cmd", "ctrl", "alt"}, "return", function()
     if module.chooser:isVisible() then
