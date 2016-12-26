@@ -9,6 +9,7 @@ local timer    = require("hs.timer")
 local eventtap = require("hs.eventtap")
 local notify   = require("hs.notify")
 local distributednotifications = require"hs.distributednotifications"
+local fnutils  = require "hs.fnutils"
 
 local watchables = require("hs.watchable")
 
@@ -37,24 +38,54 @@ module.fontSize = 12
 
 -- gleaned from http://superuser.com/questions/415213/mac-app-to-compile-and-reference-keyboard-shortcuts
 
-local commandEnum = {
-    [0] = '⌘',
-          '⇧⌘',
-          '⌥⌘',
-          '⌥⇧⌘',
-          '⌃⌘',
-          '⌃⇧⌘',
-          '⌃⌥⌘',
-          '⌃⌥⇧⌘',
-          '',
-          '⇧',
-          '⌥',
-          '⌥⇧',
-          '⌃',
-          '⌃⇧',
-          '⌃⌥',
-          '⌃⌥⇧',
-}
+--local commandEnum = {
+--    [0] = '⌘',
+--          '⇧⌘',
+--          '⌥⌘',
+--          '⌥⇧⌘',
+--          '⌃⌘',
+--          '⌃⇧⌘',
+--          '⌃⌥⌘',
+--          '⌃⌥⇧⌘',
+--          '',
+--          '⇧',
+--          '⌥',
+--          '⌥⇧',
+--          '⌃',
+--          '⌃⇧',
+--          '⌃⌥',
+--          '⌃⌥⇧',
+--}
+
+local modifiersToString = function(mods)
+    if type(mods) ~= "table" then
+        print("~~ unrecognized type for menu shortcut modifier map: " .. type(mods))
+        retrn ""
+    end
+
+    local map, result = {}, ""
+    for i,v in ipairs(mods) do map[v] = true end
+    if map["ctrl"] then
+        result = result .. "⌃"
+        map["ctrl"] = nil
+    end
+    if map["alt"] then
+        result = result .. "⌥"
+        map["alt"] = nil
+    end
+    if map["shift"] then
+        result = result .. "⇧"
+        map["shift"] = nil
+    end
+    if map["cmd"] then
+        result = result .. "⌘"
+        map["cmd"] = nil
+    end
+    if next(map) then
+        print("~~ unrecognized modifier in menu shortcut map: { " .. table.concat(mods, ", ") .. " }")
+    end
+    return result
+end
 
 local glyphs = require("hs.application").menuGlyphs
 
@@ -74,9 +105,11 @@ getAllMenuItems = function(t)
                 elseif(val['AXRole'] =="AXMenuItem" and not val['AXChildren']) then
                     if( val['AXMenuItemCmdModifiers'] ~='0' and (val['AXMenuItemCmdChar'] ~='' or type(val['AXMenuItemCmdGlyph']) == "number")) then
                         if val['AXMenuItemCmdChar'] == "" then
-                            menu = menu.."<li><div class='cmdModifiers'>"..(commandEnum[val['AXMenuItemCmdModifiers']] or tostring(val['AXMenuItemCmdModifiers']).."?").." "..(glyphs[val['AXMenuItemCmdGlyph']] or "?"..tostring(val['AXMenuItemCmdGlyph']).."?").."</div><div class='cmdtext'>".." "..val['AXTitle'].."</div></li>"
+--                           menu = menu.."<li><div class='cmdModifiers'>"..(commandEnum[val['AXMenuItemCmdModifiers']] or tostring(val['AXMenuItemCmdModifiers']).."?").." "..(glyphs[val['AXMenuItemCmdGlyph']] or "?"..tostring(val['AXMenuItemCmdGlyph']).."?").."</div><div class='cmdtext'>".." "..val['AXTitle'].."</div></li>"
+                            menu = menu.."<li><div class='cmdModifiers'>"..modifiersToString(val['AXMenuItemCmdModifiers']).." "..(glyphs[val['AXMenuItemCmdGlyph']] or "?"..tostring(val['AXMenuItemCmdGlyph']).."?").."</div><div class='cmdtext'>".." "..val['AXTitle'].."</div></li>"
                         else
-                            menu = menu.."<li><div class='cmdModifiers'>"..commandEnum[val['AXMenuItemCmdModifiers']].." "..val['AXMenuItemCmdChar'].."</div><div class='cmdtext'>".." "..val['AXTitle'].."</div></li>"
+--                           menu = menu.."<li><div class='cmdModifiers'>"..(commandEnum[val['AXMenuItemCmdModifiers']] or tostring(val['AXMenuItemCmdModifiers']).."?").." "..val['AXMenuItemCmdChar'].."</div><div class='cmdtext'>".." "..val['AXTitle'].."</div></li>"
+                            menu = menu.."<li><div class='cmdModifiers'>"..modifiersToString(val['AXMenuItemCmdModifiers']).." "..val['AXMenuItemCmdChar'].."</div><div class='cmdtext'>".." "..val['AXTitle'].."</div></li>"
                         end
                     end
                 elseif(val['AXRole'] =="AXMenuItem" and type(val['AXChildren']) == "table") then
