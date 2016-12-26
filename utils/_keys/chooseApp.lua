@@ -27,18 +27,20 @@ module.chooser:fgColor{ list = "x11", name = "lightskyblue" }
               :choices(function()
                   local results = {}
                   for i = 1, #module.apps, 1 do
-                      local bid  = module.apps[i].kMDItemCFBundleIdentifier or "< not available >"
-                      local path = module.apps[i].kMDItemPath
-                      if not path then
-                          print("~~ null path for " .. module.apps[i].kMDItemDisplayName)
-                      else
-                          table.insert(results, {
-                              text       = module.apps[i].kMDItemDisplayName,
-                              subText    = path .. " (" .. bid .. ")",
-                              image      = image.imageFromAppBundle(bid),
-                              index      = i,
-                              path       = path,
-                          })
+                      if module.apps[i] then
+                          local bid  = module.apps[i].kMDItemCFBundleIdentifier or "< not available >"
+                          local path = module.apps[i].kMDItemPath
+                          if not path then
+                              print("~~ null path for " .. module.apps[i].kMDItemDisplayName)
+                          else
+                              table.insert(results, {
+                                  text       = module.apps[i].kMDItemDisplayName,
+                                  subText    = path .. " (" .. bid .. ")",
+                                  image      = image.imageFromAppBundle(bid),
+                                  index      = i,
+                                  path       = path,
+                              })
+                          end
                       end
                   end
                   table.sort(results, function(a, b) return a.text < b.text end)
