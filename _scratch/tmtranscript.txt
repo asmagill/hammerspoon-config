@@ -1,0 +1,1733 @@
+-- Loading extension: timer
+
+2017-01-15 23:28:19.1259	Backup session status:
+{
+    ClientID = "com.apple.backupd";
+    Percent = 1;
+    Running = 0;
+}
+
+2017-01-15 23:28:24.1299	Backup session status:
+{
+    BackupPhase = MountingBackupVol;
+    ClientID = "com.apple.backupd";
+    DateOfStateChange = "2017-01-16 05:28:23 +0000";
+    DestinationID = "0FD449D4-F446-48C8-968A-E83AFC7C8E80";
+    Percent = "-1";
+    Running = 1;
+    Stopping = 0;
+}
+
+2017-01-15 23:28:29.1372	Backup session status:
+{
+    BackupPhase = Starting;
+    ClientID = "com.apple.backupd";
+    DateOfStateChange = "2017-01-16 05:28:25 +0000";
+    DestinationID = "0FD449D4-F446-48C8-968A-E83AFC7C8E80";
+    Percent = "-1";
+    Running = 1;
+    Stopping = 0;
+}
+
+2017-01-15 23:28:34.1368	Backup session status:
+{
+    BackupPhase = Starting;
+    ClientID = "com.apple.backupd";
+    DateOfStateChange = "2017-01-16 05:28:25 +0000";
+    DestinationID = "0FD449D4-F446-48C8-968A-E83AFC7C8E80";
+    Percent = "-1";
+    Running = 1;
+    Stopping = 0;
+}
+
+2017-01-15 23:28:39.1442	Backup session status:
+{
+    BackupPhase = Starting;
+    ClientID = "com.apple.backupd";
+    DateOfStateChange = "2017-01-16 05:28:25 +0000";
+    DestinationID = "0FD449D4-F446-48C8-968A-E83AFC7C8E80";
+    Percent = "-1";
+    Running = 1;
+    Stopping = 0;
+}
+
+2017-01-15 23:28:44.1403	Backup session status:
+{
+    BackupPhase = Starting;
+    ClientID = "com.apple.backupd";
+    DateOfStateChange = "2017-01-16 05:28:25 +0000";
+    DestinationID = "0FD449D4-F446-48C8-968A-E83AFC7C8E80";
+    Percent = "-1";
+    Running = 1;
+    Stopping = 0;
+}
+
+2017-01-15 23:28:49.151 	Backup session status:
+{
+    BackupPhase = Starting;
+    ClientID = "com.apple.backupd";
+    DateOfStateChange = "2017-01-16 05:28:25 +0000";
+    DestinationID = "0FD449D4-F446-48C8-968A-E83AFC7C8E80";
+    Percent = "-1";
+    Running = 1;
+    Stopping = 0;
+}
+
+2017-01-15 23:28:54.9422	Backup session status:
+{
+    BackupPhase = Starting;
+    ClientID = "com.apple.backupd";
+    DateOfStateChange = "2017-01-16 05:28:25 +0000";
+    DestinationID = "0FD449D4-F446-48C8-968A-E83AFC7C8E80";
+    Percent = "-1";
+    Running = 1;
+    Stopping = 0;
+}
+
+Sun Jan 15 23:29:03 2017        name:"kFSFileManagerVolumePropertyChanged"      obj:"com.apple.CoreServices.FileManager.VolumePropertyMonitor"  info:{ kFSVolumePropertyKey = "kFSIsTimeMachineVolume", kFSVolumeRefNumKey = -162 }
+
+-- this one was delayed (should be 23:28:59) when it would have looked like the one above
+2017-01-15 23:29:03.8804	Backup session status:
+{
+    BackupPhase = Starting;
+    ClientID = "com.apple.backupd";
+    DateOfStateChange = "2017-01-16 05:28:25 +0000";
+    DestinationID = "0FD449D4-F446-48C8-968A-E83AFC7C8E80";
+    DestinationMountPoint = "/Volumes/Time Machine Backups";
+    Percent = "-1";
+    Running = 1;
+    Stopping = 0;
+}
+
+Sun Jan 15 23:29:04 2017        name:"com.apple.backupd.DestinationMountNotification"   obj:"com.apple.backupd" info:{ DestinationMountPoint = "/Volumes/Time Machine Backups" }
+
+2017-01-15 23:29:04.14  	Backup session status:
+{
+    BackupPhase = Starting;
+    ClientID = "com.apple.backupd";
+    DateOfStateChange = "2017-01-16 05:28:25 +0000";
+    DestinationID = "0FD449D4-F446-48C8-968A-E83AFC7C8E80";
+    DestinationMountPoint = "/Volumes/Time Machine Backups";
+    Percent = "-1";
+    Running = 1;
+    Stopping = 0;
+}
+
+2017-01-15 23:29:09.1366	Backup session status:
+{
+    BackupPhase = Starting;
+    ClientID = "com.apple.backupd";
+    DateOfStateChange = "2017-01-16 05:28:25 +0000";
+    DestinationID = "0FD449D4-F446-48C8-968A-E83AFC7C8E80";
+    DestinationMountPoint = "/Volumes/Time Machine Backups";
+    Percent = "-1";
+    Running = 1;
+    Stopping = 0;
+}
+
+Sun Jan 15 23:29:11 2017        name:"com.apple.backup.prefschanged"    obj:"com.apple.backupd" info:nil
+Sun Jan 15 23:29:12 2017        name:"com.apple.backup.PerformPreOrPostHookNotification"        obj:"com.apple.backup.BackupObject"     info:{ Post = false }
+Sun Jan 15 23:29:12 2017        name:"com.apple.backup.AcknowledgePreOrPostHookNotification"    obj:"com.apple.backup.BackupObject"     info:{ PID = 990 }
+
+2017-01-15 23:29:14.1407	Backup session status:
+{
+    BackupPhase = ThinningPreBackup;
+    ClientID = "com.apple.backupd";
+    DateOfStateChange = "2017-01-16 05:29:13 +0000";
+    DestinationID = "0FD449D4-F446-48C8-968A-E83AFC7C8E80";
+    DestinationMountPoint = "/Volumes/Time Machine Backups";
+    Percent = "-1";
+    Running = 1;
+    Stopping = 0;
+}
+
+2017-01-15 23:29:19.1392	Backup session status:
+{
+    BackupPhase = ThinningPreBackup;
+    ClientID = "com.apple.backupd";
+    DateOfStateChange = "2017-01-16 05:29:13 +0000";
+    DestinationID = "0FD449D4-F446-48C8-968A-E83AFC7C8E80";
+    DestinationMountPoint = "/Volumes/Time Machine Backups";
+    Percent = "-1";
+    Running = 1;
+    Stopping = 0;
+}
+
+2017-01-15 23:29:24.1451	Backup session status:
+{
+    BackupPhase = ThinningPreBackup;
+    ClientID = "com.apple.backupd";
+    DateOfStateChange = "2017-01-16 05:29:13 +0000";
+    DestinationID = "0FD449D4-F446-48C8-968A-E83AFC7C8E80";
+    DestinationMountPoint = "/Volumes/Time Machine Backups";
+    Percent = "-1";
+    Running = 1;
+    Stopping = 0;
+}
+
+2017-01-15 23:29:29.1333	Backup session status:
+{
+    BackupPhase = ThinningPreBackup;
+    ClientID = "com.apple.backupd";
+    DateOfStateChange = "2017-01-16 05:29:13 +0000";
+    DestinationID = "0FD449D4-F446-48C8-968A-E83AFC7C8E80";
+    DestinationMountPoint = "/Volumes/Time Machine Backups";
+    Percent = "-1";
+    Running = 1;
+    Stopping = 0;
+}
+
+2017-01-15 23:29:34.1338	Backup session status:
+{
+    BackupPhase = Copying;
+    ClientID = "com.apple.backupd";
+    DateOfStateChange = "2017-01-16 05:29:31 +0000";
+    DestinationID = "0FD449D4-F446-48C8-968A-E83AFC7C8E80";
+    DestinationMountPoint = "/Volumes/Time Machine Backups";
+    Percent = 0;
+    Progress =     {
+        "_raw_totalBytes" = 830306532;
+        bytes = 0;
+        files = 3;
+        totalBytes = 913337185;
+        totalFiles = 656;
+    };
+    Running = 1;
+    Stopping = 0;
+    "_raw_Percent" = 0;
+}
+
+2017-01-15 23:29:39.1399	Backup session status:
+{
+    BackupPhase = Copying;
+    ClientID = "com.apple.backupd";
+    DateOfStateChange = "2017-01-16 05:29:31 +0000";
+    DestinationID = "0FD449D4-F446-48C8-968A-E83AFC7C8E80";
+    DestinationMountPoint = "/Volumes/Time Machine Backups";
+    Percent = "3.112091619676672e-05";
+    Progress =     {
+        "_raw_totalBytes" = 830306532;
+        bytes = 28711;
+        files = 80;
+        totalBytes = 913337185;
+        totalFiles = 656;
+    };
+    Running = 1;
+    Stopping = 0;
+    "_raw_Percent" = "3.457879577418524e-05";
+}
+
+2017-01-15 23:29:44.1421	Backup session status:
+{
+    BackupPhase = Copying;
+    ClientID = "com.apple.backupd";
+    DateOfStateChange = "2017-01-16 05:29:31 +0000";
+    DestinationID = "0FD449D4-F446-48C8-968A-E83AFC7C8E80";
+    DestinationMountPoint = "/Volumes/Time Machine Backups";
+    Percent = "3.112091619676672e-05";
+    Progress =     {
+        "_raw_totalBytes" = 830306532;
+        bytes = 28711;
+        files = 80;
+        totalBytes = 913337185;
+        totalFiles = 656;
+    };
+    Running = 1;
+    Stopping = 0;
+    "_raw_Percent" = "3.457879577418524e-05";
+}
+
+2017-01-15 23:29:49.1317	Backup session status:
+{
+    BackupPhase = Copying;
+    ClientID = "com.apple.backupd";
+    DateOfStateChange = "2017-01-16 05:29:31 +0000";
+    DestinationID = "0FD449D4-F446-48C8-968A-E83AFC7C8E80";
+    DestinationMountPoint = "/Volumes/Time Machine Backups";
+    Percent = "3.112091619676672e-05";
+    Progress =     {
+        "_raw_totalBytes" = 830306532;
+        bytes = 28711;
+        files = 80;
+        totalBytes = 913337185;
+        totalFiles = 656;
+    };
+    Running = 1;
+    Stopping = 0;
+    "_raw_Percent" = "3.457879577418524e-05";
+}
+
+2017-01-15 23:29:54.1345	Backup session status:
+{
+    BackupPhase = Copying;
+    ClientID = "com.apple.backupd";
+    DateOfStateChange = "2017-01-16 05:29:31 +0000";
+    DestinationID = "0FD449D4-F446-48C8-968A-E83AFC7C8E80";
+    DestinationMountPoint = "/Volumes/Time Machine Backups";
+    Percent = "3.112091619676672e-05";
+    Progress =     {
+        "_raw_totalBytes" = 830306532;
+        bytes = 28711;
+        files = 80;
+        totalBytes = 913337185;
+        totalFiles = 656;
+    };
+    Running = 1;
+    Stopping = 0;
+    "_raw_Percent" = "3.457879577418524e-05";
+}
+
+2017-01-15 23:29:59.1395	Backup session status:
+{
+    BackupPhase = Copying;
+    ClientID = "com.apple.backupd";
+    DateOfStateChange = "2017-01-16 05:29:31 +0000";
+    DestinationID = "0FD449D4-F446-48C8-968A-E83AFC7C8E80";
+    DestinationMountPoint = "/Volumes/Time Machine Backups";
+    Percent = "3.112091619676672e-05";
+    Progress =     {
+        "_raw_totalBytes" = 830306532;
+        bytes = 28711;
+        files = 80;
+        totalBytes = 913337185;
+        totalFiles = 656;
+    };
+    Running = 1;
+    Stopping = 0;
+    "_raw_Percent" = "3.457879577418524e-05";
+}
+
+2017-01-15 23:30:04.1419	Backup session status:
+{
+    BackupPhase = Copying;
+    ClientID = "com.apple.backupd";
+    DateOfStateChange = "2017-01-16 05:29:31 +0000";
+    DestinationID = "0FD449D4-F446-48C8-968A-E83AFC7C8E80";
+    DestinationMountPoint = "/Volumes/Time Machine Backups";
+    Percent = "3.112091619676672e-05";
+    Progress =     {
+        "_raw_totalBytes" = 830306532;
+        bytes = 28711;
+        files = 80;
+        totalBytes = 913337185;
+        totalFiles = 656;
+    };
+    Running = 1;
+    Stopping = 0;
+    "_raw_Percent" = "3.457879577418524e-05";
+}
+
+2017-01-15 23:30:09.1342	Backup session status:
+{
+    BackupPhase = Copying;
+    ClientID = "com.apple.backupd";
+    DateOfStateChange = "2017-01-16 05:30:07 +0000";
+    DestinationID = "0FD449D4-F446-48C8-968A-E83AFC7C8E80";
+    DestinationMountPoint = "/Volumes/Time Machine Backups";
+    Percent = "3.112091619676672e-05";
+    Progress =     {
+        "_raw_totalBytes" = 830306532;
+        bytes = 28711;
+        files = 146;
+        totalBytes = 913337185;
+        totalFiles = 656;
+    };
+    Running = 1;
+    Stopping = 0;
+    "_raw_Percent" = "3.457879577418524e-05";
+}
+
+2017-01-15 23:30:14.1448	Backup session status:
+{
+    BackupPhase = Copying;
+    ClientID = "com.apple.backupd";
+    DateOfStateChange = "2017-01-16 05:30:07 +0000";
+    DestinationID = "0FD449D4-F446-48C8-968A-E83AFC7C8E80";
+    DestinationMountPoint = "/Volumes/Time Machine Backups";
+    Percent = "0.0008241661044767019";
+    Progress =     {
+        "_raw_totalBytes" = 830306532;
+        bytes = 760345;
+        files = 317;
+        totalBytes = 913337185;
+        totalFiles = 656;
+    };
+    Running = 1;
+    Stopping = 0;
+    "_raw_Percent" = "0.0009157401160852243";
+}
+
+2017-01-15 23:30:19.1417	Backup session status:
+{
+    BackupPhase = Copying;
+    ClientID = "com.apple.backupd";
+    DateOfStateChange = "2017-01-16 05:30:07 +0000";
+    DestinationID = "0FD449D4-F446-48C8-968A-E83AFC7C8E80";
+    DestinationMountPoint = "/Volumes/Time Machine Backups";
+    Percent = "0.003307499452503404";
+    Progress =     {
+        "_raw_totalBytes" = 830306532;
+        bytes = 3051376;
+        files = 717;
+        totalBytes = 913337185;
+        totalFiles = 717;
+    };
+    Running = 1;
+    Stopping = 0;
+    "_raw_Percent" = "0.003674999391670449";
+}
+
+2017-01-15 23:30:24.1463	Backup session status:
+{
+    BackupPhase = Copying;
+    ClientID = "com.apple.backupd";
+    DateOfStateChange = "2017-01-16 05:30:07 +0000";
+    DestinationID = "0FD449D4-F446-48C8-968A-E83AFC7C8E80";
+    DestinationMountPoint = "/Volumes/Time Machine Backups";
+    Percent = "0.005554758901981033";
+    Progress =     {
+        "_raw_totalBytes" = 830306532;
+        bytes = 5124614;
+        files = 1124;
+        totalBytes = 913337185;
+        totalFiles = 1124;
+    };
+    Running = 1;
+    Stopping = 0;
+    "_raw_Percent" = "0.006171954335534482";
+}
+
+2017-01-15 23:30:29.1477	Backup session status:
+{
+    BackupPhase = Copying;
+    ClientID = "com.apple.backupd";
+    DateOfStateChange = "2017-01-16 05:30:07 +0000";
+    DestinationID = "0FD449D4-F446-48C8-968A-E83AFC7C8E80";
+    DestinationMountPoint = "/Volumes/Time Machine Backups";
+    Percent = "0.01508353555864836";
+    Progress =     {
+        TimeRemaining = 3651;
+        "_raw_totalBytes" = 830306532;
+        bytes = 13915509;
+        files = 1423;
+        totalBytes = 913337185;
+        totalFiles = 1423;
+    };
+    Running = 1;
+    Stopping = 0;
+    "_raw_Percent" = "0.01675948395405373";
+}
+
+2017-01-15 23:30:34.1429	Backup session status:
+{
+    BackupPhase = Copying;
+    ClientID = "com.apple.backupd";
+    DateOfStateChange = "2017-01-16 05:30:07 +0000";
+    DestinationID = "0FD449D4-F446-48C8-968A-E83AFC7C8E80";
+    DestinationMountPoint = "/Volumes/Time Machine Backups";
+    Percent = "0.01698035382913259";
+    Progress =     {
+        TimeRemaining = 3394;
+        "_raw_totalBytes" = 830306532;
+        bytes = 15665443;
+        files = 1771;
+        totalBytes = 913337185;
+        totalFiles = 1771;
+    };
+    Running = 1;
+    Stopping = 0;
+    "_raw_Percent" = "0.01886705981014732";
+}
+
+2017-01-15 23:30:39.1416	Backup session status:
+{
+    BackupPhase = Copying;
+    ClientID = "com.apple.backupd";
+    DateOfStateChange = "2017-01-16 05:30:07 +0000";
+    DestinationID = "0FD449D4-F446-48C8-968A-E83AFC7C8E80";
+    DestinationMountPoint = "/Volumes/Time Machine Backups";
+    Percent = "0.03114462731939582";
+    Progress =     {
+        TimeRemaining = 2022;
+        "_raw_totalBytes" = 830306532;
+        bytes = 28732875;
+        files = 2143;
+        totalBytes = 913337185;
+        totalFiles = 2143;
+    };
+    Running = 1;
+    Stopping = 0;
+    "_raw_Percent" = "0.03460514146599536";
+}
+
+2017-01-15 23:30:44.1476	Backup session status:
+{
+    BackupPhase = Copying;
+    ClientID = "com.apple.backupd";
+    DateOfStateChange = "2017-01-16 05:30:07 +0000";
+    DestinationID = "0FD449D4-F446-48C8-968A-E83AFC7C8E80";
+    DestinationMountPoint = "/Volumes/Time Machine Backups";
+    Percent = "0.03134386795357645";
+    Progress =     {
+        TimeRemaining = 2151;
+        "_raw_totalBytes" = 830306532;
+        bytes = 28916687;
+        files = 2374;
+        totalBytes = 913337185;
+        totalFiles = 2374;
+    };
+    Running = 1;
+    Stopping = 0;
+    "_raw_Percent" = "0.03482651994841828";
+}
+
+2017-01-15 23:30:49.1392	Backup session status:
+{
+    BackupPhase = Copying;
+    ClientID = "com.apple.backupd";
+    DateOfStateChange = "2017-01-16 05:30:07 +0000";
+    DestinationID = "0FD449D4-F446-48C8-968A-E83AFC7C8E80";
+    DestinationMountPoint = "/Volumes/Time Machine Backups";
+    Percent = "0.1386128989287537";
+    Progress =     {
+        TimeRemaining = 444;
+        "_raw_totalBytes" = 830306532;
+        bytes = 127879106;
+        files = 2517;
+        totalBytes = 913337185;
+        totalFiles = 2517;
+    };
+    Running = 1;
+    Stopping = 0;
+    "_raw_Percent" = "0.1540143321430597";
+}
+
+2017-01-15 23:30:54.2942	Backup session status:
+{
+    BackupPhase = Copying;
+    ClientID = "com.apple.backupd";
+    DateOfStateChange = "2017-01-16 05:30:07 +0000";
+    DestinationID = "0FD449D4-F446-48C8-968A-E83AFC7C8E80";
+    DestinationMountPoint = "/Volumes/Time Machine Backups";
+    Percent = "0.2069370748970574";
+    Progress =     {
+        TimeRemaining = 293;
+        "_raw_totalBytes" = 830306532;
+        bytes = 190912450;
+        files = 2517;
+        totalBytes = 913337185;
+        totalFiles = 2517;
+    };
+    Running = 1;
+    Stopping = 0;
+    "_raw_Percent" = "0.2299300832189527";
+}
+
+2017-01-15 23:30:59.1417	Backup session status:
+{
+    BackupPhase = Copying;
+    ClientID = "com.apple.backupd";
+    DateOfStateChange = "2017-01-16 05:30:07 +0000";
+    DestinationID = "0FD449D4-F446-48C8-968A-E83AFC7C8E80";
+    DestinationMountPoint = "/Volumes/Time Machine Backups";
+    Percent = "0.2092146954228706";
+    Progress =     {
+        TimeRemaining = 298;
+        "_raw_totalBytes" = 830306532;
+        bytes = 193013698;
+        files = 2517;
+        totalBytes = 913337185;
+        totalFiles = 2517;
+    };
+    Running = 1;
+    Stopping = 0;
+    "_raw_Percent" = "0.2324607726920785";
+}
+
+2017-01-15 23:31:04.1397	Backup session status:
+{
+    BackupPhase = Copying;
+    ClientID = "com.apple.backupd";
+    DateOfStateChange = "2017-01-16 05:30:07 +0000";
+    DestinationID = "0FD449D4-F446-48C8-968A-E83AFC7C8E80";
+    DestinationMountPoint = "/Volumes/Time Machine Backups";
+    Percent = "0.2251447196852837";
+    Progress =     {
+        TimeRemaining = 289;
+        "_raw_totalBytes" = 830306532;
+        bytes = 207710146;
+        files = 2517;
+        totalBytes = 913337185;
+        totalFiles = 2517;
+    };
+    Running = 1;
+    Stopping = 0;
+    "_raw_Percent" = "0.2501607996503152";
+}
+
+2017-01-15 23:31:09.1572	Backup session status:
+{
+    BackupPhase = Copying;
+    ClientID = "com.apple.backupd";
+    DateOfStateChange = "2017-01-16 05:30:07 +0000";
+    DestinationID = "0FD449D4-F446-48C8-968A-E83AFC7C8E80";
+    DestinationMountPoint = "/Volumes/Time Machine Backups";
+    Percent = "0.2479031657190432";
+    Progress =     {
+        TimeRemaining = 268;
+        "_raw_totalBytes" = 830306532;
+        bytes = 228706242;
+        files = 2517;
+        totalBytes = 913337185;
+        totalFiles = 2517;
+    };
+    Running = 1;
+    Stopping = 0;
+    "_raw_Percent" = "0.2754479619100479";
+}
+
+2017-01-15 23:31:14.1428	Backup session status:
+{
+    BackupPhase = Copying;
+    ClientID = "com.apple.backupd";
+    DateOfStateChange = "2017-01-16 05:30:07 +0000";
+    DestinationID = "0FD449D4-F446-48C8-968A-E83AFC7C8E80";
+    DestinationMountPoint = "/Volumes/Time Machine Backups";
+    Percent = "0.2501807862448563";
+    Progress =     {
+        TimeRemaining = 272;
+        "_raw_totalBytes" = 830306532;
+        bytes = 230807490;
+        files = 2517;
+        totalBytes = 913337185;
+        totalFiles = 2517;
+    };
+    Running = 1;
+    Stopping = 0;
+    "_raw_Percent" = "0.2779786513831737";
+}
+
+2017-01-15 23:31:19.1368	Backup session status:
+{
+    BackupPhase = Copying;
+    ClientID = "com.apple.backupd";
+    DateOfStateChange = "2017-01-16 05:30:07 +0000";
+    DestinationID = "0FD449D4-F446-48C8-968A-E83AFC7C8E80";
+    DestinationMountPoint = "/Volumes/Time Machine Backups";
+    Percent = "0.2524584067706696";
+    Progress =     {
+        TimeRemaining = 286;
+        "_raw_totalBytes" = 830306532;
+        bytes = 232908738;
+        files = 2517;
+        totalBytes = 913337185;
+        totalFiles = 2517;
+    };
+    Running = 1;
+    Stopping = 0;
+    "_raw_Percent" = "0.2805093408562996";
+}
+
+2017-01-15 23:31:24.1466	Backup session status:
+{
+    BackupPhase = Copying;
+    ClientID = "com.apple.backupd";
+    DateOfStateChange = "2017-01-16 05:30:07 +0000";
+    DestinationID = "0FD449D4-F446-48C8-968A-E83AFC7C8E80";
+    DestinationMountPoint = "/Volumes/Time Machine Backups";
+    Percent = "0.2570047682101096";
+    Progress =     {
+        TimeRemaining = 285;
+        "_raw_totalBytes" = 830306532;
+        bytes = 237103042;
+        files = 2517;
+        totalBytes = 913337185;
+        totalFiles = 2517;
+    };
+    Running = 1;
+    Stopping = 0;
+    "_raw_Percent" = "0.2855608535667885";
+}
+
+2017-01-15 23:31:29.1375	Backup session status:
+{
+    BackupPhase = Copying;
+    ClientID = "com.apple.backupd";
+    DateOfStateChange = "2017-01-16 05:30:07 +0000";
+    DestinationID = "0FD449D4-F446-48C8-968A-E83AFC7C8E80";
+    DestinationMountPoint = "/Volumes/Time Machine Backups";
+    Percent = "0.2570047682101096";
+    Progress =     {
+        TimeRemaining = 285;
+        "_raw_totalBytes" = 830306532;
+        bytes = 237103042;
+        files = 2517;
+        totalBytes = 913337185;
+        totalFiles = 2517;
+    };
+    Running = 1;
+    Stopping = 0;
+    "_raw_Percent" = "0.2855608535667885";
+}
+
+2017-01-15 23:31:34.1515	Backup session status:
+{
+    BackupPhase = Copying;
+    ClientID = "com.apple.backupd";
+    DateOfStateChange = "2017-01-16 05:30:07 +0000";
+    DestinationID = "0FD449D4-F446-48C8-968A-E83AFC7C8E80";
+    DestinationMountPoint = "/Volumes/Time Machine Backups";
+    Percent = "0.3184872029887873";
+    Progress =     {
+        TimeRemaining = 232;
+        "_raw_totalBytes" = 830306532;
+        bytes = 293824450;
+        files = 2517;
+        totalBytes = 913337185;
+        totalFiles = 2517;
+    };
+    Running = 1;
+    Stopping = 0;
+    "_raw_Percent" = "0.3538746699875414";
+}
+
+2017-01-15 23:31:39.1474	Backup session status:
+{
+    BackupPhase = Copying;
+    ClientID = "com.apple.backupd";
+    DateOfStateChange = "2017-01-16 05:30:07 +0000";
+    DestinationID = "0FD449D4-F446-48C8-968A-E83AFC7C8E80";
+    DestinationMountPoint = "/Volumes/Time Machine Backups";
+    Percent = "0.3708635954703052";
+    Progress =     {
+        TimeRemaining = 187;
+        "_raw_totalBytes" = 830306532;
+        bytes = 342144962;
+        files = 2517;
+        totalBytes = 913337185;
+        totalFiles = 2517;
+    };
+    Running = 1;
+    Stopping = 0;
+    "_raw_Percent" = "0.4120706616336724";
+}
+
+2017-01-15 23:31:44.1538	Backup session status:
+{
+    BackupPhase = Copying;
+    ClientID = "com.apple.backupd";
+    DateOfStateChange = "2017-01-16 05:30:07 +0000";
+    DestinationID = "0FD449D4-F446-48C8-968A-E83AFC7C8E80";
+    DestinationMountPoint = "/Volumes/Time Machine Backups";
+    Percent = "0.4482982535418618";
+    Progress =     {
+        TimeRemaining = 136;
+        "_raw_totalBytes" = 830306532;
+        bytes = 413583298;
+        files = 2517;
+        totalBytes = 913337185;
+        totalFiles = 2517;
+    };
+    Running = 1;
+    Stopping = 0;
+    "_raw_Percent" = "0.4981091706020687";
+}
+
+2017-01-15 23:31:49.144 	Backup session status:
+{
+    BackupPhase = Copying;
+    ClientID = "com.apple.backupd";
+    DateOfStateChange = "2017-01-16 05:30:07 +0000";
+    DestinationID = "0FD449D4-F446-48C8-968A-E83AFC7C8E80";
+    DestinationMountPoint = "/Volumes/Time Machine Backups";
+    Percent = "0.4482982535418618";
+    Progress =     {
+        TimeRemaining = 136;
+        "_raw_totalBytes" = 830306532;
+        bytes = 413583298;
+        files = 2517;
+        totalBytes = 913337185;
+        totalFiles = 2517;
+    };
+    Running = 1;
+    Stopping = 0;
+    "_raw_Percent" = "0.4981091706020687";
+}
+
+2017-01-15 23:31:54.1397	Backup session status:
+{
+    BackupPhase = Copying;
+    ClientID = "com.apple.backupd";
+    DateOfStateChange = "2017-01-16 05:30:07 +0000";
+    DestinationID = "0FD449D4-F446-48C8-968A-E83AFC7C8E80";
+    DestinationMountPoint = "/Volumes/Time Machine Backups";
+    Percent = "0.4482982535418618";
+    Progress =     {
+        TimeRemaining = 136;
+        "_raw_totalBytes" = 830306532;
+        bytes = 413583298;
+        files = 2517;
+        totalBytes = 913337185;
+        totalFiles = 2517;
+    };
+    Running = 1;
+    Stopping = 0;
+    "_raw_Percent" = "0.4981091706020687";
+}
+
+2017-01-15 23:31:59.1386	Backup session status:
+{
+    BackupPhase = Copying;
+    ClientID = "com.apple.backupd";
+    DateOfStateChange = "2017-01-16 05:30:07 +0000";
+    DestinationID = "0FD449D4-F446-48C8-968A-E83AFC7C8E80";
+    DestinationMountPoint = "/Volumes/Time Machine Backups";
+    Percent = "0.4482982535418618";
+    Progress =     {
+        TimeRemaining = 136;
+        "_raw_totalBytes" = 830306532;
+        bytes = 413583298;
+        files = 2517;
+        totalBytes = 913337185;
+        totalFiles = 2517;
+    };
+    Running = 1;
+    Stopping = 0;
+    "_raw_Percent" = "0.4981091706020687";
+}
+
+2017-01-15 23:32:04.1483	Backup session status:
+{
+    BackupPhase = Copying;
+    ClientID = "com.apple.backupd";
+    DateOfStateChange = "2017-01-16 05:30:07 +0000";
+    DestinationID = "0FD449D4-F446-48C8-968A-E83AFC7C8E80";
+    DestinationMountPoint = "/Volumes/Time Machine Backups";
+    Percent = "0.4756208202394341";
+    Progress =     {
+        TimeRemaining = 139;
+        "_raw_totalBytes" = 830306532;
+        bytes = 438790082;
+        files = 2517;
+        totalBytes = 913337185;
+        totalFiles = 2517;
+    };
+    Running = 1;
+    Stopping = 0;
+    "_raw_Percent" = "0.5284675780438157";
+}
+
+2017-01-15 23:32:09.143 	Backup session status:
+{
+    BackupPhase = Copying;
+    ClientID = "com.apple.backupd";
+    DateOfStateChange = "2017-01-16 05:30:07 +0000";
+    DestinationID = "0FD449D4-F446-48C8-968A-E83AFC7C8E80";
+    DestinationMountPoint = "/Volumes/Time Machine Backups";
+    Percent = "0.6373229979599871";
+    Progress =     {
+        TimeRemaining = 67;
+        "_raw_totalBytes" = 830306532;
+        bytes = 587970498;
+        files = 2517;
+        totalBytes = 913337185;
+        totalFiles = 2517;
+    };
+    Running = 1;
+    Stopping = 0;
+    "_raw_Percent" = "0.7081366643999857";
+}
+
+2017-01-15 23:32:14.1469	Backup session status:
+{
+    BackupPhase = Copying;
+    ClientID = "com.apple.backupd";
+    DateOfStateChange = "2017-01-16 05:30:07 +0000";
+    DestinationID = "0FD449D4-F446-48C8-968A-E83AFC7C8E80";
+    DestinationMountPoint = "/Volumes/Time Machine Backups";
+    Percent = "0.6464290402571469";
+    Progress =     {
+        TimeRemaining = 64;
+        "_raw_totalBytes" = 830306532;
+        bytes = 596371394;
+        files = 2517;
+        totalBytes = 913337185;
+        totalFiles = 2517;
+    };
+    Running = 1;
+    Stopping = 0;
+    "_raw_Percent" = "0.7182544891746077";
+}
+
+2017-01-15 23:32:19.1445	Backup session status:
+{
+    BackupPhase = Copying;
+    ClientID = "com.apple.backupd";
+    DateOfStateChange = "2017-01-16 05:30:07 +0000";
+    DestinationID = "0FD449D4-F446-48C8-968A-E83AFC7C8E80";
+    DestinationMountPoint = "/Volumes/Time Machine Backups";
+    Percent = "0.6578082632740265";
+    Progress =     {
+        TimeRemaining = 63;
+        "_raw_totalBytes" = 830306532;
+        bytes = 606869442;
+        files = 2517;
+        totalBytes = 913337185;
+        totalFiles = 2517;
+    };
+    Running = 1;
+    Stopping = 0;
+    "_raw_Percent" = "0.730898070304474";
+}
+
+2017-01-15 23:32:24.138 	Backup session status:
+{
+    BackupPhase = Copying;
+    ClientID = "com.apple.backupd";
+    DateOfStateChange = "2017-01-16 05:30:07 +0000";
+    DestinationID = "0FD449D4-F446-48C8-968A-E83AFC7C8E80";
+    DestinationMountPoint = "/Volumes/Time Machine Backups";
+    Percent = "0.6578082632740265";
+    Progress =     {
+        TimeRemaining = 63;
+        "_raw_totalBytes" = 830306532;
+        bytes = 606869442;
+        files = 2517;
+        totalBytes = 913337185;
+        totalFiles = 2517;
+    };
+    Running = 1;
+    Stopping = 0;
+    "_raw_Percent" = "0.730898070304474";
+}
+
+2017-01-15 23:32:29.1396	Backup session status:
+{
+    BackupPhase = Copying;
+    ClientID = "com.apple.backupd";
+    DateOfStateChange = "2017-01-16 05:30:07 +0000";
+    DestinationID = "0FD449D4-F446-48C8-968A-E83AFC7C8E80";
+    DestinationMountPoint = "/Volumes/Time Machine Backups";
+    Percent = "0.6578082632740265";
+    Progress =     {
+        TimeRemaining = 63;
+        "_raw_totalBytes" = 830306532;
+        bytes = 606869442;
+        files = 2517;
+        totalBytes = 913337185;
+        totalFiles = 2517;
+    };
+    Running = 1;
+    Stopping = 0;
+    "_raw_Percent" = "0.730898070304474";
+}
+
+2017-01-15 23:32:34.1455	Backup session status:
+{
+    BackupPhase = Copying;
+    ClientID = "com.apple.backupd";
+    DateOfStateChange = "2017-01-16 05:30:07 +0000";
+    DestinationID = "0FD449D4-F446-48C8-968A-E83AFC7C8E80";
+    DestinationMountPoint = "/Volumes/Time Machine Backups";
+    Percent = "0.6578082632740265";
+    Progress =     {
+        TimeRemaining = 63;
+        "_raw_totalBytes" = 830306532;
+        bytes = 606869442;
+        files = 2517;
+        totalBytes = 913337185;
+        totalFiles = 2517;
+    };
+    Running = 1;
+    Stopping = 0;
+    "_raw_Percent" = "0.730898070304474";
+}
+
+2017-01-15 23:32:39.152 	Backup session status:
+{
+    BackupPhase = Copying;
+    ClientID = "com.apple.backupd";
+    DateOfStateChange = "2017-01-16 05:30:07 +0000";
+    DestinationID = "0FD449D4-F446-48C8-968A-E83AFC7C8E80";
+    DestinationMountPoint = "/Volumes/Time Machine Backups";
+    Percent = "0.7284056199620503";
+    Progress =     {
+        TimeRemaining = 45;
+        "_raw_totalBytes" = 830306532;
+        bytes = 671999938;
+        files = 2517;
+        totalBytes = 913337185;
+        totalFiles = 2517;
+    };
+    Running = 1;
+    Stopping = 0;
+    "_raw_Percent" = "0.8093395777356115";
+}
+
+2017-01-15 23:32:44.1448	Backup session status:
+{
+    BackupPhase = Copying;
+    ClientID = "com.apple.backupd";
+    DateOfStateChange = "2017-01-16 05:30:07 +0000";
+    DestinationID = "0FD449D4-F446-48C8-968A-E83AFC7C8E80";
+    DestinationMountPoint = "/Volumes/Time Machine Backups";
+    Percent = "0.7727716884925097";
+    Progress =     {
+        TimeRemaining = 32;
+        "_raw_totalBytes" = 830306532;
+        bytes = 712930423;
+        files = 2517;
+        totalBytes = 913337185;
+        totalFiles = 2517;
+    };
+    Running = 1;
+    Stopping = 0;
+    "_raw_Percent" = "0.8586352094361218";
+}
+
+2017-01-15 23:32:49.1474	Backup session status:
+{
+    BackupPhase = Copying;
+    ClientID = "com.apple.backupd";
+    DateOfStateChange = "2017-01-16 05:30:07 +0000";
+    DestinationID = "0FD449D4-F446-48C8-968A-E83AFC7C8E80";
+    DestinationMountPoint = "/Volumes/Time Machine Backups";
+    Percent = "0.7727716884925097";
+    Progress =     {
+        TimeRemaining = 32;
+        "_raw_totalBytes" = 830306532;
+        bytes = 712930423;
+        files = 2517;
+        totalBytes = 913337185;
+        totalFiles = 2517;
+    };
+    Running = 1;
+    Stopping = 0;
+    "_raw_Percent" = "0.8586352094361218";
+}
+
+2017-01-15 23:32:54.1518	Backup session status:
+{
+    BackupPhase = Copying;
+    ClientID = "com.apple.backupd";
+    DateOfStateChange = "2017-01-16 05:30:07 +0000";
+    DestinationID = "0FD449D4-F446-48C8-968A-E83AFC7C8E80";
+    DestinationMountPoint = "/Volumes/Time Machine Backups";
+    Percent = "0.7727716884925097";
+    Progress =     {
+        TimeRemaining = 32;
+        "_raw_totalBytes" = 830306532;
+        bytes = 712930423;
+        files = 2517;
+        totalBytes = 913337185;
+        totalFiles = 2517;
+    };
+    Running = 1;
+    Stopping = 0;
+    "_raw_Percent" = "0.8586352094361218";
+}
+
+2017-01-15 23:32:59.1422	Backup session status:
+{
+    BackupPhase = Copying;
+    ClientID = "com.apple.backupd";
+    DateOfStateChange = "2017-01-16 05:30:07 +0000";
+    DestinationID = "0FD449D4-F446-48C8-968A-E83AFC7C8E80";
+    DestinationMountPoint = "/Volumes/Time Machine Backups";
+    Percent = "0.7729435412896403";
+    Progress =     {
+        TimeRemaining = 34;
+        "_raw_totalBytes" = 830306532;
+        bytes = 713088968;
+        files = 2990;
+        totalBytes = 913337185;
+        totalFiles = 2990;
+    };
+    Running = 1;
+    Stopping = 0;
+    "_raw_Percent" = "0.8588261569884892";
+}
+
+2017-01-15 23:33:04.1512	Backup session status:
+{
+    BackupPhase = Copying;
+    ClientID = "com.apple.backupd";
+    DateOfStateChange = "2017-01-16 05:30:07 +0000";
+    DestinationID = "0FD449D4-F446-48C8-968A-E83AFC7C8E80";
+    DestinationMountPoint = "/Volumes/Time Machine Backups";
+    Percent = "0.7729472711169759";
+    Progress =     {
+        TimeRemaining = 35;
+        "_raw_totalBytes" = 830306532;
+        bytes = 713092409;
+        files = 3251;
+        totalBytes = 913337185;
+        totalFiles = 3251;
+    };
+    Running = 1;
+    Stopping = 0;
+    "_raw_Percent" = "0.8588303012410843";
+}
+
+2017-01-15 23:33:09.1429	Backup session status:
+{
+    BackupPhase = Copying;
+    ClientID = "com.apple.backupd";
+    DateOfStateChange = "2017-01-16 05:30:07 +0000";
+    DestinationID = "0FD449D4-F446-48C8-968A-E83AFC7C8E80";
+    DestinationMountPoint = "/Volumes/Time Machine Backups";
+    Percent = "0.8034344407638599";
+    Progress =     {
+        TimeRemaining = 26;
+        "_raw_totalBytes" = 830306532;
+        bytes = 741218738;
+        files = 3346;
+        totalBytes = 913337185;
+        totalFiles = 3346;
+    };
+    Running = 1;
+    Stopping = 0;
+    "_raw_Percent" = "0.8927049341820666";
+}
+
+2017-01-15 23:33:14.1485	Backup session status:
+{
+    BackupPhase = Copying;
+    ClientID = "com.apple.backupd";
+    DateOfStateChange = "2017-01-16 05:30:07 +0000";
+    DestinationID = "0FD449D4-F446-48C8-968A-E83AFC7C8E80";
+    DestinationMountPoint = "/Volumes/Time Machine Backups";
+    Percent = "0.884469704617475";
+    Progress =     {
+        TimeRemaining = 3;
+        "_raw_totalBytes" = 830306532;
+        bytes = 815978859;
+        files = 3358;
+        totalBytes = 913337185;
+        totalFiles = 3358;
+    };
+    Running = 1;
+    Stopping = 0;
+    "_raw_Percent" = "0.9827441162416388";
+}
+
+2017-01-15 23:33:19.1459	Backup session status:
+{
+    BackupPhase = Copying;
+    ClientID = "com.apple.backupd";
+    DateOfStateChange = "2017-01-16 05:30:07 +0000";
+    DestinationID = "0FD449D4-F446-48C8-968A-E83AFC7C8E80";
+    DestinationMountPoint = "/Volumes/Time Machine Backups";
+    Percent = "0.884469704617475";
+    Progress =     {
+        TimeRemaining = 3;
+        "_raw_totalBytes" = 830306532;
+        bytes = 815978859;
+        files = 3358;
+        totalBytes = 913337185;
+        totalFiles = 3358;
+    };
+    Running = 1;
+    Stopping = 0;
+    "_raw_Percent" = "0.9827441162416388";
+}
+
+2017-01-15 23:33:24.1504	Backup session status:
+{
+    BackupPhase = Copying;
+    ClientID = "com.apple.backupd";
+    DateOfStateChange = "2017-01-16 05:30:07 +0000";
+    DestinationID = "0FD449D4-F446-48C8-968A-E83AFC7C8E80";
+    DestinationMountPoint = "/Volumes/Time Machine Backups";
+    Percent = "0.884469704617475";
+    Progress =     {
+        TimeRemaining = 3;
+        "_raw_totalBytes" = 830306532;
+        bytes = 815978859;
+        files = 3358;
+        totalBytes = 913337185;
+        totalFiles = 3358;
+    };
+    Running = 1;
+    Stopping = 0;
+    "_raw_Percent" = "0.9827441162416388";
+}
+
+2017-01-15 23:33:29.1499	Backup session status:
+{
+    BackupPhase = Copying;
+    ClientID = "com.apple.backupd";
+    DateOfStateChange = "2017-01-16 05:30:07 +0000";
+    DestinationID = "0FD449D4-F446-48C8-968A-E83AFC7C8E80";
+    DestinationMountPoint = "/Volumes/Time Machine Backups";
+    Percent = "0.884469704617475";
+    Progress =     {
+        TimeRemaining = 4;
+        "_raw_totalBytes" = 830306532;
+        bytes = 815978859;
+        files = 3380;
+        totalBytes = 913337185;
+        totalFiles = 3380;
+    };
+    Running = 1;
+    Stopping = 0;
+    "_raw_Percent" = "0.9827441162416388";
+}
+
+2017-01-15 23:33:34.1424	Backup session status:
+{
+    BackupPhase = Copying;
+    ClientID = "com.apple.backupd";
+    DateOfStateChange = "2017-01-16 05:30:07 +0000";
+    DestinationID = "0FD449D4-F446-48C8-968A-E83AFC7C8E80";
+    DestinationMountPoint = "/Volumes/Time Machine Backups";
+    Percent = "0.8847184822580682";
+    Progress =     {
+        TimeRemaining = 4;
+        "_raw_totalBytes" = 830306532;
+        bytes = 816208372;
+        files = 3596;
+        totalBytes = 913337185;
+        totalFiles = 3596;
+    };
+    Running = 1;
+    Stopping = 0;
+    "_raw_Percent" = "0.9830205358422979";
+}
+
+2017-01-15 23:33:39.1489	Backup session status:
+{
+    BackupPhase = Copying;
+    ClientID = "com.apple.backupd";
+    DateOfStateChange = "2017-01-16 05:30:07 +0000";
+    DestinationID = "0FD449D4-F446-48C8-968A-E83AFC7C8E80";
+    DestinationMountPoint = "/Volumes/Time Machine Backups";
+    Percent = "0.8853047523658407";
+    Progress =     {
+        TimeRemaining = 4;
+        "_raw_totalBytes" = 830306532;
+        bytes = 816749243;
+        files = 3775;
+        totalBytes = 913337185;
+        totalFiles = 3775;
+    };
+    Running = 1;
+    Stopping = 0;
+    "_raw_Percent" = "0.9836719470731563";
+}
+
+2017-01-15 23:33:44.1498	Backup session status:
+{
+    BackupPhase = Copying;
+    ClientID = "com.apple.backupd";
+    DateOfStateChange = "2017-01-16 05:30:07 +0000";
+    DestinationID = "0FD449D4-F446-48C8-968A-E83AFC7C8E80";
+    DestinationMountPoint = "/Volumes/Time Machine Backups";
+    Percent = "0.8982494893825549";
+    Progress =     {
+        TimeRemaining = 0;
+        "_raw_totalBytes" = 830306532;
+        bytes = 828691576;
+        files = 4129;
+        totalBytes = 913337185;
+        totalFiles = 4129;
+    };
+    Running = 1;
+    Stopping = 0;
+    "_raw_Percent" = "0.9980549882028388";
+}
+
+2017-01-15 23:33:49.1471	Backup session status:
+{
+    BackupPhase = Copying;
+    ClientID = "com.apple.backupd";
+    DateOfStateChange = "2017-01-16 05:30:07 +0000";
+    DestinationID = "0FD449D4-F446-48C8-968A-E83AFC7C8E80";
+    DestinationMountPoint = "/Volumes/Time Machine Backups";
+    Percent = "0.8996063606783717";
+    Progress =     {
+        TimeRemaining = 0;
+        "_raw_totalBytes" = 830306532;
+        bytes = 829943375;
+        files = 4639;
+        totalBytes = 913337185;
+        totalFiles = 4639;
+    };
+    Running = 1;
+    Stopping = 0;
+    "_raw_Percent" = "0.9995626229759685";
+}
+
+Sun Jan 15 23:33:53 2017        name:"com.apple.backup.prefschanged"    obj:"com.apple.backupd" info:nil
+Sun Jan 15 23:33:53 2017        name:"com.apple.backup.prefschanged"    obj:"com.apple.backupd" info:nil
+Sun Jan 15 23:33:53 2017        name:"com.apple.TimeMachine.UICleanupNeeded"    obj:"com.apple.backupd" info:{ DestinationID = "0FD449D4-F446-48C8-968A-E83AFC7C8E80" }
+Sun Jan 15 23:33:53 2017        name:"com.apple.backupd.NewSystemBackupAvailableNotification"   obj:"com.apple.backupd" info:{ LatestBackupPath = "/Volumes/Time Machine Backups/Backups.backupdb/Bender/2017-01-15-233349" }
+Sun Jan 15 23:33:54 2017        name:"com.apple.backup.PerformPreOrPostHookNotification"        obj:"com.apple.backup.BackupObject"     info:{ Post = true }
+Sun Jan 15 23:33:54 2017        name:"com.apple.backup.AcknowledgePreOrPostHookNotification"    obj:"com.apple.backup.BackupObject"     info:{ PID = 990 }
+
+2017-01-15 23:33:54.149 	Backup session status:
+{
+    BackupPhase = Finishing;
+    ClientID = "com.apple.backupd";
+    DateOfStateChange = "2017-01-16 05:33:53 +0000";
+    DestinationID = "0FD449D4-F446-48C8-968A-E83AFC7C8E80";
+    DestinationMountPoint = "/Volumes/Time Machine Backups";
+    Percent = "0.8996063606783717";
+    Progress =     {
+        TimeRemaining = 0;
+        "_raw_totalBytes" = 830306532;
+        bytes = 829943375;
+        files = 4639;
+        totalBytes = 913337185;
+        totalFiles = 4639;
+    };
+    Running = 1;
+    Stopping = 0;
+    "_raw_Percent" = "0.9995626229759685";
+}
+
+Sun Jan 15 23:33:55 2017        name:"com.apple.backupd.thinningbackup" obj:"com.apple.backupd" info:{ BackupPath = "/Volumes/Time Machine Backups/Backups.backupdb/Bender/2017-01-15-232913.inProgress" }
+
+2017-01-15 23:33:59.1484	Backup session status:
+{
+    BackupPhase = ThinningPostBackup;
+    ClientID = "com.apple.backupd";
+    DateOfStateChange = "2017-01-16 05:33:55 +0000";
+    DestinationID = "0FD449D4-F446-48C8-968A-E83AFC7C8E80";
+    DestinationMountPoint = "/Volumes/Time Machine Backups";
+    Percent = "0.8996063606783717";
+    Progress =     {
+        TimeRemaining = 0;
+        "_raw_totalBytes" = 830306532;
+        bytes = 829943375;
+        files = 4639;
+        totalBytes = 913337185;
+        totalFiles = 4639;
+    };
+    Running = 1;
+    Stopping = 0;
+    "_raw_Percent" = "0.9995626229759685";
+}
+
+2017-01-15 23:34:04.1488	Backup session status:
+{
+    BackupPhase = ThinningPostBackup;
+    ClientID = "com.apple.backupd";
+    DateOfStateChange = "2017-01-16 05:33:55 +0000";
+    DestinationID = "0FD449D4-F446-48C8-968A-E83AFC7C8E80";
+    DestinationMountPoint = "/Volumes/Time Machine Backups";
+    Percent = "0.8996063606783717";
+    Progress =     {
+        TimeRemaining = 0;
+        "_raw_totalBytes" = 830306532;
+        bytes = 829943375;
+        files = 4639;
+        totalBytes = 913337185;
+        totalFiles = 4639;
+    };
+    Running = 1;
+    Stopping = 0;
+    "_raw_Percent" = "0.9995626229759685";
+}
+
+2017-01-15 23:34:09.1564	Backup session status:
+{
+    BackupPhase = ThinningPostBackup;
+    ClientID = "com.apple.backupd";
+    DateOfStateChange = "2017-01-16 05:33:55 +0000";
+    DestinationID = "0FD449D4-F446-48C8-968A-E83AFC7C8E80";
+    DestinationMountPoint = "/Volumes/Time Machine Backups";
+    Percent = "0.8996063606783717";
+    Progress =     {
+        TimeRemaining = 0;
+        "_raw_totalBytes" = 830306532;
+        bytes = 829943375;
+        files = 4639;
+        totalBytes = 913337185;
+        totalFiles = 4639;
+    };
+    Running = 1;
+    Stopping = 0;
+    "_raw_Percent" = "0.9995626229759685";
+}
+
+Sun Jan 15 23:34:14 2017        name:"com.apple.backupd.thinningbackupended"    obj:"com.apple.backupd" info:{ BackupPath = "/Volumes/Time Machine Backups/Backups.backupdb/Bender/2017-01-15-232913.inProgress", Error = 0 }
+Sun Jan 15 23:34:14 2017        name:"com.apple.backupd.thinningbackup" obj:"com.apple.backupd" info:{ BackupPath = "/Volumes/Time Machine Backups/Backups.backupdb/Bender/2017-01-15-232913.inProgress/841BB22E-2C7E-4D02-AAD8-D64FB3D34F3B" }
+
+2017-01-15 23:34:14.1586	Backup session status:
+{
+    BackupPhase = ThinningPostBackup;
+    ClientID = "com.apple.backupd";
+    DateOfStateChange = "2017-01-16 05:33:55 +0000";
+    DestinationID = "0FD449D4-F446-48C8-968A-E83AFC7C8E80";
+    DestinationMountPoint = "/Volumes/Time Machine Backups";
+    Percent = "0.8996063606783717";
+    Progress =     {
+        TimeRemaining = 0;
+        "_raw_totalBytes" = 830306532;
+        bytes = 829943375;
+        files = 4639;
+        totalBytes = 913337185;
+        totalFiles = 4639;
+    };
+    Running = 1;
+    Stopping = 0;
+    "_raw_Percent" = "0.9995626229759685";
+}
+
+Sun Jan 15 23:34:15 2017        name:"com.apple.backupd.thinningbackupended"    obj:"com.apple.backupd" info:{ BackupPath = "/Volumes/Time Machine Backups/Backups.backupdb/Bender/2017-01-15-232913.inProgress/841BB22E-2C7E-4D02-AAD8-D64FB3D34F3B", Error = -50 }
+Sun Jan 15 23:34:15 2017        name:"com.apple.backupd.thinningbackup" obj:"com.apple.backupd" info:{ BackupPath = "/Volumes/Time Machine Backups/Backups.backupdb/Bender/2017-01-14-230214" }
+
+2017-01-15 23:34:19.1527	Backup session status:
+{
+    BackupPhase = ThinningPostBackup;
+    ClientID = "com.apple.backupd";
+    DateOfStateChange = "2017-01-16 05:34:14 +0000";
+    DestinationID = "0FD449D4-F446-48C8-968A-E83AFC7C8E80";
+    DestinationMountPoint = "/Volumes/Time Machine Backups";
+    Percent = "0.8996063606783717";
+    Progress =     {
+        TimeRemaining = 0;
+        "_raw_totalBytes" = 830306532;
+        bytes = 829943375;
+        files = 4639;
+        totalBytes = 913337185;
+        totalFiles = 4639;
+    };
+    Running = 1;
+    Stopping = 0;
+    "_raw_Percent" = "0.9995626229759685";
+}
+
+2017-01-15 23:34:24.1463	Backup session status:
+{
+    BackupPhase = ThinningPostBackup;
+    ClientID = "com.apple.backupd";
+    DateOfStateChange = "2017-01-16 05:34:14 +0000";
+    DestinationID = "0FD449D4-F446-48C8-968A-E83AFC7C8E80";
+    DestinationMountPoint = "/Volumes/Time Machine Backups";
+    Percent = "0.8996063606783717";
+    Progress =     {
+        TimeRemaining = 0;
+        "_raw_totalBytes" = 830306532;
+        bytes = 829943375;
+        files = 4639;
+        totalBytes = 913337185;
+        totalFiles = 4639;
+    };
+    Running = 1;
+    Stopping = 0;
+    "_raw_Percent" = "0.9995626229759685";
+}
+
+2017-01-15 23:34:29.1547	Backup session status:
+{
+    BackupPhase = ThinningPostBackup;
+    ClientID = "com.apple.backupd";
+    DateOfStateChange = "2017-01-16 05:34:14 +0000";
+    DestinationID = "0FD449D4-F446-48C8-968A-E83AFC7C8E80";
+    DestinationMountPoint = "/Volumes/Time Machine Backups";
+    Percent = "0.8996063606783717";
+    Progress =     {
+        TimeRemaining = 0;
+        "_raw_totalBytes" = 830306532;
+        bytes = 829943375;
+        files = 4639;
+        totalBytes = 913337185;
+        totalFiles = 4639;
+    };
+    Running = 1;
+    Stopping = 0;
+    "_raw_Percent" = "0.9995626229759685";
+}
+
+2017-01-15 23:34:34.1443	Backup session status:
+{
+    BackupPhase = ThinningPostBackup;
+    ClientID = "com.apple.backupd";
+    DateOfStateChange = "2017-01-16 05:34:14 +0000";
+    DestinationID = "0FD449D4-F446-48C8-968A-E83AFC7C8E80";
+    DestinationMountPoint = "/Volumes/Time Machine Backups";
+    Percent = "0.8996063606783717";
+    Progress =     {
+        TimeRemaining = 0;
+        "_raw_totalBytes" = 830306532;
+        bytes = 829943375;
+        files = 4639;
+        totalBytes = 913337185;
+        totalFiles = 4639;
+    };
+    Running = 1;
+    Stopping = 0;
+    "_raw_Percent" = "0.9995626229759685";
+}
+
+2017-01-15 23:34:39.1565	Backup session status:
+{
+    BackupPhase = ThinningPostBackup;
+    ClientID = "com.apple.backupd";
+    DateOfStateChange = "2017-01-16 05:34:14 +0000";
+    DestinationID = "0FD449D4-F446-48C8-968A-E83AFC7C8E80";
+    DestinationMountPoint = "/Volumes/Time Machine Backups";
+    Percent = "0.8996063606783717";
+    Progress =     {
+        TimeRemaining = 0;
+        "_raw_totalBytes" = 830306532;
+        bytes = 829943375;
+        files = 4639;
+        totalBytes = 913337185;
+        totalFiles = 4639;
+    };
+    Running = 1;
+    Stopping = 0;
+    "_raw_Percent" = "0.9995626229759685";
+}
+
+2017-01-15 23:34:44.1616	Backup session status:
+{
+    BackupPhase = ThinningPostBackup;
+    ClientID = "com.apple.backupd";
+    DateOfStateChange = "2017-01-16 05:34:14 +0000";
+    DestinationID = "0FD449D4-F446-48C8-968A-E83AFC7C8E80";
+    DestinationMountPoint = "/Volumes/Time Machine Backups";
+    Percent = "0.8996063606783717";
+    Progress =     {
+        TimeRemaining = 0;
+        "_raw_totalBytes" = 830306532;
+        bytes = 829943375;
+        files = 4639;
+        totalBytes = 913337185;
+        totalFiles = 4639;
+    };
+    Running = 1;
+    Stopping = 0;
+    "_raw_Percent" = "0.9995626229759685";
+}
+
+Sun Jan 15 23:34:48 2017        name:"com.apple.backupd.thinningbackupended"    obj:"com.apple.backupd" info:{ BackupPath = "/Volumes/Time Machine Backups/Backups.backupdb/Bender/2017-01-14-230214", Error = 0 }
+Sun Jan 15 23:34:48 2017        name:"com.apple.backupd.thinningbackup" obj:"com.apple.backupd" info:{ BackupPath = "/Volumes/Time Machine Backups/Backups.backupdb/Bender/2017-01-14-223122" }
+
+2017-01-15 23:34:49.151 	Backup session status:
+{
+    BackupPhase = ThinningPostBackup;
+    ClientID = "com.apple.backupd";
+    DateOfStateChange = "2017-01-16 05:34:14 +0000";
+    DestinationID = "0FD449D4-F446-48C8-968A-E83AFC7C8E80";
+    DestinationMountPoint = "/Volumes/Time Machine Backups";
+    Percent = "0.8996063606783717";
+    Progress =     {
+        TimeRemaining = 0;
+        "_raw_totalBytes" = 830306532;
+        bytes = 829943375;
+        files = 4639;
+        totalBytes = 913337185;
+        totalFiles = 4639;
+    };
+    Running = 1;
+    Stopping = 0;
+    "_raw_Percent" = "0.9995626229759685";
+}
+
+2017-01-15 23:34:54.1508	Backup session status:
+{
+    BackupPhase = ThinningPostBackup;
+    ClientID = "com.apple.backupd";
+    DateOfStateChange = "2017-01-16 05:34:14 +0000";
+    DestinationID = "0FD449D4-F446-48C8-968A-E83AFC7C8E80";
+    DestinationMountPoint = "/Volumes/Time Machine Backups";
+    Percent = "0.8996063606783717";
+    Progress =     {
+        TimeRemaining = 0;
+        "_raw_totalBytes" = 830306532;
+        bytes = 829943375;
+        files = 4639;
+        totalBytes = 913337185;
+        totalFiles = 4639;
+    };
+    Running = 1;
+    Stopping = 0;
+    "_raw_Percent" = "0.9995626229759685";
+}
+
+2017-01-15 23:34:59.1537	Backup session status:
+{
+    BackupPhase = ThinningPostBackup;
+    ClientID = "com.apple.backupd";
+    DateOfStateChange = "2017-01-16 05:34:14 +0000";
+    DestinationID = "0FD449D4-F446-48C8-968A-E83AFC7C8E80";
+    DestinationMountPoint = "/Volumes/Time Machine Backups";
+    Percent = "0.8996063606783717";
+    Progress =     {
+        TimeRemaining = 0;
+        "_raw_totalBytes" = 830306532;
+        bytes = 829943375;
+        files = 4639;
+        totalBytes = 913337185;
+        totalFiles = 4639;
+    };
+    Running = 1;
+    Stopping = 0;
+    "_raw_Percent" = "0.9995626229759685";
+}
+
+2017-01-15 23:35:04.1543	Backup session status:
+{
+    BackupPhase = ThinningPostBackup;
+    ClientID = "com.apple.backupd";
+    DateOfStateChange = "2017-01-16 05:34:14 +0000";
+    DestinationID = "0FD449D4-F446-48C8-968A-E83AFC7C8E80";
+    DestinationMountPoint = "/Volumes/Time Machine Backups";
+    Percent = "0.8996063606783717";
+    Progress =     {
+        TimeRemaining = 0;
+        "_raw_totalBytes" = 830306532;
+        bytes = 829943375;
+        files = 4639;
+        totalBytes = 913337185;
+        totalFiles = 4639;
+    };
+    Running = 1;
+    Stopping = 0;
+    "_raw_Percent" = "0.9995626229759685";
+}
+
+2017-01-15 23:35:09.1466	Backup session status:
+{
+    BackupPhase = ThinningPostBackup;
+    ClientID = "com.apple.backupd";
+    DateOfStateChange = "2017-01-16 05:34:14 +0000";
+    DestinationID = "0FD449D4-F446-48C8-968A-E83AFC7C8E80";
+    DestinationMountPoint = "/Volumes/Time Machine Backups";
+    Percent = "0.8996063606783717";
+    Progress =     {
+        TimeRemaining = 0;
+        "_raw_totalBytes" = 830306532;
+        bytes = 829943375;
+        files = 4639;
+        totalBytes = 913337185;
+        totalFiles = 4639;
+    };
+    Running = 1;
+    Stopping = 0;
+    "_raw_Percent" = "0.9995626229759685";
+}
+
+2017-01-15 23:35:14.1543	Backup session status:
+{
+    BackupPhase = ThinningPostBackup;
+    ClientID = "com.apple.backupd";
+    DateOfStateChange = "2017-01-16 05:34:14 +0000";
+    DestinationID = "0FD449D4-F446-48C8-968A-E83AFC7C8E80";
+    DestinationMountPoint = "/Volumes/Time Machine Backups";
+    Percent = "0.8996063606783717";
+    Progress =     {
+        TimeRemaining = 0;
+        "_raw_totalBytes" = 830306532;
+        bytes = 829943375;
+        files = 4639;
+        totalBytes = 913337185;
+        totalFiles = 4639;
+    };
+    Running = 1;
+    Stopping = 0;
+    "_raw_Percent" = "0.9995626229759685";
+}
+
+2017-01-15 23:35:19.1464	Backup session status:
+{
+    BackupPhase = ThinningPostBackup;
+    ClientID = "com.apple.backupd";
+    DateOfStateChange = "2017-01-16 05:34:14 +0000";
+    DestinationID = "0FD449D4-F446-48C8-968A-E83AFC7C8E80";
+    DestinationMountPoint = "/Volumes/Time Machine Backups";
+    Percent = "0.8996063606783717";
+    Progress =     {
+        TimeRemaining = 0;
+        "_raw_totalBytes" = 830306532;
+        bytes = 829943375;
+        files = 4639;
+        totalBytes = 913337185;
+        totalFiles = 4639;
+    };
+    Running = 1;
+    Stopping = 0;
+    "_raw_Percent" = "0.9995626229759685";
+}
+
+2017-01-15 23:35:24.1561	Backup session status:
+{
+    BackupPhase = ThinningPostBackup;
+    ClientID = "com.apple.backupd";
+    DateOfStateChange = "2017-01-16 05:34:14 +0000";
+    DestinationID = "0FD449D4-F446-48C8-968A-E83AFC7C8E80";
+    DestinationMountPoint = "/Volumes/Time Machine Backups";
+    Percent = "0.8996063606783717";
+    Progress =     {
+        TimeRemaining = 0;
+        "_raw_totalBytes" = 830306532;
+        bytes = 829943375;
+        files = 4639;
+        totalBytes = 913337185;
+        totalFiles = 4639;
+    };
+    Running = 1;
+    Stopping = 0;
+    "_raw_Percent" = "0.9995626229759685";
+}
+
+2017-01-15 23:35:29.1495	Backup session status:
+{
+    BackupPhase = ThinningPostBackup;
+    ClientID = "com.apple.backupd";
+    DateOfStateChange = "2017-01-16 05:34:14 +0000";
+    DestinationID = "0FD449D4-F446-48C8-968A-E83AFC7C8E80";
+    DestinationMountPoint = "/Volumes/Time Machine Backups";
+    Percent = "0.8996063606783717";
+    Progress =     {
+        TimeRemaining = 0;
+        "_raw_totalBytes" = 830306532;
+        bytes = 829943375;
+        files = 4639;
+        totalBytes = 913337185;
+        totalFiles = 4639;
+    };
+    Running = 1;
+    Stopping = 0;
+    "_raw_Percent" = "0.9995626229759685";
+}
+
+Sun Jan 15 23:35:32 2017        name:"com.apple.backupd.thinningbackupended"    obj:"com.apple.backupd" info:{ BackupPath = "/Volumes/Time Machine Backups/Backups.backupdb/Bender/2017-01-14-223122", Error = 0 }
+Sun Jan 15 23:35:32 2017        name:"com.apple.backup.prefschanged"    obj:"com.apple.backupd" info:nil
+Sun Jan 15 23:35:32 2017        name:"com.apple.backup.prefschanged"    obj:"com.apple.backupd" info:nil
+
+2017-01-15 23:35:34.1506	Backup session status:
+{
+    ClientID = "com.apple.backupd";
+    Percent = 1;
+    Running = 0;
+}
+
+> h:stop()
+hs.timer: not running (0x600001049c88)
+
+            Sun Jan 15 23:29:03 2017        name:"kFSFileManagerVolumePropertyChanged"      obj:"com.apple.CoreServices.FileManager.VolumePropertyMonitor"  info:{ kFSVolumePropertyKey = "kFSIsTimeMachineVolume", kFSVolumeRefNumKey = -162 }
+MOUNTED:    Sun Jan 15 23:29:04 2017        name:"com.apple.backupd.DestinationMountNotification"   obj:"com.apple.backupd" info:{ DestinationMountPoint = "/Volumes/Time Machine Backups" }
+            Sun Jan 15 23:29:11 2017        name:"com.apple.backup.prefschanged"    obj:"com.apple.backupd" info:nil
+PREPARING:  Sun Jan 15 23:29:12 2017        name:"com.apple.backup.PerformPreOrPostHookNotification"        obj:"com.apple.backup.BackupObject"     info:{ Post = false }
+            Sun Jan 15 23:29:12 2017        name:"com.apple.backup.AcknowledgePreOrPostHookNotification"    obj:"com.apple.backup.BackupObject"     info:{ PID = 990 }
+            Sun Jan 15 23:33:53 2017        name:"com.apple.backup.prefschanged"    obj:"com.apple.backupd" info:nil
+            Sun Jan 15 23:33:53 2017        name:"com.apple.backup.prefschanged"    obj:"com.apple.backupd" info:nil
+            Sun Jan 15 23:33:53 2017        name:"com.apple.TimeMachine.UICleanupNeeded"    obj:"com.apple.backupd" info:{ DestinationID = "0FD449D4-F446-48C8-968A-E83AFC7C8E80" }
+            Sun Jan 15 23:33:53 2017        name:"com.apple.backupd.NewSystemBackupAvailableNotification"   obj:"com.apple.backupd" info:{ LatestBackupPath = "/Volumes/Time Machine Backups/Backups.backupdb/Bender/2017-01-15-233349" }
+FINISHING:  Sun Jan 15 23:33:54 2017        name:"com.apple.backup.PerformPreOrPostHookNotification"        obj:"com.apple.backup.BackupObject"     info:{ Post = true }
+            Sun Jan 15 23:33:54 2017        name:"com.apple.backup.AcknowledgePreOrPostHookNotification"    obj:"com.apple.backup.BackupObject"     info:{ PID = 990 }
+THINNING:   Sun Jan 15 23:33:55 2017        name:"com.apple.backupd.thinningbackup" obj:"com.apple.backupd" info:{ BackupPath = "/Volumes/Time Machine Backups/Backups.backupdb/Bender/2017-01-15-232913.inProgress" }
+            Sun Jan 15 23:34:14 2017        name:"com.apple.backupd.thinningbackupended"    obj:"com.apple.backupd" info:{ BackupPath = "/Volumes/Time Machine Backups/Backups.backupdb/Bender/2017-01-15-232913.inProgress", Error = 0 }
+            Sun Jan 15 23:34:14 2017        name:"com.apple.backupd.thinningbackup" obj:"com.apple.backupd" info:{ BackupPath = "/Volumes/Time Machine Backups/Backups.backupdb/Bender/2017-01-15-232913.inProgress/841BB22E-2C7E-4D02-AAD8-D64FB3D34F3B" }
+            Sun Jan 15 23:34:15 2017        name:"com.apple.backupd.thinningbackupended"    obj:"com.apple.backupd" info:{ BackupPath = "/Volumes/Time Machine Backups/Backups.backupdb/Bender/2017-01-15-232913.inProgress/841BB22E-2C7E-4D02-AAD8-D64FB3D34F3B", Error = -50 }
+            Sun Jan 15 23:34:15 2017        name:"com.apple.backupd.thinningbackup" obj:"com.apple.backupd" info:{ BackupPath = "/Volumes/Time Machine Backups/Backups.backupdb/Bender/2017-01-14-230214" }
+            Sun Jan 15 23:34:48 2017        name:"com.apple.backupd.thinningbackupended"    obj:"com.apple.backupd" info:{ BackupPath = "/Volumes/Time Machine Backups/Backups.backupdb/Bender/2017-01-14-230214", Error = 0 }
+            Sun Jan 15 23:34:48 2017        name:"com.apple.backupd.thinningbackup" obj:"com.apple.backupd" info:{ BackupPath = "/Volumes/Time Machine Backups/Backups.backupdb/Bender/2017-01-14-223122" }
+            Sun Jan 15 23:35:32 2017        name:"com.apple.backupd.thinningbackupended"    obj:"com.apple.backupd" info:{ BackupPath = "/Volumes/Time Machine Backups/Backups.backupdb/Bender/2017-01-14-223122", Error = 0 }
+            Sun Jan 15 23:35:32 2017        name:"com.apple.backup.prefschanged"    obj:"com.apple.backupd" info:nil
+            Sun Jan 15 23:35:32 2017        name:"com.apple.backup.prefschanged"    obj:"com.apple.backupd" info:nil
