@@ -44,6 +44,6 @@ module.distributedObserver_core = distributednotifications.new(function(n,o,i)
     local f = io.open("__distributedobserver_core.txt","a") ;
     f:write(os.date().."\t".."name:"..inspect(n).."\tobj:"..inspect(o):gsub("%s+"," ").."\tinfo:"..inspect(i):gsub("%s+"," ").."\n")
     f:close()
-end):start()
+end)-- :start() -- gets big fast, so let me turn it on when I want to explore
 
 return module
