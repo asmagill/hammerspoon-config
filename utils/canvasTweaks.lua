@@ -22,6 +22,8 @@ if not sample.byID then
         end
         return value
     end
+else
+    print("*** Canvas fix already in place! ***")
 end
 sample:delete()
 
