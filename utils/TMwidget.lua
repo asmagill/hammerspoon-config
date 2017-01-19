@@ -10,10 +10,21 @@
 -- when we know an actual backup is occuring
 --
 -- And I added a percentage readout and tweaked the animation some...
+--
+-- this requires some tweaks to canvas that haven't made it into core yet... check the pulls or
+-- my hammerspoon configuration repo for utils/canvasTweaks.lua
 
-
---local canvas   = require "hs.canvas"
 local canvas   = require "utils.canvasTweaks"
+--local canvas   = require "hs.canvas"
+
+-- I have a timestamp function globally defined, but in a pinch, this will do something similar:
+if not timestamp then
+    timestamp = function(date)
+        date = date or timer.secondsSinceEpoch()
+        return os.date("%F %T" .. string.format("%-5s", ((tostring(date):match("(%.%d+)$")) or "")), math.floor(date))
+    end
+end
+
 local settings = require "hs.settings"
 local timer    = require "hs.timer"
 local screen   = require "hs.screen"
@@ -201,7 +212,7 @@ local setDial
 setDial = function(state)
     local stateChanged = state ~= module._currentState
     if stateChanged then
---        print("~~ " .. USERDATA_TAG .. ": state change from " .. module._currentState .. " to " .. state)
+--        print(timestamp() .. ":" .. USERDATA_TAG .. ": state change from " .. module._currentState .. " to " .. state)
         for k, v in pairs(module.timers) do v:stop() end
         module.timers = {}
         -- reset dial to stable known state
@@ -213,7 +224,7 @@ setDial = function(state)
         dial.ring.strokeColor     = module.colors.idleColor
         dial.ring.shadow.color    = module.colors.idleColor
         dial.background.fillColor = module.colors.idleColor
-    elseif state == "starting" then
+    elseif state == "prepping" then
         dial.background.action, dial.progress.action = "skip", "fill"
         dial.ring.strokeColor = module.colors.startingRingColor
         if stateChanged then
@@ -224,7 +235,7 @@ setDial = function(state)
             angle = 90
             module.timers.spinTimer = timer.doEvery(.1, spinWedge())
         end
-    elseif state == "prepping" then
+    elseif state == "starting" then
         dial.ring.strokeColor = module.colors.preppingRingColor
         dial.background.action, dial.progress.action = "skip", "fill"
         if stateChanged then
@@ -234,6 +245,7 @@ setDial = function(state)
         end
     elseif state == "running" then
         dial.ring.strokeColor = module.colors.runningRingColor
+        dial.background.fillColor = module.colors.activeBGColor
         dial.progress.action = "fill"
         dial.text.action = "stroke"
         if stateChanged then
@@ -243,11 +255,11 @@ setDial = function(state)
         dial.ring.strokeColor = module.colors.finishingRingColor
         dial.background.action, dial.progress.action = "skip", "fill"
         if stateChanged then
---             module.timers.dialTimer = timer.doEvery(.1, animateRing())
+            module.timers.dialTimer = timer.doEvery(.1, animateRing())
             module.timers.spinTimer = timer.doEvery(.1, spinWedge())
         end
     else
-        print("~~ " .. USERDATA_TAG .. ": invalid state: " .. tostring(state))
+        print(timestamp() .. ":" .. USERDATA_TAG .. ": invalid state: " .. tostring(state))
         setDial("idle")
     end
     module._currentState = state
@@ -281,14 +293,14 @@ local invokeTMUtil = function()
                 text = text .. "\n" .. (timeLeft and secsToTime(tonumber(timeLeft)) or "???")
                 text = stext("\n", { font = { name = textStyle.font.name, size = textStyle.font.size / 2 } }) .. stext(text, textStyle)
                 dial.text.text = text
-            elseif backup_phase == "Starting" then
+            elseif backup_phase == "Starting" or backup_phase == "ThinningPreBackup" then
                 setDial("starting")
-            elseif backup_phase == "ThinningPreBackup" then
+            elseif backup_phase == "MountingBackupVol" then
                 setDial("prepping")
-            elseif backup+phase == "Finishing" or backup_phase == "ThinningPostBackup" then
+            elseif backup_phase == "Finishing" or backup_phase == "ThinningPostBackup" then
                 setDial("finishing")
             else
-                print("~~ " .. USERDATA_TAG .. ": unhandled phase: " .. tostring(backup_phase) .. " -> " .. o)
+                print(timestamp() .. ":" .. USERDATA_TAG .. ": unhandled phase: " .. tostring(backup_phase) .. " -> " .. o)
                 setDial("idle")
             end
         else
@@ -298,36 +310,47 @@ local invokeTMUtil = function()
     return isRunning
 end
 
-local startWatcher = function()
-    if not module.watcher then
-        module.watcher = distnot.new(function(n, o, i)
-            if invokeTMUtil() then
-                module.tmutilTimer = timer.doEvery(interval, function()
-                    local state = invokeTMUtil()
-                    if not state then
-                        module.tmutilTimer:stop()
-                        module.tmutilTimer = nil
-                    end
-                end)
-            end
---        end, "com.apple.backupd.DestinationMountNotification"):start()
-        end, "com.apple.backup.DiscoverHookClientsNotification", "com.apple.backup.BackupObject"):start()
+local checkAndStartIfNeeded = function ()
+    if not module.tmutilTimer then
+        local state = invokeTMUtil()
+        if state then -- update display and start timer if we're in the middle of a backup
+            module.tmutilTimer = timer.doEvery(interval, function()
+                local state = invokeTMUtil()
+                if not state then
+                    module.tmutilTimer:stop()
+                    module.tmutilTimer = nil
+                end
+            end)
+        end
+        return state
     end
-    if invokeTMUtil() then -- update display and start timer if we're in the middle of a backup
-        module.tmutilTimer = timer.doEvery(interval, function()
-            local state = invokeTMUtil()
-            if not state then
-                module.tmutilTimer:stop()
-                module.tmutilTimer = nil
-            end
-        end)
-    end
-    return module.watcher
+    return false
 end
+
+local startWatcher = function()
+    if not module._watcher then
+        module._watcher = distnot.new(function(n, o, i)
+            checkAndStartIfNeeded()
+--        end, "com.apple.backupd.DestinationMountNotification"):start()
+       end, "com.apple.backup.DiscoverHookClientsNotification", "com.apple.backup.BackupObject"):start()
+
+    end
+    checkAndStartIfNeeded() -- update display and start timer if we're in the middle of a backup
+    return module._watcher
+end
+
+-- distributed notifications are not guaranteed to be delivered if the system is busy, so let's
+-- check every so often... still better then the every 5 seconds that the original widget did even when
+-- no backup was occurring...
+module._longWatcher = timer.doEvery(120, function()
+    if checkAndStartIfNeeded() then
+        print(timestamp() .. ":" .. USERDATA_TAG .. ": missed notification, but backup timer caught it")
+    end
+end)
 
 local stopWatcher = function()
     setDial("idle")
-    if module.watcher then module.watcher:stop() end
+    if module._watcher then module._watcher:stop() end
     if module.tmutilTimer then module.tmutilTimer:stop() ; module.tmutilTimer = nil end
     for k,v in pairs(module.timers) do v:stop() end
     module.timers = {}
@@ -382,9 +405,9 @@ module.interval = function(secs)
     end
     if intervalChanged then
         interval = secs or defaults.interval
-        if module.watcher then
-            module.watcher = stopWatcher()
-            module.watcher = startWatcher()
+        if module._watcher then
+            module._watcher = stopWatcher()
+            module._watcher = startWatcher()
         end
         settings.set(USERDATA_TAG .. ".interval", secs or nil)
         setDial(module._currentState)
@@ -446,12 +469,12 @@ end
 
 module.show = function()
     dial:show()
-    if not module.watcher then module.watcher = startWatcher() end
+    if not module._watcher then module._watcher = startWatcher() end
 end
 
 module.hide = function()
     dial:hide()
-    if module.watcher then module.watcher = stopWatcher() end
+    if module._watcher then module._watcher = stopWatcher() end
 end
 
 module.toggle = function()
