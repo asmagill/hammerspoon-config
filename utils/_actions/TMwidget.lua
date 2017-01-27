@@ -239,8 +239,8 @@ setDial = function(state)
         dial.ring.strokeColor = module.colors.preppingRingColor
         dial.background.action, dial.progress.action = "skip", "fill"
         if stateChanged then
-            module.timers.dialTimer = timer.doEvery(.1, animateRing())
---            module.timers.pulseTimer = timer.doEvery(.1, pulseRing())
+--            module.timers.dialTimer = timer.doEvery(.1, animateRing())
+            module.timers.pulseTimer = timer.doEvery(.1, pulseRing())
             module.timers.spinTimer = timer.doEvery(.1, spinWedge())
         end
     elseif state == "running" then
@@ -288,6 +288,10 @@ local invokeTMUtil = function()
 --                local percent  = o:match([[%s+Percent = "?(%d?%.?%d*)"?;]])
                 local timeLeft = o:match([[%s+TimeRemaining = (%d?%.?%d*);]])
                 dial.progress.startAngle = 90
+                if not rpercent then
+                    rpercent = "0"
+                    print(timestamp() .. ":" .. USERDATA_TAG .. ": bad percentage value: " .. " -> " .. o)
+                end
                 dial.progress.endAngle   = (90 + (360 * tonumber(rpercent))) % 360
                 local text = (rpercent and tostring(math.floor(10000 * tonumber(rpercent) + .5) / 100) .. "%" or "???")
                 text = text .. "\n" .. (timeLeft and secsToTime(tonumber(timeLeft)) or "???")
@@ -342,7 +346,7 @@ end
 -- distributed notifications are not guaranteed to be delivered if the system is busy, so let's
 -- check every so often... still better then the every 5 seconds that the original widget did even when
 -- no backup was occurring...
-module._longWatcher = timer.doEvery(120, function()
+module._longWatcher = timer.doEvery(60, function()
     if checkAndStartIfNeeded() then
         print(timestamp() .. ":" .. USERDATA_TAG .. ": missed notification, but backup timer caught it")
     end

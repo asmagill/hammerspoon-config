@@ -143,8 +143,6 @@ if not minimal then -- normal init continues...
 
     _asm.consoleToolbar = require"utils.consoleToolbar"
 
-    _asm.tm = require("utils.TMwidget")
-
     -- override print so that it can render styled text objects directly in the console
     _asm.hs_default_print = print
     print = function(...)
