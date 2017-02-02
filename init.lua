@@ -92,8 +92,8 @@ if not minimal then -- normal init continues...
 
     _asm._CMI     = require("utils.consolidateMenus")
 
-    table.insert(_asm._actions.closeWhenLoseFocus.closeList, "nvALT")
-    _asm._actions.closeWhenLoseFocus.disable()
+--    table.insert(_asm._actions.closeWhenLoseFocus.closeList, "nvALT")
+--    _asm._actions.closeWhenLoseFocus.disable()
 
     _asm._CMI.addMenu(_asm._menus.applicationMenu.menuUserdata, "icon",      true)
     _asm._CMI.addMenu(_asm._menus.developerMenu.menuUserdata,   "icon",  -1, true)

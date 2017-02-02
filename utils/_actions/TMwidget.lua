@@ -138,7 +138,8 @@ local setDialElements = function()
         action      = "skip",       -- starts out hidden
         absolutePosition = false ;
         radius      = .4 * widgetFrame.w,
-        fillColor   = module.colors.progressColor,
+--        fillColor   = module.colors.progressColor,
+        fillColor   = module.colors.activeBGColor
     }
     -- clear center hole clip region
     dial[6] = {
@@ -245,7 +246,7 @@ setDial = function(state)
         end
     elseif state == "running" then
         dial.ring.strokeColor = module.colors.runningRingColor
-        dial.background.fillColor = module.colors.activeBGColor
+--        dial.background.fillColor = module.colors.activeBGColor
         dial.progress.action = "fill"
         dial.text.action = "stroke"
         if stateChanged then
@@ -292,7 +293,11 @@ local invokeTMUtil = function()
                     rpercent = "0"
                     print(timestamp() .. ":" .. USERDATA_TAG .. ": bad percentage value: " .. " -> " .. o)
                 end
-                dial.progress.endAngle   = (90 + (360 * tonumber(rpercent))) % 360
+                if tonumber(rpercent) == 100 then
+                    dial.progress.endAngle = 360
+                else
+                    dial.progress.endAngle = (90 + (360 * tonumber(rpercent))) % 360
+                end
                 local text = (rpercent and tostring(math.floor(10000 * tonumber(rpercent) + .5) / 100) .. "%" or "???")
                 text = text .. "\n" .. (timeLeft and secsToTime(tonumber(timeLeft)) or "???")
                 text = stext("\n", { font = { name = textStyle.font.name, size = textStyle.font.size / 2 } }) .. stext(text, textStyle)
@@ -348,7 +353,7 @@ end
 -- no backup was occurring...
 module._longWatcher = timer.doEvery(60, function()
     if checkAndStartIfNeeded() then
-        print(timestamp() .. ":" .. USERDATA_TAG .. ": missed notification, but backup timer caught it")
+        print(timestamp() .. ":" .. USERDATA_TAG .. ": missed notification, but backup timer caught it at " .. module._currentState)
     end
 end)
 
