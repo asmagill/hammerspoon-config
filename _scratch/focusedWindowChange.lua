@@ -1,3 +1,13 @@
+-- Still seems to be unable to detect new windows when launching an application that launches
+-- in two stages (e.g. java applications, in my case Smart Git) but at least it no longer stops
+-- working when this occurs occurs.
+--
+-- If you leave such an application and return to it, then everything works as expected.  Best
+-- guess is that the application element changes, but not its pid or title so application.watcher
+-- doesn't see it; otoh uielement's watcher didn't either, but I'm not as confident about it.
+-- Will revisit if/when I add watchers to `hs._asm.axuielement` which provides more direct
+-- access to uielements without as much of a wrapper trying to hide the internals.
+
 local module      = {}
 local window      = require "hs.window"
 local application = require "hs.application"
@@ -18,7 +28,8 @@ local newWatcher = function(andNotify)
     local win = window.focusedWindow()
     if andNotify then module.actionFunction(win) end
     local app = win and win:application() or application.frontmostApplication()
-    local watcher = app:newWatcher(watcherFunction):start({uielement.watcher.applicationDeactivated, uielement.watcher.focusedWindowChanged, uielement.watcher.elementDestroyed})
+--    local watcher = app:newWatcher(watcherFunction):start({uielement.watcher.applicationDeactivated, uielement.watcher.focusedWindowChanged, uielement.watcher.elementDestroyed})
+    local watcher = app:newWatcher(watcherFunction):start({uielement.watcher.focusedWindowChanged})
 
     -- this is annoying... quitting an application doesn't destroy it's uielement, so we can't
     -- add just add uielement.watcher.elementDestroyed to the hs.uielement watcher... we have to
@@ -33,7 +44,7 @@ watcherFunction = function(el, ev, ...)
     if ev == uielement.watcher.applicationDeactivated then
         module.watcher:stop()
         module.watcher = newWatcher(true)
-    elseif ev == uielement.watcher.focusedWindowChanged then
+    elseif (ev == uielement.watcher.focusedWindowChanged) then
         -- when the last window for an app closes, but the app remains empty, el will be
         -- a raw `hs.uielement` object, which we don't want to deal with.
         if getmetatable(el).__name ~= "hs.window" then el = nil end
@@ -46,7 +57,9 @@ end
 module.watcher = newWatcher()
 
 module.terminationWatcher = application.watcher.new(function(n, e, o)
-    if e == application.watcher.terminated and o:pid() == module.activePID then
+    if (e == application.watcher.terminated and o:pid() == module.activePID) or
+       (e == application.watcher.activated)
+    then
         -- force an applicationDeactivated event so that it rebuilds the watcher.
         watcherFunction(nil, uielement.watcher.applicationDeactivated)
     end
