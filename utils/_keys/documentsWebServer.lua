@@ -43,7 +43,7 @@ module.hotkey = hotkey.bind({"cmd", "alt"}, "f10", function()
         alert("Turning Documentation Server Off...")
         module.server:stop()
     else
-        alert("Turning Documentation Server On...")
+        alert("Turning Documentation Server On (Port 8192)...")
         module.server:start()
     end
 end)

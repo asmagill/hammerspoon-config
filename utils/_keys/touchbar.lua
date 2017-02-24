@@ -71,9 +71,13 @@ local createTouchbarIfNeeded = function()
 end
 
 -- should add a cleaner way to detect right modifiers then checking their flags, but for now,
--- ev:getRawEventData().CGEventData.flags == 524608 works for right alt, 524576 for left alt
+-- ev:getRawEventData().CGEventData.flags  & 0xdffffeff == 524352 works for right alt, 524320 for left alt
+--
 -- You can check for others with this in the console:
---  a = hs.eventtap.new({12}, function(e) print(hs.inspect(e:getFlags()), hs.inspect(e:getRawEventData())) ; return false end):start()
+--  a = hs.eventtap.new({12}, function(e) print(hs.inspect(e:getFlags()),e:getRawEventData().CGEventData.flags & 0xdffffeff) ; return false end):start()
+--
+-- This filters out what appears to be a "this is a synthesized event" bit (0x20000000) and the
+-- non-coallesced bit (0x100), because these are beyond our control
 
 local rightOptPressed = false
 
@@ -94,8 +98,11 @@ end
 
 -- we only care about events other than flagsChanged that should *stop* a current count down
 module.eventwatcher = eventtap.new({events.flagsChanged, events.keyDown, events.leftMouseDown}, function(ev)
+    -- synthesized events set 0x20000000 and we may or may not get the nonCoalesced bit, so filter them out
+    local rawFlags = ev:getRawEventData().CGEventData.flags & 0xdffffeff
+--    print(rawFlags)
     rightOptPressed = false
-    if ev:getType() == events.flagsChanged and ev:getRawEventData().CGEventData.flags == 524608 then
+    if ev:getType() == events.flagsChanged and rawFlags == 524352 then
         rightOptPressed = true
         module.countDown = timer.doAfter(module.rightOptPressTime, function()
             if rightOptPressed then module.toggle() end
@@ -106,7 +113,7 @@ module.eventwatcher = eventtap.new({events.flagsChanged, events.keyDown, events.
             module.countDown = nil
         end
         if mouseInside then
-            if ev:getType() == events.flagsChanged and ev:getRawEventData().CGEventData.flags == 524576 then
+            if ev:getType() == events.flagsChanged and rawFlags == 524320 then
                 showMovableState()
             elseif ev:getType() ~= events.leftMouseDown then
                 showNormalState()
