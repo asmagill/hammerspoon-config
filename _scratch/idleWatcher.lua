@@ -2,6 +2,8 @@
 
 local module = {}
 
+module.newStyle = true
+
 local canvas  = require "hs.canvas"
 local host    = require "hs.host"
 local timer   = require "hs.timer"
@@ -20,7 +22,7 @@ local logMessage = function(...) print(timestamp(), ...) end
 local localSize  = { h = 60, w = 200 }
 local localFrame = {
     x = screen.primaryScreen():frame().x +  (screen.primaryScreen():frame().w - localSize.w) / 2,
-    y = screen.primaryScreen():frame().y,
+    y = screen.primaryScreen():frame().y + 5,
     w = localSize.w,
     h = localSize.h,
 }
@@ -48,11 +50,24 @@ module._frame = setmetatable({}, {
     end
 })
 
-module._valueStyle = {
+module._activeStyle = {
     font = {
         name = "Menlo-Italic",
-        size = 12,
+        size = 10,
     },
+    color = { red = 1, green = .8, blue = .8 },
+    paragraphStyle = {
+        alignment = "center",
+        linebreak = "clip",
+    },
+}
+
+module._idleStyle = {
+    font = {
+        name = "Menlo-Italic",
+        size = 10,
+    },
+    color = { red = .8, green = 1, blue = .8 },
     paragraphStyle = {
         alignment = "center",
         linebreak = "clip",
@@ -106,11 +121,11 @@ module._display = canvas.new(module._frame):appendElements(
     }, {
         id               = "topValue",
         type             = "text",
-        frame            = { x = "5%", y = "25%", w = "40%", h = "40%" }
+        frame            = { x = "5%", y = "25%", w = "40%", h = "50%" }
     }, {
         id               = "hostValue",
         type             = "text",
-        frame            = { x = "55%", y = "25%", w = "40%", h = "40%" }
+        frame            = { x = "55%", y = "25%", w = "40%", h = "50%" }
     }, {
         id               = "timeLabel",
         type             = "text",
@@ -122,15 +137,23 @@ module._display = canvas.new(module._frame):appendElements(
         textSize         = 8,
         frame            = { x = "5%", y = "75%", w = "90%", h = "20%" }
     }
-)
+):behavior("canJoinAllSpaces")
 
 module._timer = timer.new(5, function()
     if module._topTask and module._topTask:isRunning() then
         logMessage("+++ top task taking too long; killing it!")
         module._topTask:terminate()
     end
+    if module.newStyle then
+        module._cpuTime = host.cpuUsage(1, function(result)
+           module._display.hostValue.text =
+               stext.new(string.format("%.2f%%\n", result.overall.active), module._activeStyle) ..
+               stext.new(string.format("%.2f%%", result.overall.idle), module._idleStyle)
+           module._cpuTime = nil
+       end)
+    end
     module._topTask = task.new("/usr/bin/top", function(c, o, e)
-        local cpuStat = nil
+        local idleStat, activeStat = nil, nil
         if c == 0 then
             -- we want the second line because top's first CPU data is not valid since it
             -- calculates based on deltas
@@ -139,21 +162,31 @@ module._timer = timer.new(5, function()
                 if v:match("CPU usage") then
                     count = count + 1
                     if count == 2 then
-                        cpuStat = v:match(" ([%d%.]+%%) idle ")
+                        local userStat, sysStat
+                        userStat, sysStat, idleStat = v:match("([%d%.]+)%% user, ([%d%.]+)%% sys, ([%d%.]+%%) idle")
+                        if userStat and sysStat then
+                            activeStat = tostring(tonumber(userStat) + tonumber(sysStat)) .. "%"
+                        end
                         break
                     end
                 end
             end
-            if not cpuStat then
+            if not idleStat then
                 logMessage("+++ unable to get CPU usage number from top!")
             end
         else
             logMessage("+++ unexpected return code for top!")
         end
-        module._display.topValue.text  = stext.new(cpuStat or "XXX", module._valueStyle)
-        module._display.hostValue.text = stext.new(string.format("%.2f%%", host.cpuUsage().overall.idle), module._valueStyle)
+        module._display.topValue.text = stext.new((activeStat or "XXX") .. "\n", module._activeStyle) ..
+                                        stext.new((idleStat or "XXX"), module._idleStyle)
+        if not module.newStyle then
+            local overallUsage = host.cpuUsage().overall
+            module._display.hostValue.text =
+                stext.new(string.format("%.2f%%\n", overallUsage.active), module._activeStyle) ..
+                stext.new(string.format("%.2f%%", overallUsage.idle), module._idleStyle)
+        end
+
         module._display.timeLabel.text = timestamp()
---        module._display.hostValue.text = stext.new(string.format("%.2f%%", host.cpuUsage()[1].idle), module._valueStyle)
     end, {"-l", "2", "-n", "0"}):start()
 end)
 
