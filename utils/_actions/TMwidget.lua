@@ -11,11 +11,7 @@
 --
 -- And I added a percentage readout and tweaked the animation some...
 --
--- this requires some tweaks to canvas that haven't made it into core yet... check the pulls or
--- my hammerspoon configuration repo for utils/canvasTweaks.lua
-
-local canvas   = require "utils.canvasTweaks"
---local canvas   = require "hs.canvas"
+local canvas   = require "hs.canvas"
 
 -- I have a timestamp function globally defined, but in a pinch, this will do something similar:
 if not timestamp then

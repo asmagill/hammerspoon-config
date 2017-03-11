@@ -79,6 +79,7 @@ geocoderRequest = function()
         if location.get() then
             module._geocoder = location.geocoder.lookupLocation(location.get(), function(good, result)
                 module.addressInfo = result
+                print(timestamp() .. ": Location = " .. (result and result[1] and result[1].name))
                 if good then
                     notifiedAboutInternet = false
                     module._geocoder = nil
@@ -113,21 +114,21 @@ end)
 for i,v in ipairs(regions) do module.labelWatcher:addMonitoredRegion(v) end
 geocoderRequest()
 
--- secondary watcher for testing -- not a great example since the whole point of adding an object/method
--- interface to hs.location was to allow different code to monitor for different region changes, but as a
--- proof-of-concept, it'll do for now...
-
-module.manager = location.new():callback(function(self, message, ...)
-    print(string.format("~~ %s:%s\n   %s", timestamp(), message, (inspecta(table.pack(...)):gsub("%s+", " "))))
-end)
-
--- just so they have at least some differences
-local doit = true
-for i,v in ipairs(regions) do
-    if doit then
-        module.manager:addMonitoredRegion(v)
-    end
-    doit = not doit
-end
+---- secondary watcher for testing -- not a great example since the whole point of adding an object/method
+---- interface to hs.location was to allow different code to monitor for different region changes, but as a
+---- proof-of-concept, it'll do for now...
+--
+--module.manager = location.new():callback(function(self, message, ...)
+--    print(string.format("~~ %s:%s\n   %s", timestamp(), message, (inspecta(table.pack(...)):gsub("%s+", " "))))
+--end)
+--
+---- just so they have at least some differences
+--local doit = true
+--for i,v in ipairs(regions) do
+--    if doit then
+--        module.manager:addMonitoredRegion(v)
+--    end
+--    doit = not doit
+--end
 
 return module
