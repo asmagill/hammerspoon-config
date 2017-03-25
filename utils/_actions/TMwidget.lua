@@ -263,9 +263,9 @@ setDial = function(state)
 end
 
 local secsToTime = function(secs)
-    local h = math.floor(secs / 360)
-    local m = math.floor((secs - h * 360) / 60)
-    local s = secs - h * 360 - m * 60
+    local h = math.floor(secs / 3600)
+    local m = math.floor((secs - h * 3600) / 60)
+    local s = secs - h * 3600 - m * 60
     local result = ""
     if h > 0 then result = result .. tostring(h) .. ":" .. (m < 10 and "0" or "") end
     result = result .. tostring(m) .. ":" .. (s < 10 and "0" or "") .. tostring(s)
@@ -281,8 +281,8 @@ local invokeTMUtil = function()
         if isRunning then
             if backup_phase == "Copying" then
                 setDial("running")
-                local rpercent = o:match([[%s+"_raw_Percent" = "?(%d?%.?%d*)"?;]])
---                local percent  = o:match([[%s+Percent = "?(%d?%.?%d*)"?;]])
+--                local rpercent = o:match([[%s+"_raw_Percent" = "?(%d?%.?%d*)"?;]])
+                local rpercent = o:match([[%s+Percent = "?(%d?%.?%d*)"?;]])
                 local timeLeft = o:match([[%s+TimeRemaining = (%d?%.?%d*);]])
                 dial.progress.startAngle = 90
                 if not rpercent then
