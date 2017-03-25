@@ -34,13 +34,13 @@ end
 
 local modifierHandler = function(e)
     local flags = e:getFlags()
-    local onlyControlPressed = false
+    local onlyFNPressed = false
     for k, v in pairs(flags) do
-        onlyControlPressed = v and k == "fn"
-        if not onlyControlPressed then break end
+        onlyFNPressed = v and k == "fn"
+        if not onlyFNPressed then break end
     end
     -- you must tap and hold fn by itself to turn this on
-    if onlyControlPressed and not module.keyListener then
+    if onlyFNPressed and not module.keyListener then
         if module.debugging then print("viKeys: keyhandler on") end
         module.keyListener = eventtap.new({ event.types.keyDown, event.types.keyUp }, keyHandler):start()
     -- however, adding additional modifiers afterwards is ok... its only when fn isn't down that we switch back off
