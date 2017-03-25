@@ -144,7 +144,7 @@ local consoleToolbar = {
         image = image.imageFromPath(autoHideImage()),
         tooltip = "Hide the Hammerspoon Console when focus changes?",
         fn = function(bar, attachedTo, item)
-            _asm._menus.hammerspoonMenu.toggleWatcher()
+            module.watchConsoleAutoClose:change(not module.watchConsoleAutoClose:value())
         end,
     },
     {
@@ -241,7 +241,7 @@ table.insert(consoleToolbar, {
     tooltip = "Toggle CheatSheet Functionality",
     image = module.watchCheatSheetStatus:value() and cheatSheetOn or cheatSheetOff,
     fn = function(t, a, i)
-        _asm._keys.cheatsheet.toggle()
+        module.watchCheatSheetStatus:change(not module.watchCheatSheetStatus:value())
     end,
     default = false,
 })

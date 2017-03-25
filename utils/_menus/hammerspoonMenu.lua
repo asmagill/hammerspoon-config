@@ -27,7 +27,7 @@ local listener  = require("utils.speech")
 
 -- private variables and methods -----------------------------------------
 
-module.watchables = watchable.new("hammerspoonMenu")
+module.watchables = watchable.new("hammerspoonMenu", true)
 module.watchables.status = true
 
 -- module.status = true
@@ -50,19 +50,23 @@ end
 local hsConsoleWatcher = appwatch.new(hsConsoleWatcherFN)
 
 local toggleWatcher = function(setItTo)
-    if type(setItTo) == "boolean" then module.watchables.status = not setItTo end
-
-    if module.watchables.status then
-        module.watchables.status = false
-        hsConsoleWatcher:stop()
+    -- take advantage of local watcher defined below
+    if type(setItTo) == "boolean" then
+        module.watchables.status = setItTo
     else
-        module.watchables.status = true
-        hsConsoleWatcher:start()
+        module.watchables.status = not module.watchables.status
     end
+--    if current then
+--        module.watchables.status = false
+--        hsConsoleWatcher:stop()
+--    else
+--        module.watchables.status = true
+--        hsConsoleWatcher:start()
+--    end
     settings.set("_asm.autohide.console", module.watchables.status)
     return module.watchables.status
 end
--- local watcherMenu = menubar.new():setIcon(image.imageFromName("statusicon")) -- it's in the app bundle, so we can refer to it by name
+
 
 local watcherMenu = menubar.newWithPriority and menubar.newWithPriority(menubar.priorities.notificationCenter - 1) or menubar.new()
 
@@ -140,12 +144,24 @@ watcherMenu:setIcon(image.imageFromName("statusicon"))
 
 -- Public interface ------------------------------------------------------
 
-toggleWatcher(module.watchables.status)
-
 module.watcher = hsConsoleWatcher
 module.menuUserdata = watcherMenu
 module.toggleWatcher = toggleWatcher
 if not hs.autoCloseConsole then hs.autoCloseConsole = toggleWatcher end
+
+module.toggleForWatchablesEnabled = watchable.watch("hammerspoonMenu.status", function(w, p, i, oldValue, value)
+    if value then
+        hsConsoleWatcher:start()
+    else
+        hsConsoleWatcher:stop()
+    end
+end)
+
+if module.watchables.status then
+    hsConsoleWatcher:start()
+else
+    hsConsoleWatcher:stop()
+end
 
 -- Return Module Object --------------------------------------------------
 
