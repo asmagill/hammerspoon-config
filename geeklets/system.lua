@@ -4,7 +4,7 @@ local host       = require("hs.host")
 
 local baseFont = { name = "Menlo", size = 12 }
 local barWidth = 20
-local emptyBar = { white = 0.75 }
+local emptyBar = { white = 0.5 }
 
 -- CPU Usage
 

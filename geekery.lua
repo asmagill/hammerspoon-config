@@ -7,14 +7,16 @@ local drawing = require("hs.drawing")
 local monitorTopY   = screen.mainScreen():frame().y
 local monitorBotY   = monitorTopY + screen.mainScreen():frame().h
 
-geekery.registerShellGeeklet("cpu", 15,  "geeklets/system.sh",
-        { x = 22, y = monitorTopY + 22, h = 60, w = 350}, { color = { alpha = 1 } },
+--geekery.registerShellGeeklet("cpu", 15,  "geeklets/system.sh",
+geekery.registerLuaGeeklet("cpu", 5,  "geeklets/system.lua",
+        { x = 22, y = monitorTopY + 22, h = 60, w = 350}, { color = { alpha = 1 }, skip = true },
         { drawing.rectangle{ x = 12, y = monitorTopY + 12, h = 80, w = 370 }
             :setFillColor{ alpha=.7, white = .5 }
             :setStrokeColor{ alpha=.5 }
             :setFill(true)
             :setRoundedRectRadii(5,5)
         }):start()
+
 geekery.registerShellGeeklet("wifi", 60,  "geeklets/wifi.sh",
         { x = 22, y = monitorTopY + 102, h = 60, w = 350}, {
             color = { alpha = 1 },
