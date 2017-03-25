@@ -17,7 +17,7 @@ local events   = eventtap.event.types
 
 local module   = {}
 
-module.watchables = watchables.new("cheatsheet")
+module.watchables = watchables.new("cheatsheet", true)
 
 module.autoDismiss     = true
 module.showEmptyMenus  = false
@@ -283,28 +283,41 @@ module.cs:bind({}, "escape", function() module.cs:exit() end)
 -- mimic CheatSheet's trigger for holding Command Key
 module.cmdPressed = false
 -- we only care about events other than flagsChanged that should *stop* a current count down
-module.eventwatcher = eventtap.new({events.flagsChanged, events.keyDown, events.leftMouseDown}, function(ev)
+--module.eventwatcher = eventtap.new({events.flagsChanged, events.keyDown, events.leftMouseDown}, function(ev)
+module.eventwatcher = eventtap.new({events.flagsChanged}, function(ev)
     module.cmdPressed = false
-    if ev:getType() == events.flagsChanged then
+--    if ev:getType() == events.flagsChanged then
         local count = 0
         for k, v in pairs(ev:getFlags()) do count = count + 1 end
         if module.myView == nil and count == 1 and ev:getFlags().cmd then
             module.cmdPressed = true
         end
-    end
+--    end
 
-    if module.myView ~= nil and module.autoDismiss then module.cs:exit() end
+--    if module.myView ~= nil and module.autoDismiss then module.cs:exit() end
 
     if module.cmdPressed then
         module.countDown = timer.doAfter(module.cmdKeyPressTime, function()
             module.cs:enter()
             module.cmdPressed = false
         end)
-    else
-        if module.countDown then
-            module.countDown:stop()
-            module.countDown = nil
-        end
+        module.eventwatcher2 = eventtap.new({events.flagsChanged, events.keyDown, events.leftMouseDown}, function(ev)
+            if module.countDown then
+                module.countDown:stop()
+                module.countDown = nil
+            end
+            if module.myView ~= nil and module.autoDismiss then module.cs:exit() end
+            module.eventwatcher2:stop()
+            module.eventwatcher2 = nil
+            module.eventwatcher:start()
+            return false
+        end):start()
+        module.eventwatcher:stop()
+--    else
+--        if module.countDown then
+--            module.countDown:stop()
+--            module.countDown = nil
+--        end
     end
     return false ;
 end):start()
@@ -316,23 +329,35 @@ module.remoteAccessWatcher = distributednotifications.new(function(n,o,i)
     else
         if #vn > 0 and module.eventwatcher:isEnabled() then
             notify.show("Remote Viewer Detected", "...disabling Cmd-Key Cheatsheat", "", "")
-            module.eventwatcher:stop()
+--            module.eventwatcher:stop()
+            module.watchables.enabled = false
         elseif #vn == 0 and not module.eventwatcher:isEnabled() then
             notify.show("Remote Viewer Left", "...re-enabling Cmd-Key Cheatsheat", "", "")
-            module.eventwatcher:start()
+--            module.eventwatcher:start()
+            module.watchables.enabled = true
         end
-        module.watchables.enabled = module.eventwatcher:isEnabled()
+--        module.watchables.enabled = module.eventwatcher:isEnabled()
     end
 end, "com.apple.remotedesktop.viewerNames"):start()
 
 module.toggle = function()
-    if module.eventwatcher:isEnabled() then
-        module.eventwatcher:stop()
-    else
-        module.eventwatcher:start()
-    end
-    module.watchables.enabled = module.eventwatcher:isEnabled()
+--    if module.eventwatcher:isEnabled() then
+--        module.eventwatcher:stop()
+--    else
+--        module.eventwatcher:start()
+--    end
+--    module.watchables.enabled = module.eventwatcher:isEnabled()
+   module.watchables.enabled = not module.watchables.enabled
 end
 
 module.watchables.enabled = module.eventwatcher:isEnabled()
+
+module.toggleForWatchablesEnabled = watchables.watch("cheatsheet.enabled", function(w, p, i, oldValue, value)
+    if value then
+        module.eventwatcher:start()
+    else
+        module.eventwatcher:stop()
+    end
+end)
+
 return module
