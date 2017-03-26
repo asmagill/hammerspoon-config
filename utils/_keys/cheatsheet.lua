@@ -249,29 +249,25 @@ end
 
 module.cs = hotkey.modal.new()
     function module.cs:entered()
-        alert("Building Cheatsheet Display...")
-        -- Wrap in timer so alert has a chance to show when building the display is slow (I'm talking
-        -- to you, Safari!).  Using a value of 0 seems to halt the alert animation in mid-sequence,
-        -- so we use something almost as "quick" as 0.  Need to look at hs.timer someday and figure out
-        -- why; perhaps 0 means "dispatch immediately, even before anything else in the queue"?
+        local screenFrame = require("hs.screen").mainScreen():frame()
+        local viewFrame = {
+            x = screenFrame.x + 50,
+            y = screenFrame.y + 50,
+            h = screenFrame.h - 100,
+            w = screenFrame.w - 100,
+        }
+        module.myView = require("hs.webview").new(viewFrame, { developerExtrasEnabled = true })
+          :windowStyle("utility")
+          :closeOnEscape(true)
+          :allowGestures(true)
+          :windowTitle("CheatSheets")
+          :level(require("hs.drawing").windowLevels.floating)
+          :alpha(module.alpha or 1.0)
+          :show()
         timer.doAfter(.1, function()
-            local screenFrame = require("hs.screen").mainScreen():frame()
-            local viewFrame = {
-                x = screenFrame.x + 50,
-                y = screenFrame.y + 50,
-                h = screenFrame.h - 100,
-                w = screenFrame.w - 100,
-            }
-            module.myView = require("hs.webview").new(viewFrame, { developerExtrasEnabled = true })
-              :windowStyle("utility")
-              :closeOnEscape(true)
-              :html(generateHtml())
-              :allowGestures(true)
-              :windowTitle("CheatSheets")
-              :level(require("hs.drawing").windowLevels.floating)
-              :alpha(module.alpha or 1.0)
-              :show()
-              alert.closeAll() -- hide alert, if we finish fast enough
+            local htmlOutput = generateHtml()
+            -- make sure it hasn't been cleared already since the generation can be slow (Safari!)
+            if module.myView then module.myView:html(htmlOutput) end
         end)
     end
     function module.cs:exited()
@@ -282,19 +278,13 @@ module.cs:bind({}, "escape", function() module.cs:exit() end)
 
 -- mimic CheatSheet's trigger for holding Command Key
 module.cmdPressed = false
--- we only care about events other than flagsChanged that should *stop* a current count down
---module.eventwatcher = eventtap.new({events.flagsChanged, events.keyDown, events.leftMouseDown}, function(ev)
 module.eventwatcher = eventtap.new({events.flagsChanged}, function(ev)
     module.cmdPressed = false
---    if ev:getType() == events.flagsChanged then
-        local count = 0
-        for k, v in pairs(ev:getFlags()) do count = count + 1 end
-        if module.myView == nil and count == 1 and ev:getFlags().cmd then
-            module.cmdPressed = true
-        end
---    end
-
---    if module.myView ~= nil and module.autoDismiss then module.cs:exit() end
+    local count = 0
+    for k, v in pairs(ev:getFlags()) do count = count + 1 end
+    if module.myView == nil and count == 1 and ev:getFlags().cmd then
+        module.cmdPressed = true
+    end
 
     if module.cmdPressed then
         module.countDown = timer.doAfter(module.cmdKeyPressTime, function()
@@ -313,11 +303,6 @@ module.eventwatcher = eventtap.new({events.flagsChanged}, function(ev)
             return false
         end):start()
         module.eventwatcher:stop()
---    else
---        if module.countDown then
---            module.countDown:stop()
---            module.countDown = nil
---        end
     end
     return false ;
 end):start()
