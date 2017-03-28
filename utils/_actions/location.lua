@@ -79,7 +79,7 @@ geocoderRequest = function()
         if location.get() then
             module._geocoder = location.geocoder.lookupLocation(location.get(), function(good, result)
                 module.addressInfo = result
-                print(timestamp() .. ": Location = " .. (result and result[1] and result[1].name))
+                print(timestamp() .. ": Location = " .. (result and result[1] and (result[1].name or "** unknown **")))
                 if good then
                     notifiedAboutInternet = false
                     module._geocoder = nil

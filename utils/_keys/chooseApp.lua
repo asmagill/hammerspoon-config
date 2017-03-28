@@ -31,7 +31,7 @@ module.chooser:fgColor{ list = "x11", name = "lightskyblue" }
                           local bid  = module.apps[i].kMDItemCFBundleIdentifier or "< not available >"
                           local path = module.apps[i].kMDItemPath
                           if not path then
-                              print("~~ null path for " .. module.apps[i].kMDItemDisplayName)
+                              print("~~ null path for " .. (inspect(module.apps[i]):gsub("%s+", " ")))
                           else
                               table.insert(results, {
                                   text       = module.apps[i].kMDItemDisplayName,

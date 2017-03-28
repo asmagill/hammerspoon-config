@@ -300,6 +300,7 @@ module.eventwatcher = eventtap.new({events.flagsChanged}, function(ev)
             module.eventwatcher2:stop()
             module.eventwatcher2 = nil
             module.eventwatcher:start()
+            module.cmdPressed = false
             return false
         end):start()
         module.eventwatcher:stop()
