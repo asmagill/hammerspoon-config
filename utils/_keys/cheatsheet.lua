@@ -297,8 +297,10 @@ module.eventwatcher = eventtap.new({events.flagsChanged}, function(ev)
                 module.countDown = nil
             end
             if module.myView ~= nil and module.autoDismiss then module.cs:exit() end
-            module.eventwatcher2:stop()
-            module.eventwatcher2 = nil
+            if module.eventwatcher2 then -- as I undestand it, this should not be possible, but I got a nil error for eventwatcher2 in the console, so... I'll figure it out at a later time.
+                module.eventwatcher2:stop()
+                module.eventwatcher2 = nil
+            end
             module.eventwatcher:start()
             module.cmdPressed = false
             return false

@@ -14,43 +14,58 @@
 cd /opt/amagill/src/hammerspoon/hammerspoon
 
 if [[ $1 != doc* ]]; then
-	make clean
-	make || exit
+    make clean
+    make || exit
 
-	# signing with self-signed cert so I no longer have to reset accessibility all the time
-	xattr -cr "build/Hammerspoon.app" # codesign has become more anal in 10.12
-	codesign --verbose --sign "Internal Code Signing" "build/Hammerspoon.app/Contents/Frameworks/LuaSkin.framework/Versions/A"
-	codesign --verbose --sign "Internal Code Signing" "build/Hammerspoon.app"
+    xattr -cr "build/Hammerspoon.app" # codesign has become more anal in 10.12
+    # signing with self-signed cert so I no longer have to reset accessibility all the time
+    codesign --verbose --sign "Datalore Code Signing" "build/Hammerspoon.app/Contents/Frameworks/LuaSkin.framework/Versions/A"
+    codesign --verbose --sign "Datalore Code Signing" "build/Hammerspoon.app"
 
-	rm -fr `xcodebuild -workspace Hammerspoon.xcworkspace -scheme Hammerspoon -configuration DEBUG -showBuildSettings | sort | uniq | grep " BUILT_PRODUCTS_DIR =" | awk '{ print $3 }'`/Hammerspoon.app
+    rm -fr `xcodebuild -workspace Hammerspoon.xcworkspace -scheme Hammerspoon -configuration DEBUG -showBuildSettings | sort | uniq | grep " BUILT_PRODUCTS_DIR =" | awk '{ print $3 }'`/Hammerspoon.app
 fi
 
 if [ $1 ]; then
-	make docs
-# 	make build/html/LuaSkin
+    make docs
+#   make build/html/LuaSkin
 # hack because headerdoc2html doesn't seem to recognise @code/@endcode and @remark anymore
-	classDir=build/html/LuaSkin
-	sed -e 's/@code/<pre>@textblock/' \
-	    -e 's/@endcode/@\/textblock<\/pre>/' \
-	    -e 's/@remark/@attributeblock Notes/' LuaSkin/LuaSkin/Skin.h > Skin.h
-	headerdoc2html -u -o ${classDir} Skin.h
-	resolveLinks ${classDir}
-	mv ${classDir}/Skin_h/* ${classDir}
-	rmdir ${classDir}/Skin_h
-	rm Skin.h
+#   classDir=build/html/LuaSkin
+#   sed -e 's/@code/<pre>@textblock/' \
+#       -e 's/@endcode/@\/textblock<\/pre>/' \
+#       -e 's/@remark/@attributeblock Notes/' LuaSkin/LuaSkin/Skin.h > Skin.h
+#   headerdoc2html -u -o ${classDir} Skin.h
+#   resolveLinks ${classDir}
+#   mv ${classDir}/Skin_h/* ${classDir}
+#   rmdir ${classDir}/Skin_h
+#   rm Skin.h
 
-	rm -fr ~/Documents/Hammerspoon
-	mkdir ~/Documents/Hammerspoon
-	mv build/Hammerspoon.docset ~/Documents/Hammerspoon/
-	mv build/html/LuaSkin ~/Documents/Hammerspoon/
+    rm -fr ~/Documents/Hammerspoon
+    mkdir ~/Documents/Hammerspoon
+    mv build/Hammerspoon.docset ~/Documents/Hammerspoon/
+#   mv build/html/LuaSkin ~/Documents/Hammerspoon/
+    /usr/local/bin/appledoc \
+        --project-name "LuaSkin" \
+        --project-company "Hammerspoon" \
+        --company-id "org.hammerspoon" \
+        --output "build/LSDocs" \
+        --clean-output \
+        --no-install-docset \
+        --no-publish-docset \
+        --logformat xcode \
+        --keep-undocumented-objects \
+        --keep-undocumented-members \
+        --keep-intermediate-files \
+        --ignore "*.m" \
+        LuaSkin/LuaSkin
+    mv build/LSDocs/html ~/Documents/Hammerspoon/LuaSkin
 fi
 
 if [[ $1 != doc* ]]; then
-	osascript -e 'tell Application "Hammerspoon" to quit'
-	sleep 1
-	rm -fr /Applications/Development/Hammerspoon.app
-	mv build/Hammerspoon.app /Applications/Development/
+    osascript -e 'tell Application "Hammerspoon" to quit'
+    sleep 1
+    rm -fr /Applications/_ASM_/Developer/Hammerspoon.app
+    mv build/Hammerspoon.app /Applications/_ASM_/Developer/
 
-	open -a /Applications/Development/Hammerspoon.app
+    open -a /Applications/_ASM_/Developer/Hammerspoon.app
 fi
 
