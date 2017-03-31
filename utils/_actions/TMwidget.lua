@@ -25,6 +25,10 @@ local settings = require "hs.settings"
 local timer    = require "hs.timer"
 local screen   = require "hs.screen"
 local distnot  = require "hs.distributednotifications"
+local task     = require "hs.task"
+local fnutils  = require "hs.fnutils"
+
+local cmdText = "/usr/bin/tmutil latestbackup"
 
 local stext    = require("hs.styledtext").new
 
@@ -126,6 +130,7 @@ local setDialElements = function()
         absolutePosition = false ;
         radius      = .4 * widgetFrame.w,
         fillColor   = module.colors.idleColor,
+        trackMouseEnterExit = true,
     }
     -- progress circle
     dial[5] = {
@@ -147,7 +152,6 @@ local setDialElements = function()
         type   = "text",
         action = "skip",            -- starts out hidden
         absolutePosition = false ;
-        radius      = .4 * widgetFrame.w,
         frame  = {
             x = .3 * widgetFrame.w,
             y = .3 * widgetFrame.h,
@@ -156,9 +160,59 @@ local setDialElements = function()
         },
         text   = stext(" ", textStyle), -- need a space placeholder so we can hold an active style even when we're not printing a value; using "" would lose the style info because it has an internal (0,0) range
     }
+    dial[8] = {
+        id     = "latestTimeStamp",
+        type   = "text",
+        action = "skip",            -- starts out hidden
+        absolutePosition = false ;
+        frame  = {
+            x = 0,
+            y = .3 * widgetFrame.h,
+            h = .4 * widgetFrame.h,
+            w = widgetFrame.w
+        },
+        textAlignment = "center",
+        textFont      = "Menlo",
+        textSize      = 12,
+        textColor     = { alpha = 1 },
+        text          = "** pending **",
+    }
 end
 
 setDialElements()
+
+local _updateLatestBackupTime = function()
+    -- want to make sure this isn't getting invoked too often
+    hs.printf("~~ %s invoking _updateLatestBackupTime at %s", USERDATA_TAG, timestamp())
+    if module._task then
+        hs.printf("~~ %s:task already running", cmdText)
+    else
+        module._task = task.new(cmdText:match("^([^%s]+)"), function(c, o, e)
+            if c == 0 then
+--                print("'" .. o .. "'")
+                dial.latestTimeStamp.text = string.format("%s\n%s:%s:%s", o:match("/([%d-]+)\n?$"):match("^(%d+-%d+-%d+)-(%d%d)(%d%d)(%d%d)$"))
+            else
+                hs.printf("~~ %s: code = %s\n   %sstdout = %s\n   %sstderr = %s",
+                    cmdText, tostring(c), string.rep(" ", #cmdText), tostring(o), string.rep(" ", #cmdText), tostring(e)
+                )
+                dial.latestTimeStamp.text = "** error **"
+            end
+            module._task = nil
+        end, fnutils.split(cmdText:match("^[^%s]+ (.*)"), " ")):start()
+    end
+end
+_updateLatestBackupTime()
+
+dial:mouseCallback(function(c, msg, id, x, y)
+    if msg == "mouseEnter" and id == "background" then
+        dial.latestTimeStamp.action = "stroke"
+    elseif msg == "mouseExit" and id == "background" then
+        dial.latestTimeStamp.action = "skip"
+    else
+        hs.printf("~~ %s callback invoked for unknown reason: id = %s, msg = %s, x = %f, y = %f",
+            USERDATA_TAG, id, msg, x, y)
+    end
+end)
 
 local angle = 90
 
@@ -324,6 +378,8 @@ local checkAndStartIfNeeded = function ()
                 if not state then
                     module.tmutilTimer:stop()
                     module.tmutilTimer = nil
+                    -- when the display stops, update the latest backup time
+                    _updateLatestBackupTime()
                 end
             end)
         end
