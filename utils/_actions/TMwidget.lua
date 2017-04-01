@@ -93,6 +93,8 @@ if autoStart == nil then autoStart = defaults.autoStart end
 
 local dial = canvas.new(widgetFrame):level(widgetLevel):behavior("canJoinAllSpaces")
 
+local _latestTimeStamp = settings.get(USERDATA_TAG .. ".lastTimeStamp") or "** pending **"
+
 local setDialElements = function()
     -- outer ring
     dial[1] = {
@@ -168,14 +170,14 @@ local setDialElements = function()
         frame  = {
             x = 0,
             y = .3 * widgetFrame.h,
-            h = .4 * widgetFrame.h,
+            h = .7 * widgetFrame.h,
             w = widgetFrame.w
         },
         textAlignment = "center",
         textFont      = "Menlo",
         textSize      = 12,
         textColor     = { alpha = 1 },
-        text          = "** pending **",
+        text          = _latestTimeStamp,
     }
 end
 
@@ -190,12 +192,14 @@ local _updateLatestBackupTime = function()
         module._task = task.new(cmdText:match("^([^%s]+)"), function(c, o, e)
             if c == 0 then
 --                print("'" .. o .. "'")
-                dial.latestTimeStamp.text = string.format("%s\n%s:%s:%s", o:match("/([%d-]+)\n?$"):match("^(%d+-%d+-%d+)-(%d%d)(%d%d)(%d%d)$"))
+                _latestTimeStamp = string.format("%s\n%s:%s:%s", o:match("/([%d-]+)\n?$"):match("^(%d+-%d+-%d+)-(%d%d)(%d%d)(%d%d)$"))
+                settings.set(USERDATA_TAG .. ".lastTimeStamp", _latestTimeStamp)
+                 dial.latestTimeStamp.text = _latestTimeStamp
             else
                 hs.printf("~~ %s: code = %s\n   %sstdout = %s\n   %sstderr = %s",
                     cmdText, tostring(c), string.rep(" ", #cmdText), tostring(o), string.rep(" ", #cmdText), tostring(e)
                 )
-                dial.latestTimeStamp.text = "** error **"
+                dial.latestTimeStamp.text = _latestTimeStamp .. "\n\n** error **"
             end
             module._task = nil
         end, fnutils.split(cmdText:match("^[^%s]+ (.*)"), " ")):start()
