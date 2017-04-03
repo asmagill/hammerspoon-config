@@ -340,8 +340,8 @@ local invokeTMUtil = function()
             if backup_phase == "Copying" then
                 setDial("running")
 --                local rpercent = o:match([[%s+"_raw_Percent" = "?(%d?%.?%d*)"?;]])
-                local rpercent = o:match([[%s+Percent = "?(%d?%.?%d*)"?;]])
-                local timeLeft = o:match([[%s+TimeRemaining = (%d?%.?%d*);]])
+                local rpercent = o:match([[%s+Percent = "?([%d%.e+-]+)"?;]])
+                local timeLeft = o:match([[%s+TimeRemaining = ([%d%.e+-]+);]])
                 dial.progress.startAngle = 90
                 if not rpercent then
                     rpercent = "0"
