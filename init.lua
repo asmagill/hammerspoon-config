@@ -145,10 +145,7 @@ if not minimal then -- normal init continues...
 
     -- override print so that it can render styled text objects directly in the console
     _asm.hs_default_print = print
-    print = function(...)
-        hs.rawprint(...)
-        console.printStyledtext(...)
-    end
+    print = console.printStyledtext
 
     resetSpaces = function()
         local s = require("hs._asm.undocumented.spaces")
