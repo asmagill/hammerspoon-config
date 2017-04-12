@@ -37,6 +37,7 @@ local USERDATA_TAG = "timemachine.widget"
 local module = {}
 module.timers = {}
 module._currentState = "idle"
+module._lastError = ""
 
 local screenFrame = screen.primaryScreen():fullFrame()
 local defaults = {
@@ -191,16 +192,15 @@ local _updateLatestBackupTime = function()
     else
         module._task = task.new(cmdText:match("^([^%s]+)"), function(c, o, e)
             if c == 0 then
---                print("'" .. o .. "'")
                 _latestTimeStamp = string.format("%s\n%s:%s:%s", o:match("/([%d-]+)\n?$"):match("^(%d+-%d+-%d+)-(%d%d)(%d%d)(%d%d)$"))
                 settings.set(USERDATA_TAG .. ".lastTimeStamp", _latestTimeStamp)
-                 dial.latestTimeStamp.text = _latestTimeStamp
             else
                 hs.printf("~~ %s: code = %s\n   %sstdout = %s\n   %sstderr = %s",
                     cmdText, tostring(c), string.rep(" ", #cmdText), tostring(o), string.rep(" ", #cmdText), tostring(e)
                 )
-                dial.latestTimeStamp.text = _latestTimeStamp .. "\n\n** error **"
+                module._lastError = string.format("%s -> %s", timestamp(), tostring(e))
             end
+            dial.latestTimeStamp.text = _latestTimeStamp
             module._task = nil
         end, fnutils.split(cmdText:match("^[^%s]+ (.*)"), " ")):start()
     end
@@ -267,7 +267,6 @@ local setDial
 setDial = function(state)
     local stateChanged = state ~= module._currentState
     if stateChanged then
---        print(timestamp() .. ":" .. USERDATA_TAG .. ": state change from " .. module._currentState .. " to " .. state)
         for k, v in pairs(module.timers) do v:stop() end
         module.timers = {}
         -- reset dial to stable known state
@@ -314,7 +313,7 @@ setDial = function(state)
             module.timers.spinTimer = timer.doEvery(.1, spinWedge())
         end
     else
-        print(timestamp() .. ":" .. USERDATA_TAG .. ": invalid state: " .. tostring(state))
+        hs.printf("%s:%s: invalid state: %s", timestamp(), USERDATA_TAG, tostring(state))
         setDial("idle")
     end
     module._currentState = state
@@ -345,7 +344,7 @@ local invokeTMUtil = function()
                 dial.progress.startAngle = 90
                 if not rpercent then
                     rpercent = "0"
-                    print(timestamp() .. ":" .. USERDATA_TAG .. ": bad percentage value: " .. " -> " .. o)
+                    hs.printf("%s:%s: bad percentage value -> %s", timestamp(), USERDATA_TAG, o)
                 end
                 if tonumber(rpercent) == 100 then
                     dial.progress.endAngle = 360
@@ -363,7 +362,7 @@ local invokeTMUtil = function()
             elseif backup_phase == "Finishing" or backup_phase == "ThinningPostBackup" then
                 setDial("finishing")
             else
-                print(timestamp() .. ":" .. USERDATA_TAG .. ": unhandled phase: " .. tostring(backup_phase) .. " -> " .. o)
+                hs.printf("%s:%s: unhandled phase: %s -> %s", timestamp(), USERDATA_TAG, tostring(backup_phase), o)
                 setDial("idle")
             end
         else
@@ -409,7 +408,7 @@ end
 -- no backup was occurring...
 module._longWatcher = timer.doEvery(60, function()
     if checkAndStartIfNeeded() then
-        print(timestamp() .. ":" .. USERDATA_TAG .. ": missed notification, but backup timer caught it at " .. module._currentState)
+        hs.printf("%s:%s: missed notification, but backup timer caught it at %s", timestamp(), USERDATA_TAG, module._currentState)
     end
 end)
 
