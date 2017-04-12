@@ -13,9 +13,13 @@
 
 cd /opt/amagill/src/hammerspoon/hammerspoon
 
+GITBRANCH=$(git symbolic-ref --short -q  HEAD)-$(git log -1 --format="%h")
+
 if [[ $1 != doc* ]]; then
     make clean
     make || exit
+
+    echo $GITBRANCH > build/Hammerspoon.app/Contents/Resources/gitbranch
 
     xattr -cr "build/Hammerspoon.app" # codesign has become more anal in 10.12
     # signing with self-signed cert so I no longer have to reset accessibility all the time

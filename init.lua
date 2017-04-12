@@ -179,7 +179,7 @@ if not minimal then -- normal init continues...
             for k,v in pairs(extras) do options[k] = v end
         end
 
-        if not _asm.mb then
+        if getmetatable(_asm.mb) ~= hs.getObjectMetatable("hs.webview") then
             _asm.mblog = {}
             _asm.mb = webview.newBrowser({
                 x = 100, y = 100,
@@ -220,7 +220,16 @@ print()
 print("++ Application Path: "..hs.processInfo.bundlePath)
 print("++    Accessibility: "..tostring(hs.accessibilityState()))
 if hs.processInfo.debugBuild then
+    local gitbranchfile = hs.processInfo.resourcePath .. "/gitbranch"
+    local gfile = io.open(gitbranchfile, "r")
+    if gfile then
+        GITBRANCH = gfile:read("l")
+        gfile:close()
+    else
+        GITBRANCH = "<" .. gitbranchfile .. " missing>"
+    end
     print("++    Debug Version: " .. hs.processInfo.version .. ", " .. hs.processInfo.buildTime)
+    print("++            Build: " .. GITBRANCH)
 else
     print("++  Release Version: " .. hs.processInfo.version)
 end
