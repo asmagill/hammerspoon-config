@@ -7,13 +7,15 @@
 --     [ ] hsdocs
 --     [ ] exportable html/md ?   -- not in initial release
 --     [ ] custom built docset ?  -- not in initial release
---   [ ] if not found, generate json then register
+--   [x] if not found, generate json then register
 --     [ ] should this be a separate task to occur after initial HS load?
 --
 -- [ ] see what changes `hs.doc` requires
 --   [ ] scheduled rescan?
 
 local module = {}
+-- won't default to debug in release... debating between "error" and "none" as default and
+-- using hs.settings to allow setting it based on user preference
 local log = require("hs.logger").new("spoonDocs", "debug")
 
 local documentationFileName = "docs.json"
