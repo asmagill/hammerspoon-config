@@ -154,8 +154,11 @@ module.displayFontList = function(pageNumber)
     if screen.mainScreen() ~= fDD.lastMainScreen then module.depopulateFontList() end
     if not fDD.background                        then module.populateFontList()   end
 
-    local fonts       = drawing.fontNames()
-    table.sort(fonts)
+    local fonts = {} -- fontNames returns a constants table, so we gotta do this if we want to rearrange the order
+    for i, v in ipairs(drawing.fontNames()) do table.insert(fonts, v) end
+    table.sort(fonts, function(a,b)
+        return a:match("^%.?(.*)$") < b:match("^%.?(.*)$")
+    end)
 
     pageNumber = pageNumber or fDD.previousPage + 1
     pageNumber = pageNumber % math.ceil(#fonts / fDD.perPage)
