@@ -11,11 +11,11 @@ local styledText  = require"hs.styledText".new
 
 local module = {}
 
-local function lookat(item)
-    local result = ""
-    for k,v in pairs(item) do result = result .. tostring(k) .. " = " .. tostring(v) .. "\n" end
-    return result
-end
+--local function lookat(item)
+--    local result = ""
+--    for k,v in pairs(item) do result = result .. tostring(k) .. " = " .. tostring(v) .. "\n" end
+--    return result
+--end
 
 module.apps = spotlight.new():queryString([[ kMDItemContentType = "com.apple.application-bundle" ]])
                              :callbackMessages("didUpdate", "didFinish")
@@ -36,9 +36,10 @@ module.chooser:fgColor{ list = "x11", name = "lightskyblue" }
                       if module.apps[i] then
                           local bid  = module.apps[i].kMDItemCFBundleIdentifier or "< not available >"
                           local path = module.apps[i].kMDItemPath
-                          if not path then
-                              print("~~ null path for " .. finspect(module.apps[i]) .. " " .. (lookat(module.apps[i]):gsub("%s+", " ")))
-                          else
+--                          if not path then
+--                              print("~~ null path for " .. finspect(module.apps[i]) .. " " .. (lookat(module.apps[i]):gsub("%s+", " ")))
+--                          else
+                          if path then
                               table.insert(results, {
                                   text       = module.apps[i].kMDItemDisplayName,
                                   subText    = path .. " (" .. bid .. ")",
