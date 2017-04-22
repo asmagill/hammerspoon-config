@@ -5,7 +5,7 @@ local fnutils     = require"hs.fnutils"
 local listener    = require"utils.speech"
 local application = require"hs.application"
 local styledtext  = require"hs.styledtext"
-
+local doc         = require"hs.doc"
 local watchable   = require"hs.watchable"
 local canvas      = require"hs.canvas"
 
@@ -268,27 +268,14 @@ table.insert(consoleToolbar, {
     default = false,
 })
 
--- get list of hammerspoon modules
+-- get list of hammerspoon modules and spoons
 local list = {}
-local examine
-examine = function(tblName)
-    local myTable = {}
-    for i, v in pairs(tblName) do
-        if type(v) == "table" then
-            if v.__name == v.__path then
-                table.insert(myTable, v.__name)
-                local more = examine(v)
-                if #more > 0 then
-                    for i2,v2 in ipairs(more) do table.insert(myTable, v2) end
-                end
-            end
-        end
-    end
-    return myTable
+for i,v in ipairs(doc._jsonForModules) do
+    table.insert(list, v.name)
 end
-list = examine(hs.help.hs)
-table.insert(list, "hs")
-
+for i,v in ipairs(doc._jsonForSpoons) do
+    table.insert(list, "spoon." .. v.name)
+end
 table.sort(list)
 
 table.insert(consoleToolbar, {
