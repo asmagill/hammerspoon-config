@@ -43,7 +43,7 @@ module.chooser:fgColor{ list = "x11", name = "lightskyblue" }
                               table.insert(results, {
                                   text       = module.apps[i].kMDItemDisplayName,
                                   subText    = path .. " (" .. bid .. ")",
-                                  image      = image.imageFromAppBundle(bid),
+                                  image      = bid and image.imageFromAppBundle(bid) or image.imageFromName(image.systemImageNames.StopProgressFreestandingTemplate),
                                   index      = i,
                                   path       = path,
                               })

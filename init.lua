@@ -122,17 +122,17 @@ if not minimal then -- normal init continues...
         os.execute("open x-man-page://"..tostring(which))
     end
 
-    timer.waitUntil(
-        load([[ return require("hs.window").get("Hammerspoon Console") ]]),
-        function(timerObject)
-            local win = window.get("Hammerspoon Console")
-            local screen = win:screen()
-            win:setTopLeft({
-                x = screen:frame().x + screen:frame().w - win:size().w,
-                y = screen:frame().y + screen:frame().h - win:size().h
-            })
-        end
-    )
+--    timer.waitUntil(
+--        load([[ return require("hs.window").get("Hammerspoon Console") ]]),
+--        function(timerObject)
+--            local win = window.get("Hammerspoon Console")
+--            local screen = win:screen()
+--            win:setTopLeft({
+--                x = screen:frame().x + screen:frame().w - win:size().w,
+--                y = screen:frame().y + screen:frame().h - win:size().h
+--            })
+--        end
+--    )
 
     -- hs.drawing.windowBehaviors.moveToActiveSpace
     console.behavior(2)

@@ -268,15 +268,17 @@ table.insert(consoleToolbar, {
     default = false,
 })
 
--- get list of hammerspoon modules and spoons
-local list = {}
-for i,v in ipairs(doc._jsonForModules) do
-    table.insert(list, v.name)
+local makeModuleListForMenu = function()
+    local searchList = {}
+    for i,v in ipairs(doc._jsonForModules) do
+        table.insert(searchList, v.name)
+    end
+    for i,v in ipairs(doc._jsonForSpoons) do
+        table.insert(searchList, "spoon." .. v.name)
+    end
+    table.sort(searchList, function(a, b) return a:lower() < b:lower() end)
+    return searchList
 end
-for i,v in ipairs(doc._jsonForSpoons) do
-    table.insert(list, "spoon." .. v.name)
-end
-table.sort(list)
 
 table.insert(consoleToolbar, {
     id = "searchID",
@@ -289,9 +291,18 @@ table.insert(consoleToolbar, {
 
     searchfield               = true,
     searchPredefinedMenuTitle = false,
-    searchPredefinedSearches  = list,
+    searchPredefinedSearches  = makeModuleListForMenu(),
     searchWidth               = 250,
 })
+
+module._moduleListChanges = watchable.watch("hs.doc", "changeCount", function(w, p, k, o, n)
+    if module.toolbar then
+        module.toolbar:modifyItem{
+            id = "searchID",
+            searchPredefinedSearches = makeModuleListForMenu(),
+        }
+    end
+end)
 
 module.toolbar = toolbar.new("_asmConsole_001")
       :addItems(consoleToolbar)

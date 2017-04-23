@@ -4,13 +4,17 @@ local window      = require("hs.window")
 local application = require("hs.application")
 local timer       = require("hs.timer")
 
-local consoleToggleTime = 1.5
-
 local module = {}
 module.watchables = watchable.new("popConsole", true)
 module.watchables.enabled = true
 
+module.popTimeout = 1
+module.debug   = false
+
 local prevWindowHolder
+
+local popTimer
+local popCount = 0
 
 local consoleToggleThingy = function()
 -- this attempts to keep track of the previously focused window and return us to it
@@ -27,25 +31,27 @@ local consoleToggleThingy = function()
     end
 end
 
-local startTime = nil
+local handlePops = function()
+    if module.debug then hs.printf("~~ heard %d pop(s) in %d second(s)", popCount, module.popTimeout) end
+    if popCount == 2 then
+        consoleToggleThingy()
+    end
+    popTimer = nil
+    popCount = 0
+end
+
+local consolePopWatcher = function()
+    if not popTimer then
+        popTimer = timer.doAfter(module.popTimeout, handlePops)
+    end
+    popCount = popCount + 1
+end
 
 module.callback = function(w)
     if w == 1 then     -- start "sssss" sound
---        hs.redshift.toggleInvert()
---        startTime = timer.secondsSinceEpoch()
-----       print(timestamp(), "S")
     elseif w == 2 then -- end "sssss" sound
---        hs.redshift.toggleInvert()
-----       print(timestamp(), "s")
---        local duration = timer.secondsSinceEpoch() - startTime
---        if duration >= consoleToggleTime and duration <= (consoleToggleTime + 1) then
---            consoleToggleThingy()
---        end
---        startTime = nil
     elseif w == 3 then -- mouth popping sound
---       print(timestamp(), "pop!")
-       consoleToggleThingy()
-        startTime = nil
+        consolePopWatcher()
     end
 end
 

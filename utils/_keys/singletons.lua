@@ -19,6 +19,8 @@ local alert       = require("hs.alert").show
 local bluetooth   = require("hs._asm.undocumented.bluetooth")
 local hints       = require("hs.hints")
 local window      = require("hs.window")
+local doc         = require("hs.doc")
+local timer       = require("hs.timer")
 
 local AppName   = (mjolnir and "mjolnir") or (hs and "hammerspoon") or "hellifino"
 
@@ -55,6 +57,16 @@ end)
 -- better for my habits to assign hotkey within Dash itself...
 --hotkey.bind(mods.CAsC, "d", function() application.launchOrFocus("Dash") end, nil)
 -- hotkey.bind(mods.CAsC, "n", function() application.launchOrFocus("Notational Velocity") end, nil)
+hotkey.bind(mods.CAsC, 'h', function()
+    if doc.hsdocs._browser then
+        doc.hsdocs._browser:show()
+        timer.waitUntil(function() return doc.hsdocs._browser:hswindow() end,
+                        function(t) doc.hsdocs._browser:hswindow():focus() end,
+                        .1)
+    else
+        doc.hsdocs.help()
+    end
+end)
 hotkey.bind(mods.CAsC, "n", function() application.launchOrFocus("nvALT") end, nil)
 hotkey.bind(mods.CASC, "b", function()
     alert("Bluetooth is power is now: "..
