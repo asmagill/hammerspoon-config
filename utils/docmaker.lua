@@ -33,6 +33,29 @@ genMarkdown = function(mods, withTOC)
         results = results.."\n"
         results = results..m.doc.."\n"
         results = results.."\n"
+
+        results = results .. [[
+
+A precompiled version of this module can be found in this directory with a name along the lines of `]] .. m.name:match("^.-([^%.]+)$") .. [[-v0.x.tar.gz`. This can be installed by downloading the file and then expanding it as follows:
+
+~~~sh
+$ cd ~/.hammerspoon # or wherever your Hammerspoon init.lua file is located
+$ tar -xzf ~/Downloads/]] .. m.name:match("^.-([^%.]+)$") .. [[-v0.x.tar.gz # or wherever your downloads are located
+~~~
+
+If you wish to build this module yourself, and have XCode installed on your Mac, the best way (you are welcome to clone the entire repository if you like, but no promises on the current state of anything else) is to download `init.lua`, `internal.m`, and `Makefile` (at present, nothing else is required) into a directory of your choice and then do the following:
+
+~~~sh
+$ cd wherever-you-downloaded-the-files
+$ [HS_APPLICATION=/Applications] [PREFIX=~/.hammerspoon] make docs install
+~~~
+
+If your Hammerspoon application is located in `/Applications`, you can leave out the `HS_APPLICATION` environment variable, and if your Hammerspoon files are located in their default location, you can leave out the `PREFIX` environment variable.  For most people it will be sufficient to just type `make docs install`.
+
+As always, whichever method you chose, if you are updating from an earlier version it is recommended to fully quit and restart Hammerspoon after installing this module to ensure that the latest version of the module is loaded into memory.
+
+]]
+
         results = results.."### Usage\n"
         results = results.."~~~lua\n"
         results = results..m.name:match("^.-([^%.]+)$").." = require(\""..m.name.."\")\n"
@@ -93,7 +116,7 @@ genMarkdown = function(mods, withTOC)
 
 >     The MIT License (MIT)
 >
-> Copyright (c) 2016 Aaron Magill
+> Copyright (c) 2017 Aaron Magill
 >
 > Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 >
