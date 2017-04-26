@@ -58,13 +58,17 @@ end)
 --hotkey.bind(mods.CAsC, "d", function() application.launchOrFocus("Dash") end, nil)
 -- hotkey.bind(mods.CAsC, "n", function() application.launchOrFocus("Notational Velocity") end, nil)
 hotkey.bind(mods.CAsC, 'h', function()
-    if doc.hsdocs._browser then
-        doc.hsdocs._browser:show()
-        timer.waitUntil(function() return doc.hsdocs._browser:hswindow() end,
-                        function(t) doc.hsdocs._browser:hswindow():focus() end,
-                        .1)
+    if doc.hsdocs._browser and doc.hsdocs._browser:hswindow() and doc.hsdocs._browser:hswindow() == window.frontmostWindow() then
+        doc.hsdocs._browser:hide()
     else
-        doc.hsdocs.help()
+        if doc.hsdocs._browser then
+            doc.hsdocs._browser:show()
+            timer.waitUntil(function() return doc.hsdocs._browser:hswindow() end,
+                            function(t) doc.hsdocs._browser:hswindow():focus() end,
+                            .1)
+        else
+            doc.hsdocs.help()
+        end
     end
 end)
 hotkey.bind(mods.CAsC, "n", function() application.launchOrFocus("nvALT") end, nil)
