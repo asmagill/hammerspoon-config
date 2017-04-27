@@ -11,6 +11,8 @@ local stext        = require("hs.styledtext")
 local timer        = require("hs.timer")
 local reachability = require("hs.network.reachability")
 
+module.retry = 300
+
 -- _asm.monitoredLocations should be an array of the format:
 -- {
 --     {
@@ -85,19 +87,19 @@ geocoderRequest = function()
                     module._geocoder = nil
                 else
                     if module.internetCheck:status() & reachability.flags.reachable > 0 then
-                        print("~~ " .. timestamp() .. " geocoder error: " .. result .. ", will try again in 60 seconds")
+                        print("~~ " .. timestamp() .. " geocoder error: " .. result .. ", will try again in " .. tostring(module.retry) .. " seconds")
                     elseif not notifiedAboutInternet then
                         print("~~ " .. timestamp() .. " geocoder requires internet access, waiting until reachability changes")
                         notifiedAboutInternet = true
                     end
-                    module._geocoder = timer.doAfter(60, function()
+                    module._geocoder = timer.doAfter(module.retry, function()
                         module._geocoder = nil
                         geocoderRequest()
                     end)
                 end
             end)
         else
-            module._geocoder = timer.doAfter(60, function()
+            module._geocoder = timer.doAfter(module.retry, function()
                 module._geocoder = nil
                 geocoderRequest()
             end)
