@@ -56,14 +56,6 @@ local toggleWatcher = function(setItTo)
     else
         module.watchables.status = not module.watchables.status
     end
---    if current then
---        module.watchables.status = false
---        hsConsoleWatcher:stop()
---    else
---        module.watchables.status = true
---        hsConsoleWatcher:start()
---    end
-    settings.set("_asm.autohide.console", module.watchables.status)
     return module.watchables.status
 end
 
@@ -155,6 +147,7 @@ module.toggleForWatchablesEnabled = watchable.watch("hammerspoonMenu.status", fu
     else
         hsConsoleWatcher:stop()
     end
+    settings.set("_asm.autohide.console", value)
 end)
 
 if module.watchables.status then
