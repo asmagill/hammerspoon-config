@@ -12,15 +12,6 @@
 -- And I added a percentage readout and tweaked the animation some...
 --
 local canvas   = require "hs.canvas"
-
--- I have a timestamp function globally defined, but in a pinch, this will do something similar:
-if not timestamp then
-    timestamp = function(date)
-        date = date or timer.secondsSinceEpoch()
-        return os.date("%F %T" .. string.format("%-5s", ((tostring(date):match("(%.%d+)$")) or "")), math.floor(date))
-    end
-end
-
 local settings = require "hs.settings"
 local timer    = require "hs.timer"
 local screen   = require "hs.screen"
@@ -34,7 +25,26 @@ local stext    = require("hs.styledtext").new
 
 local USERDATA_TAG = "timemachine.widget"
 
+-- I have a timestamp function globally defined, but in a pinch, this will do something similar:
+if not timestamp then
+    timestamp = function(date)
+        date = date or timer.secondsSinceEpoch()
+        return os.date("%F %T" .. string.format("%-5s", ((tostring(date):match("(%.%d+)$")) or "")), math.floor(date))
+    end
+end
+
 local module = {}
+
+module.disabled = function(state)
+    if state ~= nil then
+      settings.set(USERDATA_TAG .. ".disabled", state and true or false)
+      print("reload required for this to take affect")
+    end
+    return settings.get(USERDATA_TAG .. ".disabled")
+end
+
+if settings.get(USERDATA_TAG .. ".disabled") then return module end
+
 module.timers = {}
 module._currentState = "idle"
 module._lastError = ""
