@@ -70,9 +70,14 @@ local caffeinate = require("hs.caffeinate")
 module.watchCaffeinatedState = watchable.watch("generalStatus.caffeinatedState", function(w, p, i, old, new)
 --     print(string.format("~~~ %s popConsole caffeinatedWatcher called with %s (%d), was %s (%d), currently %s", timestamp(), caffeinate.watcher[new], new, caffeinate.watcher[old], old, module.watchables.enabled))
     if new == 1 or new == 10 then -- systemWillSleep or screensDidLock
+        module.wasActive = module.watchables.enabled
         module.watchables.enabled = false
     elseif new == 0 or new == 11 then -- systemDidWake or screensDidUnlock
-        module.watchables.enabled = true
+        if type(module.wasActive) == "boolean" then
+            module.watchables.enabled = module.wasActive
+        else
+            module.watchables.enabled = true
+        end
     end
 end)
 
