@@ -234,3 +234,6 @@ else
     print("++  Release Version: " .. hs.processInfo.version)
 end
 print()
+
+if not hs.ipc2 then hs.ipc2 = require("hs.ipc2") end
+
