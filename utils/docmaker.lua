@@ -36,6 +36,8 @@ genMarkdown = function(mods, withTOC)
 
         results = results .. [[
 
+### Installation
+
 A precompiled version of this module can be found in this directory with a name along the lines of `]] .. m.name:match("^.-([^%.]+)$") .. [[-v0.x.tar.gz`. This can be installed by downloading the file and then expanding it as follows:
 
 ~~~sh
