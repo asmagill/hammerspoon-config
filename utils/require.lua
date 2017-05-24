@@ -6,18 +6,19 @@
 local module = {}
 
 local luafs = require("hs.fs")
+local log   = require("hs.logger").new("utils.require", require("hs.settings").get("utils.require.logLevel") or "warning")
 
 -- private variables and methods -----------------------------------------
 
 ---- Public interface ------------------------------------------------------
 
---- utils.requirePlus.requirePath(path[, output]) -> table-of-modules
+--- utils.requirePlus.requirePath(path) -> table-of-modules
 --- Function
---- Parses `package.path` and `package.cpath` by appending `path` to it and seeing what modules or files may exist at each location for loading, then requires them.  If `output` is true, then a log message is printed to the hammerspoon console for each file loaded. This function returns a table whose individual keys contain the loaded modules.
+--- Parses `package.path` and `package.cpath` by appending `path` to it and seeing what modules or files may exist at each location for loading, then requires them.
 ---
 --- This only checks at the level of `path` for a match to ?.lua or ?/init.lua (or ?.so).  It does not recurse further subdirectories.  Load order is unspecified, so each module must (they really should anyways) make sure to require anything necessary for their successful loading internally, and not assume a specific load order.
 ---
-module.requirePath = function(path, output)
+module.requirePath = function(path)
     local prefix, _ = string.gsub(path,"/",".")
     local prefix_dir, _ = string.gsub(path,"%.","/")
     local package_list, loaded = {}, {}
@@ -44,9 +45,9 @@ module.requirePath = function(path, output)
         end
     end
 
-    if output then print("++ Load: "..prefix.." -") end
+    log.f("Load: %s -", prefix)
     for i,v in pairs(package_list) do
-        if output then print("         "..prefix.."."..i) end
+        log.f("      %s.%s", prefix, i)
         loaded[i] = require(prefix.."."..i)
     end
 
@@ -64,21 +65,21 @@ end
 ---     export LUA_CPATH='/usr/local/lib/lua/5.2/?.so;...'
 ---
 module.updatePaths = function(label, command, append)
-    print("++ Updating paths for '"..label.."'...")
+    log.f("Updating paths for '%s'...", label)
     local paths = { "", "" }
 
     if type(command) == "string" then
         command = tostring(command)
         local results, _, _, rc = hs.execute(command, true)
         if rc ~= 0 then
-            print("\tFailed: rc="..rc.." output="..results.." command="..command)
+            log.ef("Failed: rc=%s output=%s command=%s", rc, results, command)
         else
             paths = table.pack(results:match("='(.*)'%s.*='(.*)'"))
         end
     elseif type(command) == "table" then
         paths = command
     else
-        print("\tInvalid command specifier: ("..type(command)..") "..tostring(command))
+        log.ef("Invalid command specifier: (%s) %s", type(command), tostring(command))
     end
     if append then
         package.path = package.path..";"..paths[1]

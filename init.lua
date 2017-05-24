@@ -84,9 +84,9 @@ if not minimal then -- normal init continues...
 
     _asm.watchables = require("utils.watchables")
 
-    _asm._keys    = requirePlus.requirePath("utils._keys", true)
-    _asm._actions = requirePlus.requirePath("utils._actions", true)
-    _asm._menus   = requirePlus.requirePath("utils._menus", true)
+    _asm._keys    = requirePlus.requirePath("utils._keys")
+    _asm._actions = requirePlus.requirePath("utils._actions")
+    _asm._menus   = requirePlus.requirePath("utils._menus")
     -- need to rethink requirePlus so that it can handle folders with name/init.lua
     _asm._menus.XProtectStatus = require"utils._menus.XprotectStatus"
 
@@ -205,7 +205,7 @@ if not minimal then -- normal init continues...
     _asm.gc = require("utils.gc")
     -- _asm.gc.patch("hs.timer")
     -- _asm.gc.patch("hs._asm.enclosure.canvas")
-    _asm.gc.patch("hs._asm.enclosure")
+    -- _asm.gc.patch("hs._asm.enclosure")
     -- _asm.gc.patch("hs._asm.canvas")
 else
     require("utils._actions.inspectors")
