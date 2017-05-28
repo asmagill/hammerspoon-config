@@ -14,6 +14,9 @@ local watchable = require"hs.watchable"
 
 local window      = require"hs.window"
 
+local hue   = require("hs._asm.hue")
+local timer = require("hs.timer")
+
 local commands = {}
 local title    = "Hammerspoon"
 local listenerCallback = function(listenerObj, text)
@@ -148,13 +151,60 @@ end
 
 placeholder.init = function() return module.init() end
 
-module.add("Open Hammerspoon Console", hs.openConsole)
-module.add("Open System Console", function() require("hs.application").launchOrFocus("Console") end)
-module.add("Open Editor", function() require("hs.application").launchOrFocus("BBEdit") end)
-module.add("Open Browser", function() require("hs.application").launchOrFocus("Safari") end)
-module.add("Open SmartGit", function() require("hs.application").launchOrFocus("SmartGit") end)
-module.add("Open Mail", function() require("hs.application").launchOrFocus("Mail") end)
-module.add("Open Terminal Application", function() require("hs.application").launchOrFocus("Terminal") end)
+module.add("Hammerspoon Console", hs.openConsole)
+module.add("System Console", function() require("hs.application").launchOrFocus("Console") end)
+-- module.add("Open Editor", function() require("hs.application").launchOrFocus("BBEdit") end)
+-- module.add("Open Browser", function() require("hs.application").launchOrFocus("Safari") end)
+-- module.add("Open SmartGit", function() require("hs.application").launchOrFocus("SmartGit") end)
+-- module.add("Open Mail", function() require("hs.application").launchOrFocus("Mail") end)
+module.add("Terminal", function() require("hs.application").launchOrFocus("Terminal") end)
+
+local extraCommandsTime = 10
+
+local lightsOnFunction
+lightsOnFunction = function()
+    module.remove("Lights")
+    module.add("Lights", function() end)
+
+    module.add("On", function()
+        for i, v in ipairs(hue.default:paths("lights", { on = false })) do hue.default:put(v .. "/state", { on = true }) end
+        hue.default:put(hue.default:paths("lights", { type = "color" }, true)[1] .. "/state", { effect="none" })
+        hue.default:put(hue.default:paths("lights", { type = "color" }, true)[1] .. "/state", { ct = 366 })
+        module._lightTimer:setNextTrigger(extraCommandsTime)
+    end)
+    module.add("Off", function()
+        for i, v in ipairs(hue.default:paths("lights", { on = true })) do hue.default:put(v .. "/state", { on = false }) end
+        module._lightTimer:setNextTrigger(extraCommandsTime)
+    end)
+    module.add("Dimmer", function()
+        for i, v in ipairs(hue.default:paths("lights", { on = true })) do hue.default:put(v .. "/state", { bri_inc = -64 }) end
+        module._lightTimer:setNextTrigger(extraCommandsTime)
+    end)
+    module.add("Brighter", function()
+        for i, v in ipairs(hue.default:paths("lights", { on = true })) do hue.default:put(v .. "/state", { bri_inc = 64 }) end
+        module._lightTimer:setNextTrigger(extraCommandsTime)
+    end)
+    module.add("Night Mode", function()
+        for i, v in ipairs(hue.default:paths("lights", { on = true })) do hue.default:put(v .. "/state", { on = false }) end
+        hue.default:put(hue.default:paths("lights", { type = "color" }, true)[1] .. "/state", { on = true, bri = 32, sat = 254, effect="colorloop" })
+        module._lightTimer:setNextTrigger(extraCommandsTime)
+    end)
+    module._lightTimer = timer.doAfter(extraCommandsTime, function()
+        module._lightTimer:stop()
+        module._lightTimer = nil
+        module.remove("Lights")
+        module.add("Lights", lightsOnFunction)
+
+        module.remove("On")
+        module.remove("Off")
+        module.remove("Dimmer")
+        module.remove("Brighter")
+        module.remove("Night Mode")
+    end)
+end
+
+module.add("Lights", lightsOnFunction)
+
 module.add("Re-Load Hammerspoon", hs.reload)
 module.add("Re-Launch Hammerspoon", _asm.relaunch)
 module.add("Toggle Command List", function()

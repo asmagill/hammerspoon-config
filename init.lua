@@ -202,7 +202,9 @@ if not minimal then -- normal init continues...
 
     history = _asm._actions.consoleHistory.history
 
-    _asm.gc = require("utils.gc")
+    _asm.gc  = require("utils.gc")
+    _asm.hue = require("hs._asm.hue")
+
     -- _asm.gc.patch("hs.timer")
     -- _asm.gc.patch("hs._asm.enclosure.canvas")
     -- _asm.gc.patch("hs._asm.enclosure")
