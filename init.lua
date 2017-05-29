@@ -7,9 +7,15 @@ local minimal = false
 -- I don't recommend this unless you like doing your own troubleshooting
 -- since it defeats some of the data captured for crash reports.
 --
-
-hs.require = require
+_asm = {}
+_asm.hs_default_require = require
 require = rawrequire
+
+-- override print so that it can render styled text objects directly in the console
+-- this needs to happen before hs.ipc is loaded since it also overrides print for mirroring
+local console     = require("hs.console")
+_asm.hs_default_print = print
+print = console.printStyledtext
 
 local requirePlus = require("utils.require")
 local settings    = require("hs.settings")
@@ -21,7 +27,6 @@ local window      = require("hs.window")
 local timer       = require("hs.timer")
 local drawing     = require("hs.drawing")
 local screen      = require("hs.screen")
-local console     = require("hs.console")
 local stext       = require("hs.styledtext")
 local fnutils     = require("hs.fnutils")
 local crash       = require("hs.crash")
@@ -74,8 +79,6 @@ if not minimal then -- normal init continues...
     -- For my convenience while testing and screwing around...
     -- If something grows into usefulness, I'll modularize it.
     _xtras = require("hs._asm.extras")
-
-    _asm = {}
 
     _asm.relaunch = function()
         os.execute([[ (while ps -p ]]..hs.processInfo.processID..[[ > /dev/null ; do sleep 1 ; done ; open -a "]]..hs.processInfo.bundlePath..[[" ) & ]])
@@ -142,10 +145,6 @@ if not minimal then -- normal init continues...
     console.alpha(.9)
 
     _asm.consoleToolbar = require"utils.consoleToolbar"
-
-    -- override print so that it can render styled text objects directly in the console
-    _asm.hs_default_print = print
-    print = console.printStyledtext
 
     resetSpaces = function()
         local s = require("hs._asm.undocumented.spaces")
@@ -236,6 +235,3 @@ else
     print("++  Release Version: " .. hs.processInfo.version)
 end
 print()
-
-if not hs.ipc2 then hs.ipc2 = require("hs.ipc2") end
-

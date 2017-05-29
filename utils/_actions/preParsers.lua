@@ -36,11 +36,11 @@ hs._consoleInputPreparser = function(s)
 end
 
 -- pre-parser for ipc's command line tool
-local ipcRawhandler = ipc.handler
-ipc.handler = function(str)
-    str = preParser(str)
-    return ipcRawhandler(str)
-end
+-- local ipcRawhandler = ipc.handler
+-- ipc.handler = function(str)
+--     str = preParser(str)
+--     return ipcRawhandler(str)
+-- end
 
 module.help = function(...)
     local output = [[
