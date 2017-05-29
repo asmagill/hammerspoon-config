@@ -50,7 +50,7 @@ module.chooser:fgColor{ list = "x11", name = "lightskyblue" }
                           end
                       end
                   end
-                  table.sort(results, function(a, b) return a.text < b.text end)
+                  table.sort(results, function(a, b) return tostring(a.text) < tostring(b.text) end)
                   return results
               end):rightClickCallback(function(row)
                   if row == 0 then print("no row") ; return end
