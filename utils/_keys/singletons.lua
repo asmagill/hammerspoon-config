@@ -80,7 +80,7 @@ hotkey.bind(mods.CASC, "b", function()
 hotkey.bind(mods.CASC, "e", nil, function()
         os.execute("/usr/local/bin/edit ~/."..AppName.." /opt/amagill/src/hammerspoon")
     end)
-hotkey.bind(mods.CASC, "3", function() application.launchOrFocus("Calculator") end, nil)
+-- hotkey.bind(mods.CASC, "3", function() application.launchOrFocus("Calculator") end, nil)
 
 local windowHolder
 hotkey.bind(mods.CAsC, "r", function()
