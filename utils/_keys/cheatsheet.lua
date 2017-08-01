@@ -105,10 +105,8 @@ getAllMenuItems = function(t)
                 elseif(val['AXRole'] =="AXMenuItem" and not val['AXChildren']) then
                     if( val['AXMenuItemCmdModifiers'] ~='0' and (val['AXMenuItemCmdChar'] ~='' or type(val['AXMenuItemCmdGlyph']) == "number")) then
                         if val['AXMenuItemCmdChar'] == "" then
---                           menu = menu.."<li><div class='cmdModifiers'>"..(commandEnum[val['AXMenuItemCmdModifiers']] or tostring(val['AXMenuItemCmdModifiers']).."?").." "..(glyphs[val['AXMenuItemCmdGlyph']] or "?"..tostring(val['AXMenuItemCmdGlyph']).."?").."</div><div class='cmdtext'>".." "..val['AXTitle'].."</div></li>"
                             menu = menu.."<li><div class='cmdModifiers'>"..modifiersToString(val['AXMenuItemCmdModifiers']).." "..(glyphs[val['AXMenuItemCmdGlyph']] or "?"..tostring(val['AXMenuItemCmdGlyph']).."?").."</div><div class='cmdtext'>".." "..val['AXTitle'].."</div></li>"
                         else
---                           menu = menu.."<li><div class='cmdModifiers'>"..(commandEnum[val['AXMenuItemCmdModifiers']] or tostring(val['AXMenuItemCmdModifiers']).."?").." "..val['AXMenuItemCmdChar'].."</div><div class='cmdtext'>".." "..val['AXTitle'].."</div></li>"
                             menu = menu.."<li><div class='cmdModifiers'>"..modifiersToString(val['AXMenuItemCmdModifiers']).." "..val['AXMenuItemCmdChar'].."</div><div class='cmdtext'>".." "..val['AXTitle'].."</div></li>"
                         end
                     end
@@ -125,8 +123,8 @@ local generateHtml = function()
     --local focusedApp= hs.window.frontmostWindow():application()
     local focusedApp = require("hs.application").frontmostApplication()
     local appTitle = focusedApp:title()
-    local allMenuItems = focusedApp:getMenuItems();
-    local myMenuItems = getAllMenuItems(allMenuItems)
+    local allMenuItems = focusedApp:getMenuItems()
+    local myMenuItems = allMenuItems and getAllMenuItems(allMenuItems) or "<i>&nbsp;&nbsp;application has no menu items</i>"
 
     local html = [[
         <!DOCTYPE html>
