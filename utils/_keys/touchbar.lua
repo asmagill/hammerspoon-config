@@ -1,12 +1,12 @@
 
 --
--- Sample Use of hs._asm.touchbar
+-- Sample Use of hs._asm.undocumented.touchbar
 --
 -- Copy this file into your ~/.hammerspoon/ directory and then type (or add to your init.lua) the
 -- following: myToolbar = require("touchbar")
 --
 --
--- This example uses the hs._asm.touchbar module to create an on-screen visible representation of the
+-- This example uses the hs._asm.undocumented.touchbar module to create an on-screen visible representation of the
 -- Apple Touch Bar on your screen.
 --
 -- When you press and hold the right Option key for at least 2 seconds, the touch bar's visibility
@@ -32,7 +32,7 @@ module.movableBorderColor = { red = 1 }
 -- set the default inactiveAlpha
 module.inactiveAlpha = .4
 
-local touchbar = require("hs._asm.touchbar")
+local touchbar = require("hs._asm.undocumented.touchbar")
 local eventtap = require("hs.eventtap")
 local timer    = require("hs.timer")
 local screen   = require("hs.screen")
