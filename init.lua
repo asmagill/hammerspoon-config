@@ -31,6 +31,7 @@ local stext       = require("hs.styledtext")
 local fnutils     = require("hs.fnutils")
 local crash       = require("hs.crash")
 local logger      = require("hs.logger")
+local touchbar    = require("hs._asm.undocumented.touchbar")
 
 timestamp = function(date)
     date = date or timer.secondsSinceEpoch()
@@ -140,9 +141,15 @@ if not minimal then -- normal init continues...
     -- hs.drawing.windowBehaviors.moveToActiveSpace
     console.behavior(2)
     console.smartInsertDeleteEnabled(false)
-    console.windowBackgroundColor({red=.6,blue=.7,green=.7})
-    console.outputBackgroundColor({red=.8,blue=.8,green=.8})
-    console.alpha(.9)
+    if console.darkMode() then
+        console.outputBackgroundColor{ white = 0 }
+        console.consoleCommandColor{ white = 1 }
+        console.alpha(.8)
+    else
+        console.windowBackgroundColor({red=.6,blue=.7,green=.7})
+        console.outputBackgroundColor({red=.8,blue=.8,green=.8})
+        console.alpha(.9)
+    end
 
     _asm.consoleToolbar = require"utils.consoleToolbar"
 
@@ -208,6 +215,12 @@ if not minimal then -- normal init continues...
     -- _asm.gc.patch("hs._asm.enclosure.canvas")
     -- _asm.gc.patch("hs._asm.enclosure")
     -- _asm.gc.patch("hs._asm.canvas")
+
+    _asm.tbi = touchbar.item.newButton(image.imageFromName(image.systemImageNames.ApplicationIcon), "HSSystemButton")
+                            :callback(function(obj) hs.openConsole() end)
+                            :addToSystemTray(true)
+
+
 else
     require("utils._actions.inspectors")
     print("++ Running minimal configuration")

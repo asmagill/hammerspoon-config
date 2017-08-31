@@ -46,7 +46,7 @@ imageHolder[1] = {
     }),
     type = "text",
 }
-local cheatSheetOn = imageHolder:imageFromCanvas()
+local cheatSheetOn = imageHolder:imageFromCanvas():template(true)
 imageHolder[2] = {
     action = "stroke",
     closed = false,
@@ -63,7 +63,7 @@ imageHolder[3] = {
     strokeWidth = 3,
     type = "segments",
 }
-local cheatSheetOff = imageHolder:imageFromCanvas()
+local cheatSheetOff = imageHolder:imageFromCanvas():template(true)
 imageHolder = imageHolder:delete()
 
 module.watchCheatSheetStatus = watchable.watch("cheatsheet.enabled", function(w, p, i, oldValue, value)
@@ -79,7 +79,7 @@ imageHolder[1] = {
     }),
     type = "text",
 }
-local popConsoleOn = imageHolder:imageFromCanvas()
+local popConsoleOn = imageHolder:imageFromCanvas()--:template(true)
 imageHolder[2] = {
     action = "stroke",
     closed = false,
@@ -96,7 +96,7 @@ imageHolder[3] = {
     strokeWidth = 3,
     type = "segments",
 }
-local popConsoleOff = imageHolder:imageFromCanvas()
+local popConsoleOff = imageHolder:imageFromCanvas()--:template(true)
 imageHolder = imageHolder:delete()
 
 module.watchPopConsoleStatus = watchable.watch("popConsole.enabled", function(w, p, i, oldValue, value)
@@ -112,7 +112,7 @@ imageHolder[1] = {
     }),
     type = "text",
 }
-local viKeysOn = imageHolder:imageFromCanvas()
+local viKeysOn = imageHolder:imageFromCanvas():template(true)
 imageHolder[2] = {
     action = "stroke",
     closed = false,
@@ -129,7 +129,7 @@ imageHolder[3] = {
     strokeWidth = 3,
     type = "segments",
 }
-local viKeysOff = imageHolder:imageFromCanvas()
+local viKeysOff = imageHolder:imageFromCanvas():template(true)
 imageHolder = imageHolder:delete()
 
 module.watchViKeysStatus = watchable.watch("viKeys.enabled", function(w, p, i, oldValue, value)
@@ -308,6 +308,7 @@ module.toolbar = toolbar.new("_asmConsole_001")
       :addItems(consoleToolbar)
       :canCustomize(true)
       :autosaves(true)
+      :separator(false)
       :setCallback(function(...)
                         print("+++ Oops! You better assign me something to do!")
                    end)
