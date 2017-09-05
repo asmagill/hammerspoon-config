@@ -33,22 +33,9 @@ local crash       = require("hs.crash")
 local logger      = require("hs.logger")
 local touchbar    = require("hs._asm.undocumented.touchbar")
 
-timestamp = function(date)
-    date = date or timer.secondsSinceEpoch()
-    return os.date("%F %T" .. string.format("%-5s", ((tostring(date):match("(%.%d+)$")) or "")), math.floor(date))
-end
-
--- due to the way dSYM libraries are loaded, this can only work for actual lua files, but it's still
--- better then constantly restarting Hammerspoon to clear or ignore package.path during development
-weakrequire = function(what)
-    local path, err = package.searchpath(what, package.path)
-
-    if path then
-        return dofile(path)
-    else
-        error("no module " .. what .. " found" .. err, 2)
-    end
-end
+-- something steals focus from an application which was focused before HS starts; capture that
+-- window and then we'll switch back to it at the end
+local fmW = window.frontmostWindow()
 
 crash.crashLogToNSLog = true
 -- local coreCrashLog = crash._crashLog
@@ -248,3 +235,8 @@ else
     print("++  Release Version: " .. hs.processInfo.version)
 end
 print()
+
+-- refocus captured window from begining
+timer.doAfter(1, function()
+    if fmW then fmW:focus() end
+end)

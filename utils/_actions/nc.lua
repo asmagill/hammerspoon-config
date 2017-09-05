@@ -1,4 +1,5 @@
 local module = {}
+require("utils._actions.inspectors")
 
 local ignoreInWorkspaceObserver = {
     NSWorkspaceActiveSpaceDidChangeNotification = true,

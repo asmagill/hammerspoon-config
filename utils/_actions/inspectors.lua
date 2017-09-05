@@ -1,6 +1,12 @@
 local module = {}
+local timer = require("hs.timer")
 
 inspect = require("hs.inspect")
+
+timestamp = function(date)
+    date = date or timer.secondsSinceEpoch()
+    return os.date("%F %T" .. string.format("%-5s", ((tostring(date):match("(%.%d+)$")) or "")), math.floor(date))
+end
 
 local inspectWrapper = function(what, how, actual)
     how = how or {}
@@ -14,7 +20,17 @@ inspecta = function(what, how) return inspectWrapper(what, how, {
     process = function(i,p) if p[#p] ~= "n" then return i end end
 }) end
 
-finspect = function(what, ...)
+finspect = function(...)
+    local args = table.pack(...)
+    if args.n == 1 and type(args[1]) == "table" then
+        args = args[1]
+    else
+        args.n = nil -- supress the count from table.pack
+    end
+    return (inspect(args):gsub("%s+", " "))
+end
+
+finspect2 = function(what, ...)
     local fn, opt = inspect, {}
     for i,v in ipairs(table.pack(...)) do
         -- "inspect" is a table with a __call metamethod, so...
@@ -30,19 +46,27 @@ module.help = function(...)
 
 This module creates some shortcuts for inspecting Lua data:
 
-    inspect  - equivalent to `hs.inspect`
+    inspect   - equivalent to `hs.inspect`
 
-    inspectm - include options { metatables = 1} by default
-    inspect1 - include options { depth = 1 } by default
-    inspect2 - include options { depth = 2 } by default
-    inspecta - includes process function in options table to remove `n` key from tables;
-               this allows tables which contain non-numeric keys only because of
-               table.pack to be treated as the arrays they really are.
+    inspectm  - include options { metatables = 1} by default
+    inspect1  - include options { depth = 1 } by default
+    inspect2  - include options { depth = 2 } by default
+    inspecta  - includes process function in options table to remove `n` key from tables;
+                this allows tables which contain non-numeric keys only because of
+                table.pack to be treated as the arrays they really are.
 
-    finspect(what, [fn], [opt]) - inspects `what` with the function `fn` (default is
-                                  "inspect") with the specfied options (default {}) and
-                                  "flattens" the output by replacing run-on spaces, tabs,
-                                  and newlines into a single space.
+    finspect(...) - inspects the arguments, first combining them into a table if more
+                    then one or if the one provided is not already a table. Flattens
+                    the output by replacing run-on spaces, tabs, and newlines into a
+                    single space.
+
+    finspect2(what, [fn], [opt]) - inspects `what` with the function `fn` (default is
+                                   "inspect") with the specfied options (default {}) and
+                                   "flattens" the output by replacing run-on spaces, tabs,
+                                   and newlines into a single space.
+
+    timestamp([number]) - returns the current or specified time as a string in the format
+                          of 'YYYY-MM-DD hh:mm:ss.nnnn'
 
     Note that a second argument to any of the `inspect*` shortcuts is appended to the
     default table described; i.e. if you specify the same key in your options table,
