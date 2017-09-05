@@ -3,19 +3,22 @@
 -- Modified to more closely match my usage style
 
 -- I prefer a different type of key invocation/remove setup
-local alert    = require("hs.alert")
-local hotkey   = require("hs.hotkey")
-local timer    = require("hs.timer")
-local eventtap = require("hs.eventtap")
-local notify   = require("hs.notify")
-local distributednotifications = require"hs.distributednotifications"
-local fnutils  = require "hs.fnutils"
+local alert       = require("hs.alert")
+local hotkey      = require("hs.hotkey")
+local timer       = require("hs.timer")
+local eventtap    = require("hs.eventtap")
+local notify      = require("hs.notify")
+local dn          = require("hs.distributednotifications")
+local fnutils     = require("hs.fnutils")
+local application = require("hs.application")
+local watchables  = require("hs.watchable")
+local screen      = require("hs.screen")
+local webview     = require("hs.webview")
+local drawing     = require("hs.drawing")
 
-local watchables = require("hs.watchable")
+local events = eventtap.event.types
 
-local events   = eventtap.event.types
-
-local module   = {}
+local module = {}
 
 module.watchables = watchables.new("cheatsheet", true)
 
@@ -87,7 +90,7 @@ local modifiersToString = function(mods)
     return result
 end
 
-local glyphs = require("hs.application").menuGlyphs
+local glyphs = application.menuGlyphs
 
 local getAllMenuItems -- forward reference, since we're called recursively
 getAllMenuItems = function(t)
@@ -119,11 +122,11 @@ getAllMenuItems = function(t)
     return menu
 end
 
-local generateHtml = function()
+local generateHtml = function(allMenuItems)
     --local focusedApp= hs.window.frontmostWindow():application()
-    local focusedApp = require("hs.application").frontmostApplication()
+    local focusedApp = application.frontmostApplication()
     local appTitle = focusedApp:title()
-    local allMenuItems = focusedApp:getMenuItems()
+--     local allMenuItems = focusedApp:getMenuItems()
     local myMenuItems = allMenuItems and getAllMenuItems(allMenuItems) or "<i>&nbsp;&nbsp;application has no menu items</i>"
 
     local html = [[
@@ -247,25 +250,23 @@ end
 
 module.cs = hotkey.modal.new()
     function module.cs:entered()
-        local screenFrame = require("hs.screen").mainScreen():frame()
-        local viewFrame = {
-            x = screenFrame.x + 50,
-            y = screenFrame.y + 50,
-            h = screenFrame.h - 100,
-            w = screenFrame.w - 100,
-        }
-        module.myView = require("hs.webview").new(viewFrame, { developerExtrasEnabled = true })
-          :windowStyle("utility")
-          :closeOnEscape(true)
-          :allowGestures(true)
-          :windowTitle("CheatSheets")
-          :level(require("hs.drawing").windowLevels.floating)
-          :alpha(module.alpha or 1.0)
-          :show()
-        timer.doAfter(.1, function()
-            local htmlOutput = generateHtml()
-            -- make sure it hasn't been cleared already since the generation can be slow (Safari!)
-            if module.myView then module.myView:html(htmlOutput) end
+        application.frontmostApplication():getMenuItems(function(allMenuItems)
+            local screenFrame = screen.mainScreen():frame()
+            local viewFrame = {
+                x = screenFrame.x + 50,
+                y = screenFrame.y + 50,
+                h = screenFrame.h - 100,
+                w = screenFrame.w - 100,
+            }
+            module.myView = webview.new(viewFrame, { developerExtrasEnabled = true })
+              :windowStyle("utility")
+              :closeOnEscape(true)
+              :allowGestures(true)
+              :windowTitle("CheatSheets")
+              :level(drawing.windowLevels.floating)
+              :alpha(module.alpha or 1.0)
+              :html(generateHtml(allMenuItems))
+              :show()
         end)
     end
     function module.cs:exited()
@@ -308,7 +309,7 @@ module.eventwatcher = eventtap.new({events.flagsChanged}, function(ev)
     return false ;
 end):start()
 
-module.remoteAccessWatcher = distributednotifications.new(function(n,o,i)
+module.remoteAccessWatcher = dn.new(function(n,o,i)
     local vn = i and i.ViewerNames or nil
     if not vn then
         print("~~ com.apple.remotedesktop.viewerNames with unknown details: object = " .. tostring(o) .. ", info = " .. tostring(i))
