@@ -32,6 +32,8 @@ local fnutils     = require("hs.fnutils")
 local crash       = require("hs.crash")
 local logger      = require("hs.logger")
 local touchbar    = require("hs._asm.undocumented.touchbar")
+local application = require("hs.application")
+local alert       = require("hs.alert")
 
 -- something steals focus from an application which was focused before HS starts; capture that
 -- window and then we'll switch back to it at the end
@@ -238,5 +240,13 @@ print()
 
 -- refocus captured window from begining
 timer.doAfter(1, function()
-    if fmW then fmW:focus() end
+    if fmW then
+        fmW:focus()
+    else
+        local finder = application("Finder")
+        if finder then
+            alert("Activating Finder")
+            finder:activate()
+        end
+    end
 end)
