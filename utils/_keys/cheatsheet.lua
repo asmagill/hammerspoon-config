@@ -250,30 +250,39 @@ end
 
 module.cs = hotkey.modal.new()
     function module.cs:entered()
+        module.cs._waitingToBuild = true
         application.frontmostApplication():getMenuItems(function(allMenuItems)
-            local screenFrame = screen.mainScreen():frame()
-            local viewFrame = {
-                x = screenFrame.x + 50,
-                y = screenFrame.y + 50,
-                h = screenFrame.h - 100,
-                w = screenFrame.w - 100,
-            }
-            module.myView = webview.new(viewFrame, { developerExtrasEnabled = true })
-              :windowStyle("utility")
-              :closeOnEscape(true)
-              :allowGestures(true)
-              :windowTitle("CheatSheets")
-              :level(drawing.windowLevels.floating)
-              :alpha(module.alpha or 1.0)
-              :html(generateHtml(allMenuItems))
-              :show()
+            if module.cs._waitingToBuild then
+                module.cs._waitingToBuild = false
+                local screenFrame = screen.mainScreen():frame()
+                local viewFrame = {
+                    x = screenFrame.x + 50,
+                    y = screenFrame.y + 50,
+                    h = screenFrame.h - 100,
+                    w = screenFrame.w - 100,
+                }
+                module.myView = webview.new(viewFrame, { developerExtrasEnabled = true })
+                  :windowStyle("utility")
+                  :closeOnEscape(true)
+                  :allowGestures(true)
+                  :windowTitle("CheatSheets")
+                  :level(drawing.windowLevels.floating)
+                  :alpha(module.alpha or 1.0)
+                  :html(generateHtml(allMenuItems))
+                  :show()
+              else
+                  module.cs:exit()
+              end
         end)
     end
     function module.cs:exited()
-        module.myView:delete()
-        module.myView=nil
+        if module.myView then
+            module.myView:delete()
+            module.myView=nil
+        end
     end
 module.cs:bind({}, "escape", function() module.cs:exit() end)
+module.cs._waitingToBuild = false
 
 -- mimic CheatSheet's trigger for holding Command Key
 module.cmdPressed = false
@@ -295,6 +304,7 @@ module.eventwatcher = eventtap.new({events.flagsChanged}, function(ev)
                 module.countDown:stop()
                 module.countDown = nil
             end
+            module.cs._waitingToBuild = false -- in case the display is still waiting on the getMenuItems callback
             if module.myView ~= nil and module.autoDismiss then module.cs:exit() end
             if module.eventwatcher2 then -- as I undestand it, this should not be possible, but I got a nil error for eventwatcher2 in the console, so... I'll figure it out at a later time.
                 module.eventwatcher2:stop()
