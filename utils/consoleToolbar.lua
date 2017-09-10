@@ -317,4 +317,8 @@ console.toolbar(module.toolbar)
 -- not in core yet
 if console.titleVisibility then console.titleVisibility("hidden") end
 
-return module
+return setmetatable(module, {
+    __gc = function(self)
+        console.toolbar(nil)
+    end,
+})
