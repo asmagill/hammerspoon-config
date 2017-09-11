@@ -6,8 +6,8 @@ local finspect = function(...) return (inspect({...}):gsub("%s+", " ")) end
 
 local module = {}
 
-local display = guitk.new{ x = 100, y = 100, h = 100, w = 100 }:show()
-local manager = guitk.manager.new():passthroughCallback(function(...) print(finspect(...)) end)
+local display = guitk.new{ x = 100, y = 100, h = 100, w = 100 }:show():passthroughCallback(function(...) print(finspect(...)) end)
+local manager = guitk.manager.new()
 display:contentManager(manager)
 
 local types = {
@@ -24,7 +24,7 @@ local types = {
 }
 
 for i, v in ipairs(types) do
-    manager:add(guitk.element.button.buttonType(v):title(v), true)
+    manager:add(guitk.element.button.buttonType(v):title(v):alternateTitle("not " .. v), true)
 end
 
 local elements = manager:elements()
@@ -36,8 +36,15 @@ manager:add(guitk.element.button.buttonWithTitleAndImage("buttonWithTitleAndImag
 manager:add(guitk.element.button.checkbox("checkbox"))
 manager:add(guitk.element.button.radioButton("radioButton"))
 
-manager:shrinkToFit(20, 10)
+local manager2 = guitk.manager.new()
+manager2:add(guitk.element.button.radioButton("A"))
+manager2:add(guitk.element.button.radioButton("B"))
+manager2:add(guitk.element.button.radioButton("C"))
+manager:add(manager2, true):elementLocation(manager2, { x = 200, y = 200 })
 
-module.manager = manager
+manager:sizeToFit(20, 10)
+
+module.manager  = manager
+module.manager2 = manager2
 
 return module
