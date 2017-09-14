@@ -25,6 +25,9 @@ manager:add(minutesBar,        { x =  42, y = 40, h = 12, w = 120 })
 manager:add(secondsBar,        { x =  42, y = 52, h = 12, w = 120 })
 manager:add(foregroundBar,     { x =  10, y = 64, h = 20, w = 184 })
 
+manager[4].tooltip = "hours"
+manager[5].tooltip = "minutes"
+manager[6].tooltip = "seconds"
 
 local updateTimeBars = function()
     local t = os.date("*t")

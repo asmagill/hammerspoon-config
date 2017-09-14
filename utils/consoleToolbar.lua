@@ -319,6 +319,7 @@ if console.titleVisibility then console.titleVisibility("hidden") end
 
 return setmetatable(module, {
     __gc = function(self)
+        hs.openConsole() --trying to figure out what's causing console growth creep when a toolbar is attached
         console.toolbar(nil)
     end,
 })

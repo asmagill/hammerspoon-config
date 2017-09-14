@@ -27,7 +27,7 @@ local types = {
 }
 
 for i, v in ipairs(types) do
-    manager:add(guitk.element.button.buttonType(v):title(v):alternateTitle("not " .. v), true)
+    manager:add(guitk.element.button.buttonType(v):title(v):alternateTitle("not " .. v):tooltip("button type " .. v), true)
 end
 
 local elements = manager:elements()
@@ -42,10 +42,10 @@ manager:add(guitk.element.button.radioButton("radioButton"))
 
 -- radio buttons within the same manager only allow one at a time to be selected (they automatically unselect the others)
 -- to have multiple sets of radio buttons they need to be in different managers (views)
-local manager2 = guitk.manager.new()
-manager2:add(guitk.element.button.radioButton("A"))
-manager2:add(guitk.element.button.radioButton("B"))
-manager2:add(guitk.element.button.radioButton("C"))
+local manager2 = guitk.manager.new():tooltip("grouped radiobuttons")
+manager2:add(guitk.element.button.radioButton("A"):tooltip("A"))
+manager2:add(guitk.element.button.radioButton("B"):tooltip("not A"))
+manager2:add(guitk.element.button.radioButton("C"):tooltip("also not A"))
 -- then add the new manager to the main one just like any other element
 manager:add(manager2, true):elementLocation(manager2, { x = 200, y = 200 })
 
