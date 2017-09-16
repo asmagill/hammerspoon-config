@@ -229,6 +229,27 @@ end
 
 -- local powerWatcher = battery.watcher.new(powerSourceChangeFN)
 
+local rawBatteryData
+rawBatteryData = function(tbl)
+    local data = {}
+    for i,v in fnutils.sortByKeys(tbl) do
+        if type(v) ~= "table" then
+            table.insert(data, {
+                title = styledtext.new(i.." = "..tostring(v), { font = { name ="Menlo", size = 10 } }),
+                disabled = true,
+            })
+        else
+            table.insert(data, {
+                title = styledtext.new(i, { font = { name ="Menlo", size = 10 } }),
+                menu = rawBatteryData(v),
+                disabled = not next(v),
+            })
+        end
+    end
+
+    return data
+end
+
 local displayBatteryData = function(modifier)
     local menuTable = {}
     updateMenuTitle()
@@ -277,11 +298,8 @@ local displayBatteryData = function(modifier)
     end
 
     table.insert(menuTable, { title = "-" })
-    local rawBatteryData = {}
-    for i,v in fnutils.sortByKeys(battery.getAll()) do
-        table.insert(rawBatteryData, { title = i.." = "..tostring(v), disabled = true })
-    end
-    table.insert(menuTable, { title = "Raw Battery Data...", menu = rawBatteryData })
+
+    table.insert(menuTable, { title = "Raw Battery Data...", menu = rawBatteryData(battery.getAll()) })
 
     table.insert(menuTable, { title = "-" })
 
