@@ -27,28 +27,29 @@ local types = {
 }
 
 for i, v in ipairs(types) do
-    manager:add(guitk.element.button.buttonType(v):title(v):alternateTitle("not " .. v):tooltip("button type " .. v), true)
+    manager[#manager + 1] = guitk.element.button.buttonType(v):title(v):alternateTitle("not " .. v):tooltip("button type " .. v)
 end
 
-local elements = manager:elements()
-local location = manager:elementLocation(elements[#elements])
+local lastFrame = manager[#manager].frameDetails._effective
 
 -- 10.12 constructors; approximations are used if 10.11 or 10.10 detected; included here so I can determine what to mimic
-manager:add(guitk.element.button.buttonWithImage(image.imageFromName(image.systemImageNames.ApplicationIcon)), { x = 0, y = location.y + 2 * location.h })
-manager:add(guitk.element.button.buttonWithTitle("buttonWithTitle"))
-manager:add(guitk.element.button.buttonWithTitleAndImage("buttonWithTitleAndImage", image.imageFromName(image.systemImageNames.ApplicationIcon)))
-manager:add(guitk.element.button.checkbox("checkbox"))
-manager:add(guitk.element.button.radioButton("radioButton"))
+manager[#manager + 1] = {
+    _element     = guitk.element.button.buttonWithImage(image.imageFromName(image.systemImageNames.ApplicationIcon)),
+    frameDetails = { y = lastFrame.y + 2 * lastFrame.h }
+}
+manager[#manager + 1] = guitk.element.button.buttonWithTitle("buttonWithTitle")
+manager[#manager + 1] = guitk.element.button.buttonWithTitleAndImage("buttonWithTitleAndImage", image.imageFromName(image.systemImageNames.ApplicationIcon))
+manager[#manager + 1] = guitk.element.button.checkbox("checkbox")
+manager[#manager + 1] = guitk.element.button.radioButton("radioButton")
 
 -- radio buttons within the same manager only allow one at a time to be selected (they automatically unselect the others)
 -- to have multiple sets of radio buttons they need to be in different managers (views)
-local manager2 = guitk.manager.new():tooltip("grouped radiobuttons")
-manager2:add(guitk.element.button.radioButton("A"):tooltip("A"))
-manager2:add(guitk.element.button.radioButton("B"):tooltip("not A"))
-manager2:add(guitk.element.button.radioButton("C"):tooltip("also not A"))
+local radio = guitk.manager.new():tooltip("grouped radiobuttons")
+radio:insert(guitk.element.button.radioButton("A"):tooltip("A"))
+radio:insert(guitk.element.button.radioButton("B"):tooltip("not A"))
+radio:insert(guitk.element.button.radioButton("C"):tooltip("also not A"))
 -- then add the new manager to the main one just like any other element
-manager:add(manager2, true):elementLocation(manager2, { x = 200, y = 200 })
-
+manager:insert(radio, { x = 200, y = 200 })
 manager:sizeToFit(20, 10)
 
 -- returning only the manager; usually we can ignore the window once it's created because
