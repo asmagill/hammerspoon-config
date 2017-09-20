@@ -9,10 +9,16 @@ local gui = guitk.new{ x = 100, y = 100, h = 500, w = 500 }:show()
 local mgr = guitk.manager.new()
 gui:contentManager(mgr)
 
-mgr:add(guitk.element.textfield.newLabel(stext.new(
-    "Drag an image file into the box or\npaste one from the clipboard",
-    { paragraphStyle = { alignment = "center" } }
-)), { x = 5, y = 5, h = 36, w = 490 })
+mgr[#mgr + 1] = {
+    _element = guitk.element.textfield.newLabel(stext.new(
+                    "Drag an image file into the box or\npaste one from the clipboard",
+                    { paragraphStyle = { alignment = "center" } }
+    )),
+    frameDetails = {
+        cX = "50%",
+        y  = 5,
+    }
+}
 
 local placeholder = canvas.new{ x = 0, y = 0, h = 500, w = 500 }:appendElements{
     {
@@ -40,7 +46,8 @@ local imageElement = guitk.element.image.new():image(placeholder)
                                                   }
                                               end)
 
-mgr:add(imageElement, { x = 5, y = 50, w = 490, h = 440 })
+mgr:insert(imageElement, { w = 450, h = 450 })
+imageElement:moveBelow(mgr(1), 5, "centered")
 
 module.manager = mgr
 
