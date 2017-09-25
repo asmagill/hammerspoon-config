@@ -75,6 +75,12 @@ if not minimal then -- normal init continues...
         hs._exit(true, true)
     end
 
+    _asm.hexstring2ascii = function(stuff)
+        stuff = stuff:lower():gsub("[<>\n\r ]+", ""):gsub("0x", "")
+        local result = ""
+        for k in stuff:gmatch("(..)") do result = result .. string.char(tonumber(k, 16)) end
+        return result
+    end
     _asm.watchables = require("utils.watchables")
 
     _asm._keys    = requirePlus.requirePath("utils._keys")
