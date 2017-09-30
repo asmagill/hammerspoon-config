@@ -21,11 +21,11 @@ local notify   = require("hs.notify")
 local urlevent = require("hs.urlevent")
 local hash     = require("hs.hash")
 local fnutils  = require("hs.fnutils")
-local inspect  = require("hs.inspect")
 
-local _xtras
+local _xtras, stext
 if package.searchpath("hs._asm.extras", package.path) then
   _xtras = require("hs._asm.extras")
+  stext  = require("hs.styledtext")
 end
 
 local siteData         = settings.get(USERDATA_TAG .. ".siteData") or {}
@@ -175,7 +175,10 @@ module._sample = function(site, delay)
         -- not in core, see https://github.com/asmagill/hammerspoon_asm/tree/master/extras
         if _xtras and _xtras.meyersShortestEdit then
             local diff = _xtras.meyersShortestEdit(b1, b2)
-            print("", "MeyersShortestEdit Diff: " .. tostring(diff) .. " differences for " .. tostring(math.max(#b1, #b2)) .. " bytes --> " .. tostring(100 * diff / math.max(#b1, #b2)) .. "%")
+            print("", "MeyersShortestEdit Diff, raw html: " .. tostring(diff) .. " differences for " .. tostring(math.max(#b1, #b2)) .. " bytes --> " .. tostring(100 * diff / math.max(#b1, #b2)) .. "%")
+            b1, b2 = stext.getStyledTextFromData(b1, "html"):getString(), stext.getStyledTextFromData(b2, "html"):getString()
+            diff = _xtras.meyersShortestEdit(b1, b2)
+            print("", "MeyersShortestEdit Diff, text render: " .. tostring(diff) .. " differences for " .. tostring(math.max(#b1, #b2)) .. " bytes --> " .. tostring(100 * diff / math.max(#b1, #b2)) .. "%")
         end
     end)
 end
