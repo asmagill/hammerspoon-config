@@ -11,6 +11,10 @@ _asm = {}
 _asm.hs_default_require = require
 require = rawrequire
 
+-- I link the Spoons dir to the primary repo's Source directory, so this is where I'll put in progress or
+-- personal Spoons
+package.path = hs.configdir .. "/_Spoons/?.spoon/init.lua;" .. package.path
+
 -- override print so that it can render styled text objects directly in the console
 -- this needs to happen before hs.ipc is loaded since it also overrides print for mirroring
 local console     = require("hs.console")
