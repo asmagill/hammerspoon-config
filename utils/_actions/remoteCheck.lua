@@ -7,7 +7,7 @@ local settings    = require("hs.settings")
 local watchable   = require"hs.watchable"
 
 local hosts = {
-    "cousteau.private",
+    "tesla.private",
     "marconi.private",
     "hedylamarr.private",
 }
