@@ -220,9 +220,8 @@ local sensorCallback = function(self, mgr, msg, loc)
 
     if msg == "enter" then
         if obj._persistLock then
-            _status = _status .. "; break persist lock, change msg to exit"
+            _status = _status .. "; break persist lock"
             obj._persistLock = nil
-            msg = "exit"
         else
             if activeSides[side] == self then
                 _status = _status .. "; transit, change direction to open"
@@ -350,8 +349,6 @@ objectMT.color = function(self, ...)
             blue  = col.blue,
             alpha = obj.strokeAlpha,
         }
--- doesn't matter if it's in transition or visible, so don't bother with update
---         updatePanelFrame(self)
         return self
     end
     error("expected optional color table", 2)
@@ -366,8 +363,6 @@ objectMT.modifiers = function(self, ...)
         if mods then
             verifyUnique(self, obj.side, obj.enabled, mods)
             obj.mods = mods
--- doesn't matter if it's in transition or visible, so don't bother with update
---             updatePanelFrame(self)
             return self
         end
     end
@@ -398,8 +393,6 @@ objectMT.enabled = function(self, ...)
             end
             updatePanelFrame(self)
         end
--- we've already enabled/disabled everything, so don't bother with update
---         updatePanelFrame(self)
         return self
     end
     error("expected optional boolean", 2)
@@ -525,7 +518,6 @@ objectMT.show = function(self)
     local obj = internalData[self]
     local atOurSide = activeSides[obj.side]
     if atOurSide and atOurSide ~= self then objectMT.hide(atOurSide) end
-    obj._persistLock = true
     obj._targetCount, obj._dir = obj.animationSteps, 1
     if atOurSide ~= self then
         activeSides[obj.side] = self
@@ -544,6 +536,44 @@ objectMT.hide = function(self)
     obj._persistLock = nil
     sensorCallback(self, obj._sensor, "exit", {})
     return self
+end
+
+objectMT.properties = function(self, ...)
+    local obj, args = internalData[self], table.pack(...)
+    if args.n == 0 then
+        local results = {}
+        for k,v in pairs(module._properties) do results[k] = v(self) end
+        return setmetatable(results, { __tostring = function(self)
+            return (inspect(self, { process = function(item, path)
+                if path[#path] == inspect.KEY then return item end
+                if path[#path] == inspect.METATABLE then return nil end
+                if #path > 0 and type(item) == "table" then
+                    return finspect(item)
+                else
+                    return item
+                end
+            end
+            }):gsub("[\"']{", "{"):gsub("}[\"']", "}"))
+        end})
+    elseif args.n == 1 and type(args[1]) == "table" then
+        -- enabled is special -- since we can only have one enabled panel for a given side and modifiers, we check it "outside"
+        -- of the loop. If set to disable, then disable before making other adjustments; if set to enable, do so afterwards.
+        local enabled = args[1].enabled
+        if type(enabled) ~= "nil" and not enabled then module._properties["enabled"](self, enabled) end
+        for k, v in pairs(args[1]) do
+            if k ~= "enabled" then
+                local fn = module._properties[k]
+                if fn then
+                    fn(self, v)
+                else
+                    error(string.format("%s is not a recognized property name", tostring(k)), 2)
+                end
+            end
+        end
+        if enabled then module._properties["enabled"](self, enabled) end
+        return self
+    end
+    error("expected optional table of key-value pairs specifying properties to modify", 2)
 end
 
 -- objectMT.elements
@@ -613,6 +643,22 @@ module.new = function()
 
     return self
 end
+
+-- a list of methods which can be considered properties (i.e. a getter/setter for a single value)
+module._properties = {
+    color             = objectMT.color,
+    modifiers         = objectMT.modifiers,
+    enabled           = objectMT.enabled,
+    side              = objectMT.side,
+    size              = objectMT.size,
+    persistent        = objectMT.persistent,
+    animationSteps    = objectMT.animationSteps,
+    animationDuration = objectMT.animationDuration,
+    hoverDelay        = objectMT.hoverDelay,
+    padding           = objectMT.padding,
+    strokeAlpha       = objectMT.strokeAlpha,
+    fillAlpha         = objectMT.fillAlpha,
+}
 
 return setmetatable(module, {
     __gc = function(self)

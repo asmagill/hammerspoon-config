@@ -6,7 +6,6 @@
 ---
 --- TODO:
 ---   * Document, including docs.json file and slidingPanelObject.lua version
----   * Additional functions for spoon (see comments below)
 ---   * Add methods to add/remove canvas and guitk element objects, including slidingPanelObject.lua version
 ---
 --- Download: `svn export https://github.com/asmagill/hammerspoon-config/trunk/_Spoons/SlidingPanel.spoon`
@@ -37,7 +36,7 @@ obj.license = "MIT - https://opensource.org/licenses/MIT"
 obj.logger = require("hs.logger").new(obj.name)
 obj.spoonPath = debug.getinfo(1, "S").source:sub(2, -9)
 
--- trick to allow require to work on our support objects
+-- trick to allow require to work on our support files and use package.loaded to get at the support files directly later
 local pp = package.path
 package.path = obj.spoonPath .. "?.lua;" .. package.path
 local _object = require("slidingPanelObject")
@@ -45,34 +44,22 @@ package.path = pp
 
 obj.panels = {}
 
-local applyPanelPropertyTable = function(panel, propertyTable)
-    local s, r
-    for k, v in pairs(propertyTable) do
-        if k ~= "enabled" then
-            if panel[k] and type(panel[k]) == "function" then
-                s, r = pcall(panel[k], panel, v)
-            else
-                s, r = nil, tostring(k) .. " is not a sliding panel property"
-            end
-            if not s then break end
-        end
-    end
-    -- do this last because pairs doesn't guarantee order and you can have only one enabled panel for a given side and modifiers
-    -- so we want them to have a chance to be set above first
-    if type(propertyTable.enabled) ~= "nil" then
-        s, r = pcall(panel.enabled, panel, propertyTable.enabled)
-    end
-    return s, r
-end
-
-obj.newPanel = function(self, propertyTable)
 -- Call me old fashioned, but I don't like the `function obj:newPanel(propertyTable)` shorthand because it hides the
 -- fact that there is an implicit `self` variable created.
+obj.newPanel = function(self, ...)
+-- work properly even if this isn't called as a method
+    local args = table.pack(...)
+    if self ~= obj then
+        table.insert(args, 1, self)
+        self = obj
+    end
+    local propertyTable = table.unpack(args)
+
     propertyTable = propertyTable or {}
     local panel = _object.new()
-    local s, r = applyPanelPropertyTable(panel, propertyTable)
+    local s, r = pcall(panel.properties, panel, propertyTable)
     if not s then
-        obj.logger:ef("newPanel error: %s", r)
+        obj.logger.ef("newPanel error: %s", r)
         return nil
     else
         table.insert(obj.panels, panel)
@@ -80,64 +67,157 @@ obj.newPanel = function(self, propertyTable)
     end
 end
 
-obj.removePanel = function(self, idx)
+obj.removePanel = function(self, ...)
+-- work properly even if this isn't called as a method
+    local args = table.pack(...)
+    if self ~= obj then
+        table.insert(args, 1, self)
+        self = obj
+    end
+    local idx = table.unpack(args)
+
     if math.type(idx) ~= "integer" then
-        obj.logger:e("removePanel error: expected integer index")
+        obj.logger.e("removePanel error: expected integer index")
         return nil
     elseif not obj.panels[idx] then
-        obj.logger:ef("removePanel error: index %d does not refer to an existing panel", idx)
+        obj.logger.ef("removePanel error: index %d does not refer to an existing panel", idx)
         return nil
     else
         obj.panels[idx]:enabled(false)
-        obj.panels[idx] = nil
+        -- keeps the array pos filled so treating obj.panels as array will work without running into an issue with it
+        -- being sparse -- sometimes lua copes, other times not so well
+        obj.panels[idx] = false
         return true
     end
 end
 
-obj.panelProperties = function(self, idx, propertyTable)
+obj.panelProperties = function(self, ...)
+-- work properly even if this isn't called as a method
+    local args = table.pack(...)
+    if self ~= obj then
+        table.insert(args, 1, self)
+        self = obj
+    end
+    local idx, propertyTable = table.unpack(args)
+
     if math.type(idx) ~= "integer" then
-        obj.logger:e("panelProperties error: expected integer index")
+        obj.logger.e("panelProperties error: expected integer index")
         return nil
     elseif not obj.panels[idx] then
-        obj.logger:ef("panelProperties error: index %d does not refer to an existing panel", idx)
+        obj.logger.ef("panelProperties error: index %d does not refer to an existing panel", idx)
         return nil
     elseif propertyTable then
-        local s, r = applyPanelPropertyTable(obj.panels[idx], propertyTable)
+        local panel = obj.panels[idx]
+        local s, r = pcall(panel.properties, panel, propertyTable)
         if not s then
-            obj.logger:ef("panelProperties error: %s", r)
+            obj.logger.ef("panelProperties error: %s", r)
             return nil
         else
-            return true
+            return idx
         end
     else
-        local panel = obj.panels[idx]
-        return {
-            color             = panel:color(),
-            modifiers         = panel:modifiers(),
-            enabled           = panel:enabled(),
-            side              = panel:side(),
-            size              = panel:size(),
-            persistent        = panel:persistent(),
-            animationSteps    = panel:animationSteps(),
-            animationDuration = panel:animationDuration(),
-            hoverDelay        = panel:hoverDelay(),
-            padding           = panel:padding(),
-            strokeAlpha       = panel:strokeAlpha(),
-            fillAlpha         = panel:fillAlpha(),
-        }
+        return obj.panels[idx]:properties()
     end
 end
 
--- obj.hidePanel = function(self, idx)
--- end
---
--- obj.showPanel = function(self, idx)
--- end
---
--- obj.hideAllPanels = function(self)
--- end
---
--- obj.disableAllPanels = function(self)
--- end
+obj.enablePanel = function(self, ...)
+-- work properly even if this isn't called as a method
+    local args = table.pack(...)
+    if self ~= obj then
+        table.insert(args, 1, self)
+        self = obj
+    end
+    local idx = table.unpack(args)
+
+    if math.type(idx) ~= "integer" then
+        obj.logger.e("enablePanel error: expected integer index")
+        return nil
+    elseif not obj.panels[idx] then
+        obj.logger.ef("enablePanel error: index %d does not refer to an existing panel", idx)
+        return nil
+    else
+        local panel = obj.panels[idx]
+        local s, r = pcall(panel.enabled, panel, true)
+        if not s then
+            obj.logger.ef("enablePanel error: %s", r)
+            return nil
+        else
+            return idx
+        end
+    end
+end
+
+obj.disablePanel = function(self, ...)
+-- work properly even if this isn't called as a method
+    local args = table.pack(...)
+    if self ~= obj then
+        table.insert(args, 1, self)
+        self = obj
+    end
+    local idx = table.unpack(args)
+
+    if math.type(idx) ~= "integer" then
+        obj.logger.e("disablePanel error: expected integer index")
+        return nil
+    elseif not obj.panels[idx] then
+        obj.logger.ef("disablePanel error: index %d does not refer to an existing panel", idx)
+        return nil
+    else
+        obj.panels[idx]:enabled(false)
+        return idx
+    end
+end
+
+obj.hidePanel = function(self, ...)
+-- work properly even if this isn't called as a method
+    local args = table.pack(...)
+    if self ~= obj then
+        table.insert(args, 1, self)
+        self = obj
+    end
+    local idx = table.unpack(args)
+
+    if math.type(idx) ~= "integer" then
+        obj.logger.e("hidePanel error: expected integer index")
+        return nil
+    elseif not obj.panels[idx] then
+        obj.logger.ef("hidePanel error: index %d does not refer to an existing panel", idx)
+        return nil
+    else
+        obj.panels[idx]:hide()
+        return idx
+    end
+end
+
+obj.showPanel = function(self, ...)
+-- work properly even if this isn't called as a method
+    local args = table.pack(...)
+    if self ~= obj then
+        table.insert(args, 1, self)
+        self = obj
+    end
+    local idx = table.unpack(args)
+
+    if math.type(idx) ~= "integer" then
+        obj.logger.e("showPanel error: expected integer index")
+        return nil
+    elseif not obj.panels[idx] then
+        obj.logger.ef("showPanel error: index %d does not refer to an existing panel", idx)
+        return nil
+    else
+        obj.panels[idx]:show()
+        return idx
+    end
+end
+
+obj.hideAllPanels = function(self)
+    for i, v in ipairs(obj.panels) do if v then v:hide() end end
+    return true
+end
+
+obj.disableAllPanels = function(self)
+    for i, v in ipairs(obj.panels) do if v then v:enabled(false) end end
+    return true
+end
 
 return obj
