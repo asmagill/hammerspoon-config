@@ -20,6 +20,16 @@ inspecta = function(what, how) return inspectWrapper(what, how, {
     process = function(i,p) if p[#p] ~= "n" then return i end end
 }) end
 
+-- finspect = function(...)
+--     local args = table.pack(...)
+--     if args.n == 1 and type(args[1]) == "table" then
+--         args = args[1]
+--     else
+--         args.n = nil -- supress the count from table.pack
+--     end
+--     return (inspect(args):gsub("%s+", " "))
+-- end
+
 finspect = function(...)
     local args = table.pack(...)
     if args.n == 1 and type(args[1]) == "table" then
@@ -27,7 +37,13 @@ finspect = function(...)
     else
         args.n = nil -- supress the count from table.pack
     end
-    return (inspect(args):gsub("%s+", " "))
+
+    -- causes issues with recursive calls to __tostring in inspect
+    local mt = getmetatable(args)
+    if mt then setmetatable(args, nil) end
+    local answer = inspect(args, { newline = " ", indent = "" })
+    if mt then setmetatable(args, mt) end
+    return answer
 end
 
 finspect2 = function(what, ...)
