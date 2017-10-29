@@ -46,6 +46,19 @@ finspect = function(...)
     return answer
 end
 
+minspect = function(stuff)
+    return (inspect(stuff, { process = function(item, path)
+        if path[#path] == inspect.KEY then return item end
+        if path[#path] == inspect.METATABLE then return nil end
+        if #path > 0 and type(item) == "table" then
+            return finspect(item)
+        else
+            return item
+        end
+    end
+    }):gsub("[\"']{", "{"):gsub("}[\"']", "}"))
+end
+
 finspect2 = function(what, ...)
     local fn, opt = inspect, {}
     for i,v in ipairs(table.pack(...)) do
