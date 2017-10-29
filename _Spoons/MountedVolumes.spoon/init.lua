@@ -12,6 +12,7 @@ local fs      = require("hs.fs")
 local fnutils = require("hs.fnutils")
 local timer   = require("hs.timer")
 local alert   = require("hs.alert")
+local spoons  = require("hs.spoons")
 
 local obj    = {
 -- Metadata
@@ -282,6 +283,33 @@ obj.hide = function(self)
     end
     obj.canvas:hide()
     return self
+end
+
+--- MountedVolumes:bindHotkeys(mapping)
+--- Method
+--- Binds hotkeys for MountedVolumes
+---
+--- Parameters:
+---  * `mapping` - A table containing hotkey modifier/key details for one or more of the following commands:
+---    * "show"   - Show the volume list
+---    * "hide"   - Hide the volume list
+---    * "toggle" - If the volume list is visible then hide it; otherwise show the list.
+---
+--- Returns:
+---  * None
+---
+--- Notes:
+---  * the `mapping` table is a table of one or more key-value pairs of the format `command = { { modifiers }, key }` where:
+---    * `command`   - is one of the commands listed above
+---    * `modifiers` - is a table containing keyboard modifiers, as specified in `hs.hotkey.bind()`
+---    * `key`       - is a string containing the name of a keyboard key, as specified in `hs.hotkey.bind()`
+obj.bindHotkeys = function(self, mapping)
+    local def = {
+        show = obj.show,
+        hide = obj.hide,
+        toggle = function() if obj._watcher then obj.hide() else obj.show() end end,
+    }
+    spoons.bindHotkeysToSpec(def, mapping)
 end
 
 return setmetatable(obj, {

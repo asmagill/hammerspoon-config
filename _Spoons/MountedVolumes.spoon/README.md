@@ -1,7 +1,9 @@
 MountedVolumes
 ==============
 
-Displays a list of mounted volumes and a pie chart for each indicating free space on the desktop
+Displays a list of mounted volumes and a pie chart for each indicating free space on the desktop.
+
+![sample list](list.png "Example")
 
 Download: `svn export https://github.com/asmagill/hammerspoon-config/trunk/_Spoons/MountedVolumes.spoon`
 
@@ -12,8 +14,8 @@ MountedVolumes = hs.loadSpoon("MountedVolumes")
 
 ### Contents
 
-
 ##### Module Methods
+* <a href="#bindHotkeys">MountedVolumes:bindHotkeys(mapping)</a>
 * <a href="#hide">MountedVolumes:hide()</a>
 * <a href="#show">MountedVolumes:show()</a>
 
@@ -34,6 +36,29 @@ MountedVolumes = hs.loadSpoon("MountedVolumes")
 - - -
 
 ### Module Methods
+
+<a name="bindHotkeys"></a>
+~~~lua
+MountedVolumes:bindHotkeys(mapping)
+~~~
+Binds hotkeys for MountedVolumes
+
+Parameters:
+ * `mapping` - A table containing hotkey modifier/key details for one or more of the following commands:
+   * "show"   - Show the volume list
+   * "hide"   - Hide the volume list
+   * "toggle" - If the volume list is visible then hide it; otherwise show the list.
+
+Returns:
+ * None
+
+Notes:
+ * the `mapping` table is a table of one or more key-value pairs of the format `command = { { modifiers }, key }` where:
+   * `command`   - is one of the commands listed above
+   * `modifiers` - is a table containing keyboard modifiers, as specified in `hs.hotkey.bind()`
+   * `key`       - is a string containing the name of a keyboard key, as specified in `hs.hotkey.bind()`
+
+- - -
 
 <a name="hide"></a>
 ~~~lua
