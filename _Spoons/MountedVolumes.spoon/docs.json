@@ -1,0 +1,628 @@
+[
+  {
+    "Constant" : [
+
+    ],
+    "submodules" : [
+
+    ],
+    "Function" : [
+
+    ],
+    "Variable" : [
+      {
+        "name" : "unitsInSI",
+        "desc" : "Boolean, default false, indicating whether capacity is displayed in SI units (1 GB = 10^9 bytes) or Gibibytes (1 GiB = 2^30 bytes).",
+        "stripped_doc" : [
+          "Boolean, default false, indicating whether capacity is displayed in SI units (1 GB = 10^9 bytes) or Gibibytes (1 GiB = 2^30 bytes).",
+          "",
+          "Changes will take effect when the next volume change occurs, when the next usage check occurs (see `MountedVolumes.checkInterval`), or when `MountedVolumes:show` is invoked, whichever occurs first."
+        ],
+        "doc" : "Boolean, default false, indicating whether capacity is displayed in SI units (1 GB = 10^9 bytes) or Gibibytes (1 GiB = 2^30 bytes).\n\nChanges will take effect when the next volume change occurs, when the next usage check occurs (see `MountedVolumes.checkInterval`), or when `MountedVolumes:show` is invoked, whichever occurs first.",
+        "notes" : [
+
+        ],
+        "signature" : "MountedVolumes.unitsInSI",
+        "type" : "Variable",
+        "returns" : [
+
+        ],
+        "def" : "MountedVolumes.unitsInSI",
+        "parameters" : [
+
+        ]
+      },
+      {
+        "name" : "textStyle",
+        "desc" : "A table specifying the style as defined in `hs.styledtext` to display the volume name and usage details with. Defaults to:",
+        "stripped_doc" : [
+          "A table specifying the style as defined in `hs.styledtext` to display the volume name and usage details with. Defaults to:",
+          "",
+          "    {",
+          "        font = { name = \"Menlo\", size = 10 },",
+          "        color = { alpha = 1.0 },",
+          "        paragraphStyle = { alignment = \"center\" },",
+          "    }",
+          "",
+          "Changes will take effect when the next volume change occurs, when the next usage check occurs (see `MountedVolumes.checkInterval`), or when `MountedVolumes:show` is invoked, whichever occurs first."
+        ],
+        "doc" : "A table specifying the style as defined in `hs.styledtext` to display the volume name and usage details with. Defaults to:\n\n    {\n        font = { name = \"Menlo\", size = 10 },\n        color = { alpha = 1.0 },\n        paragraphStyle = { alignment = \"center\" },\n    }\n\nChanges will take effect when the next volume change occurs, when the next usage check occurs (see `MountedVolumes.checkInterval`), or when `MountedVolumes:show` is invoked, whichever occurs first.",
+        "notes" : [
+
+        ],
+        "signature" : "MountedVolumes.textStyle",
+        "type" : "Variable",
+        "returns" : [
+
+        ],
+        "def" : "MountedVolumes.textStyle",
+        "parameters" : [
+
+        ]
+      },
+      {
+        "name" : "enableEjectButton",
+        "desc" : "A boolean, default true, indicating whether the eject button displayed next to removable volumes is enabled.",
+        "stripped_doc" : [
+          "A boolean, default true, indicating whether the eject button displayed next to removable volumes is enabled.",
+          "",
+          "Changes will take effect when the next volume change occurs, when the next usage check occurs (see `MountedVolumes.checkInterval`), or when `MountedVolumes:show` is invoked, whichever occurs first."
+        ],
+        "doc" : "A boolean, default true, indicating whether the eject button displayed next to removable volumes is enabled.\n\nChanges will take effect when the next volume change occurs, when the next usage check occurs (see `MountedVolumes.checkInterval`), or when `MountedVolumes:show` is invoked, whichever occurs first.",
+        "notes" : [
+
+        ],
+        "signature" : "MountedVolumes.enableEjectButton",
+        "type" : "Variable",
+        "returns" : [
+
+        ],
+        "def" : "MountedVolumes.enableEjectButton",
+        "parameters" : [
+
+        ]
+      },
+      {
+        "name" : "capacityColor",
+        "desc" : "A table, as defined in `hs.drawing.color`, specifying the color to use for the in use portion of the volume's capacity pie chart. Defaults to `hs.drawing.color.x11.orangered`",
+        "stripped_doc" : [
+          "A table, as defined in `hs.drawing.color`, specifying the color to use for the in use portion of the volume's capacity pie chart. Defaults to `hs.drawing.color.x11.orangered`",
+          "",
+          "Changes will take effect when the next volume change occurs, when the next usage check occurs (see `MountedVolumes.checkInterval`), or when `MountedVolumes:show` is invoked, whichever occurs first."
+        ],
+        "doc" : "A table, as defined in `hs.drawing.color`, specifying the color to use for the in use portion of the volume's capacity pie chart. Defaults to `hs.drawing.color.x11.orangered`\n\nChanges will take effect when the next volume change occurs, when the next usage check occurs (see `MountedVolumes.checkInterval`), or when `MountedVolumes:show` is invoked, whichever occurs first.",
+        "notes" : [
+
+        ],
+        "signature" : "MountedVolumes.capacityColor",
+        "type" : "Variable",
+        "returns" : [
+
+        ],
+        "def" : "MountedVolumes.capacityColor",
+        "parameters" : [
+
+        ]
+      },
+      {
+        "name" : "freeColor",
+        "desc" : "A table, as defined in `hs.drawing.color`, specifying the color to use for the free portion of the volume's capacity pie chart. Defaults to `hs.drawing.color.x11.mediumspringgreen`",
+        "stripped_doc" : [
+          "A table, as defined in `hs.drawing.color`, specifying the color to use for the free portion of the volume's capacity pie chart. Defaults to `hs.drawing.color.x11.mediumspringgreen`",
+          "",
+          "Changes will take effect when the next volume change occurs, when the next usage check occurs (see `MountedVolumes.checkInterval`), or when `MountedVolumes:show` is invoked, whichever occurs first."
+        ],
+        "doc" : "A table, as defined in `hs.drawing.color`, specifying the color to use for the free portion of the volume's capacity pie chart. Defaults to `hs.drawing.color.x11.mediumspringgreen`\n\nChanges will take effect when the next volume change occurs, when the next usage check occurs (see `MountedVolumes.checkInterval`), or when `MountedVolumes:show` is invoked, whichever occurs first.",
+        "notes" : [
+
+        ],
+        "signature" : "MountedVolumes.freeColor",
+        "type" : "Variable",
+        "returns" : [
+
+        ],
+        "def" : "MountedVolumes.freeColor",
+        "parameters" : [
+
+        ]
+      },
+      {
+        "name" : "location",
+        "desc" : "A table specifying the location on the screen of the starting corner of the display. Defaults to `{ x = 20, y = 22 }`.",
+        "stripped_doc" : [
+          "A table specifying the location on the screen of the starting corner of the display. Defaults to `{ x = 20, y = 22 }`.",
+          "See also `MountedValues.growsDownwards`.",
+          "",
+          "Changes will take effect when the next volume change occurs, when the next usage check occurs (see `MountedVolumes.checkInterval`), or when `MountedVolumes:show` is invoked, whichever occurs first."
+        ],
+        "doc" : "A table specifying the location on the screen of the starting corner of the display. Defaults to `{ x = 20, y = 22 }`.\nSee also `MountedValues.growsDownwards`.\n\nChanges will take effect when the next volume change occurs, when the next usage check occurs (see `MountedVolumes.checkInterval`), or when `MountedVolumes:show` is invoked, whichever occurs first.",
+        "notes" : [
+
+        ],
+        "signature" : "MountedVolumes.location",
+        "type" : "Variable",
+        "returns" : [
+
+        ],
+        "def" : "MountedVolumes.location",
+        "parameters" : [
+
+        ]
+      },
+      {
+        "name" : "growsDownwards",
+        "desc" : "A boolean, default true, indicating whether the displayed list grows downwards or upwards as more volumes are mounted.",
+        "stripped_doc" : [
+          "A boolean, default true, indicating whether the displayed list grows downwards or upwards as more volumes are mounted.",
+          "Note that if this value is true, then `MountedVolumes.location` specifies the upper left corner of the display.  If this value is false, then `MountedVolumes.location` specifies the bottom left corner of the display.",
+          "",
+          "Changes will take effect when the next volume change occurs, when the next usage check occurs (see `MountedVolumes.checkInterval`), or when `MountedVolumes:show` is invoked, whichever occurs first."
+        ],
+        "doc" : "A boolean, default true, indicating whether the displayed list grows downwards or upwards as more volumes are mounted.\nNote that if this value is true, then `MountedVolumes.location` specifies the upper left corner of the display.  If this value is false, then `MountedVolumes.location` specifies the bottom left corner of the display.\n\nChanges will take effect when the next volume change occurs, when the next usage check occurs (see `MountedVolumes.checkInterval`), or when `MountedVolumes:show` is invoked, whichever occurs first.",
+        "notes" : [
+
+        ],
+        "signature" : "MountedVolumes.growsDownwards",
+        "type" : "Variable",
+        "returns" : [
+
+        ],
+        "def" : "MountedVolumes.growsDownwards",
+        "parameters" : [
+
+        ]
+      },
+      {
+        "name" : "checkInterval",
+        "desc" : "A number, default 120, specifying how often in seconds the free space on mounted volumes should be polled for current usage data.",
+        "stripped_doc" : [
+          "A number, default 120, specifying how often in seconds the free space on mounted volumes should be polled for current usage data.",
+          "",
+          "Changes will take effect when the next volume change occurs, when the next usage check occurs (see `MountedVolumes.checkInterval`), or when `MountedVolumes:show` is invoked, whichever occurs first."
+        ],
+        "doc" : "A number, default 120, specifying how often in seconds the free space on mounted volumes should be polled for current usage data.\n\nChanges will take effect when the next volume change occurs, when the next usage check occurs (see `MountedVolumes.checkInterval`), or when `MountedVolumes:show` is invoked, whichever occurs first.",
+        "notes" : [
+
+        ],
+        "signature" : "MountedVolumes.checkInterval",
+        "type" : "Variable",
+        "returns" : [
+
+        ],
+        "def" : "MountedVolumes.checkInterval",
+        "parameters" : [
+
+        ]
+      },
+      {
+        "name" : "backgroundColor",
+        "desc" : "A table, as defined in `hs.drawing.color`, specifying the color of the volume lists background. Defaults to `{ alpha = .7, white = .5 }`",
+        "stripped_doc" : [
+          "A table, as defined in `hs.drawing.color`, specifying the color of the volume lists background. Defaults to `{ alpha = .7, white = .5 }`",
+          "",
+          "Changes will take effect when the next volume change occurs, when the next usage check occurs (see `MountedVolumes.checkInterval`), or when `MountedVolumes:show` is invoked, whichever occurs first."
+        ],
+        "doc" : "A table, as defined in `hs.drawing.color`, specifying the color of the volume lists background. Defaults to `{ alpha = .7, white = .5 }`\n\nChanges will take effect when the next volume change occurs, when the next usage check occurs (see `MountedVolumes.checkInterval`), or when `MountedVolumes:show` is invoked, whichever occurs first.",
+        "notes" : [
+
+        ],
+        "signature" : "MountedVolumes.backgroundColor",
+        "type" : "Variable",
+        "returns" : [
+
+        ],
+        "def" : "MountedVolumes.backgroundColor",
+        "parameters" : [
+
+        ]
+      },
+      {
+        "name" : "backgroundBorder",
+        "desc" : "A table, as defined in `hs.drawing.color`, specifying the color of the volume lists border. Defaults to `{ alpha = .5 }`",
+        "stripped_doc" : [
+          "A table, as defined in `hs.drawing.color`, specifying the color of the volume lists border. Defaults to `{ alpha = .5 }`",
+          "",
+          "Changes will take effect when the next volume change occurs, when the next usage check occurs (see `MountedVolumes.checkInterval`), or when `MountedVolumes:show` is invoked, whichever occurs first."
+        ],
+        "doc" : "A table, as defined in `hs.drawing.color`, specifying the color of the volume lists border. Defaults to `{ alpha = .5 }`\n\nChanges will take effect when the next volume change occurs, when the next usage check occurs (see `MountedVolumes.checkInterval`), or when `MountedVolumes:show` is invoked, whichever occurs first.",
+        "notes" : [
+
+        ],
+        "signature" : "MountedVolumes.backgroundBorder",
+        "type" : "Variable",
+        "returns" : [
+
+        ],
+        "def" : "MountedVolumes.backgroundBorder",
+        "parameters" : [
+
+        ]
+      },
+      {
+        "name" : "cornerRadius",
+        "desc" : "A number, default 5, specifying how rounded the corners of the volume list background should be.",
+        "stripped_doc" : [
+          "A number, default 5, specifying how rounded the corners of the volume list background should be.",
+          "",
+          "Changes will take effect when the next volume change occurs, when the next usage check occurs (see `MountedVolumes.checkInterval`), or when `MountedVolumes:show` is invoked, whichever occurs first."
+        ],
+        "doc" : "A number, default 5, specifying how rounded the corners of the volume list background should be.\n\nChanges will take effect when the next volume change occurs, when the next usage check occurs (see `MountedVolumes.checkInterval`), or when `MountedVolumes:show` is invoked, whichever occurs first.",
+        "notes" : [
+
+        ],
+        "signature" : "MountedVolumes.cornerRadius",
+        "type" : "Variable",
+        "returns" : [
+
+        ],
+        "def" : "MountedVolumes.cornerRadius",
+        "parameters" : [
+
+        ]
+      }
+    ],
+    "stripped_doc" : [
+
+    ],
+    "Deprecated" : [
+
+    ],
+    "type" : "Module",
+    "desc" : "Displays a list of mounted volumes and a pie chart for each indicating free space on the desktop",
+    "Constructor" : [
+
+    ],
+    "items" : [
+      {
+        "name" : "backgroundBorder",
+        "desc" : "A table, as defined in `hs.drawing.color`, specifying the color of the volume lists border. Defaults to `{ alpha = .5 }`",
+        "stripped_doc" : [
+          "A table, as defined in `hs.drawing.color`, specifying the color of the volume lists border. Defaults to `{ alpha = .5 }`",
+          "",
+          "Changes will take effect when the next volume change occurs, when the next usage check occurs (see `MountedVolumes.checkInterval`), or when `MountedVolumes:show` is invoked, whichever occurs first."
+        ],
+        "doc" : "A table, as defined in `hs.drawing.color`, specifying the color of the volume lists border. Defaults to `{ alpha = .5 }`\n\nChanges will take effect when the next volume change occurs, when the next usage check occurs (see `MountedVolumes.checkInterval`), or when `MountedVolumes:show` is invoked, whichever occurs first.",
+        "notes" : [
+
+        ],
+        "signature" : "MountedVolumes.backgroundBorder",
+        "type" : "Variable",
+        "returns" : [
+
+        ],
+        "def" : "MountedVolumes.backgroundBorder",
+        "parameters" : [
+
+        ]
+      },
+      {
+        "name" : "backgroundColor",
+        "desc" : "A table, as defined in `hs.drawing.color`, specifying the color of the volume lists background. Defaults to `{ alpha = .7, white = .5 }`",
+        "stripped_doc" : [
+          "A table, as defined in `hs.drawing.color`, specifying the color of the volume lists background. Defaults to `{ alpha = .7, white = .5 }`",
+          "",
+          "Changes will take effect when the next volume change occurs, when the next usage check occurs (see `MountedVolumes.checkInterval`), or when `MountedVolumes:show` is invoked, whichever occurs first."
+        ],
+        "doc" : "A table, as defined in `hs.drawing.color`, specifying the color of the volume lists background. Defaults to `{ alpha = .7, white = .5 }`\n\nChanges will take effect when the next volume change occurs, when the next usage check occurs (see `MountedVolumes.checkInterval`), or when `MountedVolumes:show` is invoked, whichever occurs first.",
+        "notes" : [
+
+        ],
+        "signature" : "MountedVolumes.backgroundColor",
+        "type" : "Variable",
+        "returns" : [
+
+        ],
+        "def" : "MountedVolumes.backgroundColor",
+        "parameters" : [
+
+        ]
+      },
+      {
+        "name" : "capacityColor",
+        "desc" : "A table, as defined in `hs.drawing.color`, specifying the color to use for the in use portion of the volume's capacity pie chart. Defaults to `hs.drawing.color.x11.orangered`",
+        "stripped_doc" : [
+          "A table, as defined in `hs.drawing.color`, specifying the color to use for the in use portion of the volume's capacity pie chart. Defaults to `hs.drawing.color.x11.orangered`",
+          "",
+          "Changes will take effect when the next volume change occurs, when the next usage check occurs (see `MountedVolumes.checkInterval`), or when `MountedVolumes:show` is invoked, whichever occurs first."
+        ],
+        "doc" : "A table, as defined in `hs.drawing.color`, specifying the color to use for the in use portion of the volume's capacity pie chart. Defaults to `hs.drawing.color.x11.orangered`\n\nChanges will take effect when the next volume change occurs, when the next usage check occurs (see `MountedVolumes.checkInterval`), or when `MountedVolumes:show` is invoked, whichever occurs first.",
+        "notes" : [
+
+        ],
+        "signature" : "MountedVolumes.capacityColor",
+        "type" : "Variable",
+        "returns" : [
+
+        ],
+        "def" : "MountedVolumes.capacityColor",
+        "parameters" : [
+
+        ]
+      },
+      {
+        "name" : "checkInterval",
+        "desc" : "A number, default 120, specifying how often in seconds the free space on mounted volumes should be polled for current usage data.",
+        "stripped_doc" : [
+          "A number, default 120, specifying how often in seconds the free space on mounted volumes should be polled for current usage data.",
+          "",
+          "Changes will take effect when the next volume change occurs, when the next usage check occurs (see `MountedVolumes.checkInterval`), or when `MountedVolumes:show` is invoked, whichever occurs first."
+        ],
+        "doc" : "A number, default 120, specifying how often in seconds the free space on mounted volumes should be polled for current usage data.\n\nChanges will take effect when the next volume change occurs, when the next usage check occurs (see `MountedVolumes.checkInterval`), or when `MountedVolumes:show` is invoked, whichever occurs first.",
+        "notes" : [
+
+        ],
+        "signature" : "MountedVolumes.checkInterval",
+        "type" : "Variable",
+        "returns" : [
+
+        ],
+        "def" : "MountedVolumes.checkInterval",
+        "parameters" : [
+
+        ]
+      },
+      {
+        "name" : "cornerRadius",
+        "desc" : "A number, default 5, specifying how rounded the corners of the volume list background should be.",
+        "stripped_doc" : [
+          "A number, default 5, specifying how rounded the corners of the volume list background should be.",
+          "",
+          "Changes will take effect when the next volume change occurs, when the next usage check occurs (see `MountedVolumes.checkInterval`), or when `MountedVolumes:show` is invoked, whichever occurs first."
+        ],
+        "doc" : "A number, default 5, specifying how rounded the corners of the volume list background should be.\n\nChanges will take effect when the next volume change occurs, when the next usage check occurs (see `MountedVolumes.checkInterval`), or when `MountedVolumes:show` is invoked, whichever occurs first.",
+        "notes" : [
+
+        ],
+        "signature" : "MountedVolumes.cornerRadius",
+        "type" : "Variable",
+        "returns" : [
+
+        ],
+        "def" : "MountedVolumes.cornerRadius",
+        "parameters" : [
+
+        ]
+      },
+      {
+        "name" : "enableEjectButton",
+        "desc" : "A boolean, default true, indicating whether the eject button displayed next to removable volumes is enabled.",
+        "stripped_doc" : [
+          "A boolean, default true, indicating whether the eject button displayed next to removable volumes is enabled.",
+          "",
+          "Changes will take effect when the next volume change occurs, when the next usage check occurs (see `MountedVolumes.checkInterval`), or when `MountedVolumes:show` is invoked, whichever occurs first."
+        ],
+        "doc" : "A boolean, default true, indicating whether the eject button displayed next to removable volumes is enabled.\n\nChanges will take effect when the next volume change occurs, when the next usage check occurs (see `MountedVolumes.checkInterval`), or when `MountedVolumes:show` is invoked, whichever occurs first.",
+        "notes" : [
+
+        ],
+        "signature" : "MountedVolumes.enableEjectButton",
+        "type" : "Variable",
+        "returns" : [
+
+        ],
+        "def" : "MountedVolumes.enableEjectButton",
+        "parameters" : [
+
+        ]
+      },
+      {
+        "name" : "freeColor",
+        "desc" : "A table, as defined in `hs.drawing.color`, specifying the color to use for the free portion of the volume's capacity pie chart. Defaults to `hs.drawing.color.x11.mediumspringgreen`",
+        "stripped_doc" : [
+          "A table, as defined in `hs.drawing.color`, specifying the color to use for the free portion of the volume's capacity pie chart. Defaults to `hs.drawing.color.x11.mediumspringgreen`",
+          "",
+          "Changes will take effect when the next volume change occurs, when the next usage check occurs (see `MountedVolumes.checkInterval`), or when `MountedVolumes:show` is invoked, whichever occurs first."
+        ],
+        "doc" : "A table, as defined in `hs.drawing.color`, specifying the color to use for the free portion of the volume's capacity pie chart. Defaults to `hs.drawing.color.x11.mediumspringgreen`\n\nChanges will take effect when the next volume change occurs, when the next usage check occurs (see `MountedVolumes.checkInterval`), or when `MountedVolumes:show` is invoked, whichever occurs first.",
+        "notes" : [
+
+        ],
+        "signature" : "MountedVolumes.freeColor",
+        "type" : "Variable",
+        "returns" : [
+
+        ],
+        "def" : "MountedVolumes.freeColor",
+        "parameters" : [
+
+        ]
+      },
+      {
+        "name" : "growsDownwards",
+        "desc" : "A boolean, default true, indicating whether the displayed list grows downwards or upwards as more volumes are mounted.",
+        "stripped_doc" : [
+          "A boolean, default true, indicating whether the displayed list grows downwards or upwards as more volumes are mounted.",
+          "Note that if this value is true, then `MountedVolumes.location` specifies the upper left corner of the display.  If this value is false, then `MountedVolumes.location` specifies the bottom left corner of the display.",
+          "",
+          "Changes will take effect when the next volume change occurs, when the next usage check occurs (see `MountedVolumes.checkInterval`), or when `MountedVolumes:show` is invoked, whichever occurs first."
+        ],
+        "doc" : "A boolean, default true, indicating whether the displayed list grows downwards or upwards as more volumes are mounted.\nNote that if this value is true, then `MountedVolumes.location` specifies the upper left corner of the display.  If this value is false, then `MountedVolumes.location` specifies the bottom left corner of the display.\n\nChanges will take effect when the next volume change occurs, when the next usage check occurs (see `MountedVolumes.checkInterval`), or when `MountedVolumes:show` is invoked, whichever occurs first.",
+        "notes" : [
+
+        ],
+        "signature" : "MountedVolumes.growsDownwards",
+        "type" : "Variable",
+        "returns" : [
+
+        ],
+        "def" : "MountedVolumes.growsDownwards",
+        "parameters" : [
+
+        ]
+      },
+      {
+        "name" : "location",
+        "desc" : "A table specifying the location on the screen of the starting corner of the display. Defaults to `{ x = 20, y = 22 }`.",
+        "stripped_doc" : [
+          "A table specifying the location on the screen of the starting corner of the display. Defaults to `{ x = 20, y = 22 }`.",
+          "See also `MountedValues.growsDownwards`.",
+          "",
+          "Changes will take effect when the next volume change occurs, when the next usage check occurs (see `MountedVolumes.checkInterval`), or when `MountedVolumes:show` is invoked, whichever occurs first."
+        ],
+        "doc" : "A table specifying the location on the screen of the starting corner of the display. Defaults to `{ x = 20, y = 22 }`.\nSee also `MountedValues.growsDownwards`.\n\nChanges will take effect when the next volume change occurs, when the next usage check occurs (see `MountedVolumes.checkInterval`), or when `MountedVolumes:show` is invoked, whichever occurs first.",
+        "notes" : [
+
+        ],
+        "signature" : "MountedVolumes.location",
+        "type" : "Variable",
+        "returns" : [
+
+        ],
+        "def" : "MountedVolumes.location",
+        "parameters" : [
+
+        ]
+      },
+      {
+        "name" : "textStyle",
+        "desc" : "A table specifying the style as defined in `hs.styledtext` to display the volume name and usage details with. Defaults to:",
+        "stripped_doc" : [
+          "A table specifying the style as defined in `hs.styledtext` to display the volume name and usage details with. Defaults to:",
+          "",
+          "    {",
+          "        font = { name = \"Menlo\", size = 10 },",
+          "        color = { alpha = 1.0 },",
+          "        paragraphStyle = { alignment = \"center\" },",
+          "    }",
+          "",
+          "Changes will take effect when the next volume change occurs, when the next usage check occurs (see `MountedVolumes.checkInterval`), or when `MountedVolumes:show` is invoked, whichever occurs first."
+        ],
+        "doc" : "A table specifying the style as defined in `hs.styledtext` to display the volume name and usage details with. Defaults to:\n\n    {\n        font = { name = \"Menlo\", size = 10 },\n        color = { alpha = 1.0 },\n        paragraphStyle = { alignment = \"center\" },\n    }\n\nChanges will take effect when the next volume change occurs, when the next usage check occurs (see `MountedVolumes.checkInterval`), or when `MountedVolumes:show` is invoked, whichever occurs first.",
+        "notes" : [
+
+        ],
+        "signature" : "MountedVolumes.textStyle",
+        "type" : "Variable",
+        "returns" : [
+
+        ],
+        "def" : "MountedVolumes.textStyle",
+        "parameters" : [
+
+        ]
+      },
+      {
+        "name" : "unitsInSI",
+        "desc" : "Boolean, default false, indicating whether capacity is displayed in SI units (1 GB = 10^9 bytes) or Gibibytes (1 GiB = 2^30 bytes).",
+        "stripped_doc" : [
+          "Boolean, default false, indicating whether capacity is displayed in SI units (1 GB = 10^9 bytes) or Gibibytes (1 GiB = 2^30 bytes).",
+          "",
+          "Changes will take effect when the next volume change occurs, when the next usage check occurs (see `MountedVolumes.checkInterval`), or when `MountedVolumes:show` is invoked, whichever occurs first."
+        ],
+        "doc" : "Boolean, default false, indicating whether capacity is displayed in SI units (1 GB = 10^9 bytes) or Gibibytes (1 GiB = 2^30 bytes).\n\nChanges will take effect when the next volume change occurs, when the next usage check occurs (see `MountedVolumes.checkInterval`), or when `MountedVolumes:show` is invoked, whichever occurs first.",
+        "notes" : [
+
+        ],
+        "signature" : "MountedVolumes.unitsInSI",
+        "type" : "Variable",
+        "returns" : [
+
+        ],
+        "def" : "MountedVolumes.unitsInSI",
+        "parameters" : [
+
+        ]
+      },
+      {
+        "name" : "hide",
+        "desc" : "Hide the volumes panel on the background and stop watching for volume changes",
+        "stripped_doc" : [
+          "Hide the volumes panel on the background and stop watching for volume changes",
+          ""
+        ],
+        "doc" : "Hide the volumes panel on the background and stop watching for volume changes\n\nParameters:\n * None\n\nReturns:\n * The MountedVolumes object",
+        "notes" : [
+
+        ],
+        "signature" : "MountedVolumes:hide()",
+        "type" : "Method",
+        "returns" : [
+          " * The MountedVolumes object"
+        ],
+        "def" : "MountedVolumes:hide()",
+        "parameters" : [
+          " * None",
+          ""
+        ]
+      },
+      {
+        "name" : "show",
+        "desc" : "Display the volumes panel on the background and update it as volumes are mounted and unmounted.",
+        "stripped_doc" : [
+          "Display the volumes panel on the background and update it as volumes are mounted and unmounted.",
+          ""
+        ],
+        "doc" : "Display the volumes panel on the background and update it as volumes are mounted and unmounted.\n\nParameters:\n * None\n\nReturns:\n * The MountedVolumes object\n\nNotes:\n * If you make a change to any of the variables defining the visual appearance of the volume list, you can force the change to take immediate effect by invoking this method, even if the volume list is already being displayed.",
+        "notes" : [
+          " * If you make a change to any of the variables defining the visual appearance of the volume list, you can force the change to take immediate effect by invoking this method, even if the volume list is already being displayed."
+        ],
+        "signature" : "MountedVolumes:show()",
+        "type" : "Method",
+        "returns" : [
+          " * The MountedVolumes object",
+          ""
+        ],
+        "def" : "MountedVolumes:show()",
+        "parameters" : [
+          " * None",
+          ""
+        ]
+      }
+    ],
+    "doc" : "Displays a list of mounted volumes and a pie chart for each indicating free space on the desktop\n\nDownload: `svn export https:\/\/github.com\/asmagill\/hammerspoon-config\/trunk\/_Spoons\/MountedVolumes.spoon`",
+    "Command" : [
+
+    ],
+    "Method" : [
+      {
+        "name" : "show",
+        "desc" : "Display the volumes panel on the background and update it as volumes are mounted and unmounted.",
+        "stripped_doc" : [
+          "Display the volumes panel on the background and update it as volumes are mounted and unmounted.",
+          ""
+        ],
+        "doc" : "Display the volumes panel on the background and update it as volumes are mounted and unmounted.\n\nParameters:\n * None\n\nReturns:\n * The MountedVolumes object\n\nNotes:\n * If you make a change to any of the variables defining the visual appearance of the volume list, you can force the change to take immediate effect by invoking this method, even if the volume list is already being displayed.",
+        "notes" : [
+          " * If you make a change to any of the variables defining the visual appearance of the volume list, you can force the change to take immediate effect by invoking this method, even if the volume list is already being displayed."
+        ],
+        "signature" : "MountedVolumes:show()",
+        "type" : "Method",
+        "returns" : [
+          " * The MountedVolumes object",
+          ""
+        ],
+        "def" : "MountedVolumes:show()",
+        "parameters" : [
+          " * None",
+          ""
+        ]
+      },
+      {
+        "name" : "hide",
+        "desc" : "Hide the volumes panel on the background and stop watching for volume changes",
+        "stripped_doc" : [
+          "Hide the volumes panel on the background and stop watching for volume changes",
+          ""
+        ],
+        "doc" : "Hide the volumes panel on the background and stop watching for volume changes\n\nParameters:\n * None\n\nReturns:\n * The MountedVolumes object",
+        "notes" : [
+
+        ],
+        "signature" : "MountedVolumes:hide()",
+        "type" : "Method",
+        "returns" : [
+          " * The MountedVolumes object"
+        ],
+        "def" : "MountedVolumes:hide()",
+        "parameters" : [
+          " * None",
+          ""
+        ]
+      }
+    ],
+    "Field" : [
+
+    ],
+    "name" : "MountedVolumes"
+  }
+]

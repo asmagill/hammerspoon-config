@@ -11,7 +11,7 @@
 -- organized, we still need to load the spoon so that the module file will already be in `package.loaded` allowing `require`
 -- to find it.
 
-    hs.loadSpoon("SlidingPanel")
+    hs.loadSpoon("SlidingPanels")
     sp  = require("slidingPanelObject")
     id  = getmetatable(sp)._internalData -- for debugging
     bs  = sp.new():persistent(true):enabled(true)
@@ -20,6 +20,9 @@
     ts2 = sp.new():side("top"):size(250):color{ green = 1, blue = 1 }:enabled(true)
     rs  = sp.new():animationDuration(0):size(.25):side("right"):color{ blue = 1 }:enabled(true)
 ]]--
+
+local USERDATA_TAG = "slidingPanelObject"
+local BASE_PATH    = debug.getinfo(1, "S").source:match("^@(.+/).+%.lua$")
 
 local module, objectMT = {}, {}
 local internalData, activeSides = setmetatable({}, {__mode = "k" }), setmetatable({}, {__mode = "v" })
@@ -34,6 +37,7 @@ local screen   = require("hs.screen")
 local mouse    = require("hs.mouse")
 local inspect  = require("hs.inspect")
 local eventtap = require("hs.eventtap")
+local fs       = require("hs.fs")
 
 local ANIMATION_STEPS    = 10    -- how many steps should the panel take to go from full close to full open or vice-versa
 local ANIMATION_DURATION =  0.5  -- how long the panel takes to fully open or close
@@ -42,7 +46,6 @@ local PADDING            = 10    -- padding between panel background and display
 local FILL_ALPHA         =  0.25 -- alpha for panel background color
 local STROKE_ALPHA       =  0.5  -- alpha for panel border color
 
-local USERDATA_TAG = "slidingPanelObject"
 local VALID_SIDES = {
     top    = { horizontal = true  },
     bottom = { horizontal = true  },
@@ -121,7 +124,7 @@ local verifyUnique = function(self, side, enabled, mods)
         end
     end
     if not isGood then
-        error("enabled panel already at " .. side .. " with modifiers " .. modsAsString, 3)
+        error("enabled panel already at " .. side .. " with modifiers " .. modsAsString, 2)
     end
 end
 
@@ -204,7 +207,8 @@ local startPanelTimer = function(self)
             _status = _status .. "; target reached, kill moveTimer"
             obj._panelMoveTimer:stop()
             obj._panelMoveTimer = nil
-            obj._persistLock = obj.persistent and obj._count ~= 0 or nil -- coerce false into nil
+            obj._persistLock = obj.persistent and obj._count ~= 0 or obj._forcePersist
+            obj._forcePersist = nil
             obj._targetCount, obj._dir, obj._count = nil, nil, nil
             _status = _status .. "; persistLock = " .. tostring(obj._persistLock)
         end
@@ -220,8 +224,9 @@ local sensorCallback = function(self, mgr, msg, loc)
 
     if msg == "enter" then
         if obj._persistLock then
-            _status = _status .. "; break persist lock"
+            _status = _status .. "; break persist lock, change msg to exit"
             obj._persistLock = nil
+            msg = "exit"
         else
             if activeSides[side] == self then
                 _status = _status .. "; transit, change direction to open"
@@ -271,10 +276,32 @@ local screenWatcher = screen.watcher.newWithActiveScreen(function(active)
 end):start()
 
 -- pass through to display manager since that will be what is wanted if the key doesn't refer to a sliderPanel method
-objectMT.__index    = function(self, key)        return objectMT[key] or internalData[self]._display[key] end
-objectMT.__call     = function(self, ...)        return internalData[self]._display(key, ...) end
+objectMT.__index    = function(self, key)
+    if objectMT[key] then
+        return objectMT[key]
+    else
+        local obj = internalData[self]
+        local fromDisplay = obj._display[key]
+        if fromDisplay and type(fromDisplay) == "function" or (getmetatable(fromDisplay) or {}).__call then
+            return function(_, ...)
+                local result = fromDisplay(obj._display, ...)
+                return result == obj._display and self or result
+            end
+        else
+            return fromDisplay
+        end
+    end
+end
+
+objectMT.__call     = function(self, ...)        return internalData[self]._display(...) end
 objectMT.__len      = function(self)             return #internalData[self]._display end
-objectMT.__newindex = function(self, key, value) internalData[self]._display[key] = value end
+objectMT.__newindex = function(self, key, value)
+    if objectMT[key] then
+        objectMT[key](self, value)
+    else
+        internalData[self]._display[key] = value
+    end
+end
 objectMT.__pairs    = function(self)
     local fn, _, initial = pairs(internalData[self]._display)
     -- properly we should return *our* self, not the one returned by pairs, but I'm not sure it
@@ -351,7 +378,7 @@ objectMT.color = function(self, ...)
         }
         return self
     end
-    error("expected optional color table", 2)
+    error("expected optional color table")
 end
 
 objectMT.modifiers = function(self, ...)
@@ -368,7 +395,7 @@ objectMT.modifiers = function(self, ...)
     end
     local mods = {}
     for k,v in pairs(VALID_MODS) do table.insert(mods, k) end
-    error("expected optional table with zero or more strings equal to " .. table.concat(mods), 2)
+    error("expected optional table with zero or more strings equal to " .. table.concat(mods))
 end
 
 objectMT.enabled = function(self, ...)
@@ -395,7 +422,7 @@ objectMT.enabled = function(self, ...)
         end
         return self
     end
-    error("expected optional boolean", 2)
+    error("expected optional boolean")
 end
 
 objectMT.side = function(self, ...)
@@ -410,7 +437,7 @@ objectMT.side = function(self, ...)
     end
     local sides = {}
     for k,v in pairs(VALID_SIDES) do table.insert(sides, k) end
-    error("expected optional string equal to one of " .. table.concat(sides, ", "), 2)
+    error("expected optional string equal to one of " .. table.concat(sides, ", "))
 end
 
 -- if <= 1.0, treat as percentage; otherwise explicit size
@@ -423,7 +450,7 @@ objectMT.size = function(self, ...)
         updatePanelFrame(self)
         return self
     end
-    error("expected optional number greater than 0.0", 2)
+    error("expected optional number greater than 0.0")
 end
 
 objectMT.persistent = function(self, ...)
@@ -435,7 +462,7 @@ objectMT.persistent = function(self, ...)
         obj._persistLock = obj.persistent and obj._panel:isShowing() and not obj._panelMoveTimer or nil -- coerce to nil
         return self
     end
-    error("expected optional boolean", 2)
+    error("expected optional boolean")
 end
 
 objectMT.animationSteps = function(self, ...)
@@ -452,7 +479,7 @@ objectMT.animationSteps = function(self, ...)
         end
         return self
     end
-    error("expected optional integer greater than or equal to 1", 2)
+    error("expected optional integer greater than or equal to 1")
 end
 
 objectMT.animationDuration = function(self, ...)
@@ -464,7 +491,7 @@ objectMT.animationDuration = function(self, ...)
         if (obj.animationDuration / obj.animationSteps) < 1e-09 then self:animationSteps(1) end
         return self
     end
-    error("expected optional number greater than or equal to 0.0", 2)
+    error("expected optional number greater than or equal to 0.0")
 end
 
 objectMT.hoverDelay = function(self, ...)
@@ -475,7 +502,7 @@ objectMT.hoverDelay = function(self, ...)
         obj.hoverDelay = math.max(0.0, args[1])
         return self
     end
-    error("expected optional number greater than or equal to 0.0", 2)
+    error("expected optional number greater than or equal to 0.0")
 end
 
 objectMT.padding = function(self, ...)
@@ -487,7 +514,7 @@ objectMT.padding = function(self, ...)
         updatePanelFrame(self)
         return self
     end
-    error("expected optional number greater than or equal to 0.0", 2)
+    error("expected optional number greater than or equal to 0.0")
 end
 
 objectMT.strokeAlpha = function(self, ...)
@@ -499,7 +526,7 @@ objectMT.strokeAlpha = function(self, ...)
         self:color(self:color())
         return self
     end
-    error("expected optional number between 0.0 and 1.0 inclusive", 2)
+    error("expected optional number between 0.0 and 1.0 inclusive")
 end
 
 objectMT.fillAlpha = function(self, ...)
@@ -511,13 +538,14 @@ objectMT.fillAlpha = function(self, ...)
         self:color(self:color())
         return self
     end
-    error("expected optional number between 0.0 and 1.0 inclusive", 2)
+    error("expected optional number between 0.0 and 1.0 inclusive")
 end
 
 objectMT.show = function(self)
     local obj = internalData[self]
     local atOurSide = activeSides[obj.side]
     if atOurSide and atOurSide ~= self then objectMT.hide(atOurSide) end
+    obj._forcePersist = true
     obj._targetCount, obj._dir = obj.animationSteps, 1
     if atOurSide ~= self then
         activeSides[obj.side] = self
@@ -534,9 +562,13 @@ end
 objectMT.hide = function(self)
     local obj = internalData[self]
     obj._persistLock = nil
+    obj._forcePersist = nil
     sensorCallback(self, obj._sensor, "exit", {})
     return self
 end
+
+objectMT.enable = function(self)  return self:enabled(true)  end
+objectMT.disable = function(self) return self:enabled(false) end
 
 objectMT.properties = function(self, ...)
     local obj, args = internalData[self], table.pack(...)
@@ -566,14 +598,45 @@ objectMT.properties = function(self, ...)
                 if fn then
                     fn(self, v)
                 else
-                    error(string.format("%s is not a recognized property name", tostring(k)), 2)
+                    error(string.format("%s is not a recognized property name", tostring(k)))
                 end
             end
         end
         if enabled then module._properties["enabled"](self, enabled) end
         return self
     end
-    error("expected optional table of key-value pairs specifying properties to modify", 2)
+    error("expected optional table of key-value pairs specifying properties to modify")
+end
+
+objectMT.addWidget = function(self, name, ...)
+    local obj = internalData[self]
+
+    local element, properties
+    if type(name) == "userdata" then
+        element    = name
+        properties = ...
+    elseif type(name) == "string" then
+        local filePath = BASE_PATH .. "widgets/" .. name .. ".lua"
+        filePath = (fs.attributes(filePath) and filePath) or (fs.attributes(name) and name) or package.searchpath(name, package.path)
+        if filePath then
+            local contents = { dofile(filePath) }
+            if type(contents[1]) == "function" or (getmetatable(contents[1]) or {}).__call then
+                contents = { contents[1](...) }
+            end
+            element, properties = table.unpack(contents)
+        else
+            error("unable to locate widget with name " .. name)
+        end
+    else
+        error("unexpected widget type")
+    end
+
+    if element and pcall(require("hs._asm.guitk.element._view")._nextResponder, element) then
+        obj._display:insert(element, properties or {})
+        return self
+    else
+        error("element is not recognized as a widget type (NSView subclass)")
+    end
 end
 
 -- objectMT.elements
