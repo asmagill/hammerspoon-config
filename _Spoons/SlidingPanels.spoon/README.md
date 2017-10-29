@@ -32,6 +32,8 @@ slidingPanels:panel("infoPanel"):addWidget("MountedVolumes", { x = 0, bY = "100%
 return slidingPanels:panel("infoPanel")
 ~~~
 
+You will also need the `MountedVolumes` spoon for the example (or remove the third `addWidget` line) which is currently available at https://github.com/asmagill/hammerspoon-config/tree/master/_Spoons/MountedVolumes.spoon (the MountedVolumes spoon doesn't require `hs._asm.guitk`, so it may be moved to the core spoon repository soon)
+
 To trigger the panel, hold down the `fn` key on your keyboard and move the mouse pointer to the bottom of the screen and wait a second or two.  If you are not on a laptop, you can remove (or change) the requirement to use the `fn` key by removing the `modifiers` line above.
 
 To release the panel, move the mouse up and then back to the bottom of the screen (`fn` is not required to release the panel).
