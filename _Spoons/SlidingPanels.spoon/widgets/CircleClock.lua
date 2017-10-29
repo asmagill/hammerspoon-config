@@ -1,3 +1,6 @@
+-- TODO: Need to ponder; I still like the idea of being able to add a background to the spoon canvas... can this be made
+-- an option to "FromSpoon.lua"? Can we detect size changes even if canvas becomes a subview of a wrapper manager?
+
 --
 -- CircleClock widget for SlidingPanels spoon
 --

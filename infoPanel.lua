@@ -9,8 +9,11 @@ slidingPanels:addPanel("infoPanel", {
     fillAlpha         = .95,
 }):enable()
 
-slidingPanels:panel("infoPanel"):addWidget("HCalendar",      { rX = "100%", bY = "100%" })
-slidingPanels:panel("infoPanel"):addWidget("CircleClock",    { rX = "100%",  y = 0      })
-slidingPanels:panel("infoPanel"):addWidget("MountedVolumes", { x = 0, bY = "100%" }, { cornerRadius = 20 })
+slidingPanels:panel("infoPanel"):addWidget("FromSpoon", "HCalendar",      { rX = "100%", bY = "100%" })
+slidingPanels:panel("infoPanel"):addWidget("FromSpoon", "CircleClock",    { rX = "100%",  y = 0      })
+slidingPanels:panel("infoPanel"):addWidget("FromSpoon", "MountedVolumes", {  x = 0,      bY = "100%" }, {
+    start = "show",
+    vars  = { cornerRadius = 20 },
+})
 
 return slidingPanels:panel("infoPanel")
