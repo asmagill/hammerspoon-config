@@ -1,4 +1,3 @@
-local minimal = false
 
 -- I do too much with developmental versions of HS -- I don't need
 -- extraneous info in the Console application for every require; very
@@ -68,62 +67,58 @@ requirePlus.updatePaths("In Home", {
     hs.configdir.."/?.so"}, false)
 requirePlus.updatePaths("Luarocks", "luarocks-5.3 path", true)
 
-if not minimal then -- normal init continues...
+-- For my convenience while testing and screwing around...
+-- If something grows into usefulness, I'll modularize it.
+_xtras = require("hs._asm.extras")
 
-    -- For my convenience while testing and screwing around...
-    -- If something grows into usefulness, I'll modularize it.
-    _xtras = require("hs._asm.extras")
+_asm.relaunch = function()
+    os.execute([[ (while ps -p ]]..hs.processInfo.processID..[[ > /dev/null ; do sleep 1 ; done ; open -a "]]..hs.processInfo.bundlePath..[[" ) & ]])
+    hs._exit(true, true)
+end
 
-    _asm.relaunch = function()
-        os.execute([[ (while ps -p ]]..hs.processInfo.processID..[[ > /dev/null ; do sleep 1 ; done ; open -a "]]..hs.processInfo.bundlePath..[[" ) & ]])
-        hs._exit(true, true)
-    end
+_asm.hexstring2ascii = function(stuff)
+    stuff = stuff:lower():gsub("[<>\n\r ]+", ""):gsub("0x", "")
+    local result = ""
+    for k in stuff:gmatch("(..)") do result = result .. string.char(tonumber(k, 16)) end
+    return result
+end
+_asm.watchables = require("utils.watchables")
 
-    _asm.hexstring2ascii = function(stuff)
-        stuff = stuff:lower():gsub("[<>\n\r ]+", ""):gsub("0x", "")
-        local result = ""
-        for k in stuff:gmatch("(..)") do result = result .. string.char(tonumber(k, 16)) end
-        return result
-    end
-    _asm.watchables = require("utils.watchables")
+_asm._keys    = requirePlus.requirePath("utils._keys")
+_asm._actions = requirePlus.requirePath("utils._actions")
+_asm._menus   = requirePlus.requirePath("utils._menus")
+-- need to rethink requirePlus so that it can handle folders with name/init.lua
+_asm._menus.XProtectStatus = require"utils._menus.XprotectStatus"
 
-    _asm._keys    = requirePlus.requirePath("utils._keys")
-    _asm._actions = requirePlus.requirePath("utils._actions")
-    _asm._menus   = requirePlus.requirePath("utils._menus")
-    -- need to rethink requirePlus so that it can handle folders with name/init.lua
-    _asm._menus.XProtectStatus = require"utils._menus.XprotectStatus"
-
-    _asm._CMI     = require("utils.consolidateMenus")
+_asm._CMI     = require("utils.consolidateMenus")
 
 --    table.insert(_asm._actions.closeWhenLoseFocus.closeList, "nvALT")
 --    _asm._actions.closeWhenLoseFocus.disable()
 
-    _asm._CMI.addMenu(_asm._menus.applicationMenu.menuUserdata, "icon",      true)
-    _asm._CMI.addMenu(_asm._menus.developerMenu.menuUserdata,   "icon",  -1, true)
-    _asm._CMI.addMenu(_asm._menus.newClipper.menu,              "title", -1, true)
-    _asm._CMI.addMenu(_asm._menus.volumes.menu,                 "icon",  -1, true)
-    -- _asm._CMI.addMenu(_asm._menus.battery.menuUserdata,         "title", -1, true)
-    -- going to have to revisit CMI... it doesn't do arbitrary sized icons well, plus I think I want a dark mode
-    -- time to consider image filters for hs.image?
-    _asm._CMI.addMenu(_asm._menus.dateMenu.menuUserdata,        "title", -1, true)
-    _asm._CMI.addMenu(_asm._menus.amphetamine.menu,             "icon",  -1, true)
-    _asm._CMI.addMenu(_asm._menus.XProtectStatus.fullMenu,      "icon",  -1, true)
-    _asm._CMI.panelShow()
+_asm._CMI.addMenu(_asm._menus.applicationMenu.menuUserdata, "icon",      true)
+_asm._CMI.addMenu(_asm._menus.developerMenu.menuUserdata,   "icon",  -1, true)
+_asm._CMI.addMenu(_asm._menus.newClipper.menu,              "title", -1, true)
+-- going to have to revisit CMI... it doesn't do arbitrary sized icons well, plus I think I want a dark mode
+-- time to consider image filters for hs.image?
+_asm._CMI.addMenu(_asm._menus.dateMenu.menuUserdata,        "title", -1, true)
+_asm._CMI.addMenu(_asm._menus.amphetamine.menu,             "icon",  -1, true)
+_asm._CMI.addMenu(_asm._menus.XProtectStatus.fullMenu,      "icon",  -1, true)
+_asm._CMI.panelShow()
 
-    dofile("geekery.lua")
+dofile("geekery.lua")
 
-    hints.style = "vimperator"
-    window.animationDuration = 0 -- I'm a philistine, sue me
-    ipc.cliInstall("/opt/amagill")
+hints.style = "vimperator"
+window.animationDuration = 0 -- I'm a philistine, sue me
+ipc.cliInstall("/opt/amagill")
 
-    -- terminal shell equivalencies...
-    edit = function(where)
-        where = where or "."
-        os.execute("/usr/local/bin/edit "..where)
-    end
-    m = function(which)
-        os.execute("open x-man-page://"..tostring(which))
-    end
+-- terminal shell equivalencies...
+edit = function(where)
+    where = where or "."
+    os.execute("/usr/local/bin/edit "..where)
+end
+m = function(which)
+    os.execute("open x-man-page://"..tostring(which))
+end
 
 --    timer.waitUntil(
 --        load([[ return require("hs.window").get("Hammerspoon Console") ]]),
@@ -137,93 +132,89 @@ if not minimal then -- normal init continues...
 --        end
 --    )
 
-    -- hs.drawing.windowBehaviors.moveToActiveSpace
-    console.behavior(2)
-    console.smartInsertDeleteEnabled(false)
-    if console.darkMode() then
-        console.outputBackgroundColor{ white = 0 }
-        console.consoleCommandColor{ white = 1 }
-        console.alpha(.8)
-    else
-        console.windowBackgroundColor({red=.6,blue=.7,green=.7})
-        console.outputBackgroundColor({red=.8,blue=.8,green=.8})
-        console.alpha(.9)
-    end
-
-    _asm.consoleToolbar = require"utils.consoleToolbar"
-
-    resetSpaces = function()
-        local s = require("hs._asm.undocumented.spaces")
-        -- bypass check for raw function access
-        local si = require("hs._asm.undocumented.spaces.internal")
-        for k,v in pairs(s.spacesByScreenUUID()) do
-            local first = true
-            for a,b in ipairs(v) do
-                if first and si.spaceType(b) == s.types.user then
-                    si.showSpaces(b)
-                    si._changeToSpace(b)
-                    first = false
-                else
-                    si.hideSpaces(b)
-                end
-                si.spaceTransform(b, nil)
-            end
-            si.setScreenUUIDisAnimating(k, false)
-        end
-        hs.execute("killall Dock")
-    end
-
-    mb = function(url, extras)
-        local webview = require("hs.webview")
-        url = url or "https://www.google.com"
-
-        local options = {
-                developerExtrasEnabled = true,
-        }
-        if type(extras) == "table" then
-            for k,v in pairs(extras) do options[k] = v end
-        end
-
-        if getmetatable(_asm.mb) ~= hs.getObjectMetatable("hs.webview") then
-            _asm.mblog = {}
-            _asm.mb = webview.newBrowser({
-                x = 100, y = 100,
-                h = 500, w = 500
-            }, options):closeOnEscape(true)
-                       :navigationCallback(function(a, w, n, e)
-                          table.insert(_asm.mblog, { os.date("%D %T"), a, n, e })
-                       end)
-                       :policyCallback(function(a, w, d1, d2)
-                          table.insert(_asm.mblog, { os.date("%D %T"), a, d1, d2 })
-                          return true
-                       end)
-                       :sslCallback(function(w, p)
-                          table.insert(_asm.mblog, { os.date("%D %T"), "sslServerTrust", p })
-                          return true
-                       end)
-        end
-        return _asm.mb:url(url):show()
-    end
-
-    history = _asm._actions.consoleHistory.history
-
-    _asm.gc  = require("utils.gc")
-    _asm.hue = require("hs._asm.hue")
-
-    -- _asm.gc.patch("hs.timer")
-    -- _asm.gc.patch("hs._asm.enclosure.canvas")
-    -- _asm.gc.patch("hs._asm.enclosure")
-    -- _asm.gc.patch("hs._asm.canvas")
-
-    _asm.tbi = touchbar.item.newButton(image.imageFromName(image.systemImageNames.ApplicationIcon), "HSSystemButton")
-                            :callback(function(obj) hs.openConsole() end)
-                            :addToSystemTray(true)
-
-
+-- hs.drawing.windowBehaviors.moveToActiveSpace
+console.behavior(2)
+console.smartInsertDeleteEnabled(false)
+if console.darkMode() then
+    console.outputBackgroundColor{ white = 0 }
+    console.consoleCommandColor{ white = 1 }
+    console.alpha(.8)
 else
-    require("utils._actions.inspectors")
-    print("++ Running minimal configuration")
+    console.windowBackgroundColor({red=.6,blue=.7,green=.7})
+    console.outputBackgroundColor({red=.8,blue=.8,green=.8})
+    console.alpha(.9)
 end
+
+_asm.consoleToolbar = require"utils.consoleToolbar"
+
+resetSpaces = function()
+    local s = require("hs._asm.undocumented.spaces")
+    -- bypass check for raw function access
+    local si = require("hs._asm.undocumented.spaces.internal")
+    for k,v in pairs(s.spacesByScreenUUID()) do
+        local first = true
+        for a,b in ipairs(v) do
+            if first and si.spaceType(b) == s.types.user then
+                si.showSpaces(b)
+                si._changeToSpace(b)
+                first = false
+            else
+                si.hideSpaces(b)
+            end
+            si.spaceTransform(b, nil)
+        end
+        si.setScreenUUIDisAnimating(k, false)
+    end
+    hs.execute("killall Dock")
+end
+
+mb = function(url, extras)
+    local webview = require("hs.webview")
+    url = url or "https://www.google.com"
+
+    local options = {
+            developerExtrasEnabled = true,
+    }
+    if type(extras) == "table" then
+        for k,v in pairs(extras) do options[k] = v end
+    end
+
+    if getmetatable(_asm.mb) ~= hs.getObjectMetatable("hs.webview") then
+        _asm.mblog = {}
+        _asm.mb = webview.newBrowser({
+            x = 100, y = 100,
+            h = 500, w = 500
+        }, options):closeOnEscape(true)
+                   :navigationCallback(function(a, w, n, e)
+                      table.insert(_asm.mblog, { os.date("%D %T"), a, n, e })
+                   end)
+                   :policyCallback(function(a, w, d1, d2)
+                      table.insert(_asm.mblog, { os.date("%D %T"), a, d1, d2 })
+                      return true
+                   end)
+                   :sslCallback(function(w, p)
+                      table.insert(_asm.mblog, { os.date("%D %T"), "sslServerTrust", p })
+                      return true
+                   end)
+    end
+    return _asm.mb:url(url):show()
+end
+
+history = _asm._actions.consoleHistory.history
+
+_asm.gc  = require("utils.gc")
+_asm.hue = require("hs._asm.hue")
+
+-- _asm.gc.patch("hs.timer")
+-- _asm.gc.patch("hs._asm.enclosure.canvas")
+-- _asm.gc.patch("hs._asm.enclosure")
+-- _asm.gc.patch("hs._asm.canvas")
+
+_asm.tbi = touchbar.item.newButton(image.imageFromName(image.systemImageNames.ApplicationIcon), "HSSystemButton")
+                        :callback(function(obj) hs.openConsole() end)
+                        :addToSystemTray(true)
+
+_asm.infoPanel = require("infoPanel")
 
 if package.searchpath("hs.network.ping", package.path) then
     ping = require("hs.network.ping")
@@ -260,3 +251,5 @@ timer.doAfter(1, function()
         end
     end
 end)
+
+hs.loadSpoon('FadeLogo'):start(.5)
