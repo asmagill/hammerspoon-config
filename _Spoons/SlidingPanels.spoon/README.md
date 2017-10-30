@@ -3,7 +3,7 @@ SlidingPanels
 
 Create sliding panels which can emerge from the sides of your monitor to display canvas and guitk element objects
 
-Also requires [hs._asm.guitk](https://github.com/asmagill/hammerspoon_asm/tree/master/guitk) version 0.1.4.1alpha or newer to be installed.  GUITK is a candidate for future inclusion in the Hammerspoon core modules, so hopefully this requirement is temporary
+Also requires [hs._asm.guitk](https://github.com/asmagill/hammerspoon_asm/tree/master/guitk) version 0.1.5alpha or newer to be installed.  GUITK is a candidate for future inclusion in the Hammerspoon core modules, so hopefully this requirement is temporary
 
 TODO:
   * Document, including docs.json file and slidingPanelObject.lua version
@@ -11,30 +11,13 @@ TODO:
 
 Download: `svn export https://github.com/asmagill/hammerspoon-config/trunk/_Spoons/SlidingPanels.spoon`
 
-This is so much a work in progress that I hesitate to even recommend that you look at it. An example can be tried by saving the following in a file and the loading it with `require` or `dofile`:
+### Status
 
-~~~lua
-local slidingPanels = hs.loadSpoon("SlidingPanels")
+This is so much a work in progress that I hesitate to even recommend that you look at it. An example of how to use it can be found at https://github.com/asmagill/hammerspoon-config/tree/master/utils/_panels/infoPanel.lua.
 
-slidingPanels:addPanel("infoPanel", {
-    size              = 1/3,
-    modifiers         = { "fn" },
-    persistent        = true,
-    animationDuration = 0.1,
-    color             = { white = .35 },
-    fillAlpha         = .95,
-}):enable()
+You will also need the `MountedVolumes` spoon for the example (or remove the third `addWidget` line) which is currently available at https://github.com/asmagill/Spoons/raw/MountedVolumes/Spoons/MountedVolumes.spoon.zip (a pull request to the Hammerspoon master spoon repository has been submitted, but hasn't been merged yet)
 
-slidingPanels:panel("infoPanel"):addWidget("HCalendar",      { rX = "100%", bY = "100%" })
-slidingPanels:panel("infoPanel"):addWidget("CircleClock",    { rX = "100%",  y = 0      })
-slidingPanels:panel("infoPanel"):addWidget("MountedVolumes", { x = 0, bY = "100%" }, { cornerRadius = 20 })
-
-return slidingPanels:panel("infoPanel")
-~~~
-
-You will also need the `MountedVolumes` spoon for the example (or remove the third `addWidget` line) which is currently available at https://github.com/asmagill/hammerspoon-config/tree/master/_Spoons/MountedVolumes.spoon (the MountedVolumes spoon doesn't require `hs._asm.guitk`, so it may be moved to the core spoon repository soon)
-
-To trigger the panel, hold down the `fn` key on your keyboard and move the mouse pointer to the bottom of the screen and wait a second or two.  If you are not on a laptop, you can remove (or change) the requirement to use the `fn` key by removing the `modifiers` line above.
+To trigger the panel, hold down the `fn` key on your keyboard and move the mouse pointer to the bottom of the screen and wait a second or two.  If you are not on a laptop, you can remove (or change) the requirement to use the `fn` key by removing the `modifiers` line.
 
 To release the panel, move the mouse up and then back to the bottom of the screen (`fn` is not required to release the panel).
 

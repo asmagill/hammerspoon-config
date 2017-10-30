@@ -84,9 +84,11 @@ _asm.hexstring2ascii = function(stuff)
 end
 _asm.watchables = require("utils.watchables")
 
+_asm._panels  = requirePlus.requirePath("utils._panels")
 _asm._keys    = requirePlus.requirePath("utils._keys")
 _asm._actions = requirePlus.requirePath("utils._actions")
 _asm._menus   = requirePlus.requirePath("utils._menus")
+
 -- need to rethink requirePlus so that it can handle folders with name/init.lua
 _asm._menus.XProtectStatus = require"utils._menus.XprotectStatus"
 
@@ -213,8 +215,6 @@ _asm.hue = require("hs._asm.hue")
 _asm.tbi = touchbar.item.newButton(image.imageFromName(image.systemImageNames.ApplicationIcon), "HSSystemButton")
                         :callback(function(obj) hs.openConsole() end)
                         :addToSystemTray(true)
-
-_asm.infoPanel = require("infoPanel")
 
 if package.searchpath("hs.network.ping", package.path) then
     ping = require("hs.network.ping")
