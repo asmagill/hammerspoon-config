@@ -1,6 +1,7 @@
 local slidingPanels = hs.loadSpoon("SlidingPanels")
 
 slidingPanels:addPanel("infoPanel", {
+    side              = "top",
     size              = 1/3,
     modifiers         = { "fn" },
     persistent        = true,
@@ -21,7 +22,7 @@ slidingPanels:addPanel("infoPanel", {
 
 slidingPanels:panel("infoPanel"):addWidget("FromSpoon", "HCalendar",      { rX = "100%", bY = "100%" })
 
-slidingPanels:panel("infoPanel"):addWidget("FromSpoon", "CircleClock",    { rX = "100%",  y = 0      }, {
+slidingPanels:panel("infoPanel"):addWidget("FromSpoon", "CircleClock",    { rX = "100%",  y = 0 }, {
     background = {
         type             = "rectangle",
         action           = "fill",
@@ -30,9 +31,21 @@ slidingPanels:panel("infoPanel"):addWidget("FromSpoon", "CircleClock",    { rX =
     },
 })
 
-slidingPanels:panel("infoPanel"):addWidget("FromSpoon", "MountedVolumes", {  x = 0,      bY = "100%" }, {
-    start = "show", -- could also be `function(spoon) spoon:show() end``
-    vars  = { cornerRadius = 20 },
+slidingPanels:panel("infoPanel"):addWidget("FromSpoon", "MountedVolumes", {  x = 0, bY = "100%" }, {
+    start = function(spoon)
+        spoon.textStyle.font.size = 9 -- easier then spelling out entire style in vars
+                                      -- need to think about separating out font from style in spoon
+        spoon:show()
+    end,
+    vars  = { cornerRadius = 20, },
+})
+
+slidingPanels:panel("infoPanel"):addWidget("FromSpoon", "CPUMEMBAT", {  x = 0, y = 0 }, {
+    start = "show", -- could also be `function(spoon) spoon:show() end`
+    vars  = {
+        checkInterval = 10,
+        baseFont = { name = "Menlo", size = 10 },
+    },
 })
 
 return slidingPanels:panel("infoPanel")
