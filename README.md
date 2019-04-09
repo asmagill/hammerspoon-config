@@ -1,3 +1,12 @@
+***This Repository is no longer updated or maintained***
+========================================================
+
+I found it was getting unwieldy and wanted to slim things up and simplify, so my current active configuration can be found at https://github.com/asmagill/hammerspoon-config-take2.
+
+I'm keeping this around for reference, and occasionally I do migrate some things from here that I find that I do actually miss, but in general, this repository should be considered outdated and any changes or modifications will be found at the new location.
+
+*...And now back to your regularly scheduled README.md...*
+
 Personal Configuration for Hammerspoon
 ======================================
 
